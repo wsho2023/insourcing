@@ -752,8 +752,7 @@ public class OcrProcess {
 	//---------------------------------------
 	//DLしたCSV変換処理
 	//---------------------------------------
-    @SuppressWarnings("null")
-	private void convertCSV(OcrDataFormBean ocrData) {	//throws Throwable 
+    private void convertCSV(OcrDataFormBean ocrData) {	//throws Throwable 
 		String formName = ocrData.formName;
 		String documentName = ocrData.documentName;
 		String createdAt = ocrData.createdAt;
