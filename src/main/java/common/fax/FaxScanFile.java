@@ -11,9 +11,6 @@ import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.apache.poi.ss.usermodel.CellType;
 
@@ -223,13 +220,14 @@ public class FaxScanFile implements Runnable {
     	FaxDataDAO.getInstance(config).insertDB(fax);
         
         //------------------------------------------------------
-        //OCR登録処理(注文書)	★NEXTで、A,B列を変更する必要があり
+        //OCR登録処理(注文書)
         //------------------------------------------------------
-		int type = -1;
-		if (this.kyoten.equals(this.SCAN_CLASS1) == true) {
-			type = 2;
-		} else if (this.kyoten.equals(this.SCAN_CLASS2) == true) {
-			type = 0;
+		int type = 0;	//FAX経由
+		//if (this.kyoten.equals(this.SCAN_CLASS1) == true) {
+		//	type = 2;
+		//} else 
+		if (this.kyoten.equals(this.SCAN_CLASS2) == true) {
+		//	type = 0;
 			if (syubetsu.equals("K注文書") == true) {
 				syubetsu = "注文書";
 			}
@@ -238,19 +236,63 @@ public class FaxScanFile implements Runnable {
 		}
 		//注文書以外、番号登録ありは、この時点でメール送信
     	if (syubetsu.equals("注文書") != true && faxNo.equals("") != true && soshinMoto.equals("00送信元なし") != true) {
-			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-			mailConf.subject = this.kyoten + "受信連絡" + "("+ dateFormat.format(new Date()) + " " + soshinMoto + ")";
+			mailConf.subject = this.kyoten + "受信連絡("+ MyUtils.getDate() + " " + soshinMoto + ")";
 			mailConf.attach = dstPath;
 			sendScanMail(this.kyoten);
 			
 			return;
-		} else {
-			//それ以外は、OCR登録のプロセス
-			MyUtils.SystemLogPrint("  OCR登録...");
-			registOcrProcess(dstPath, type);
-			
-			return;
 		}
+		//それ以外は、OCR登録のプロセス
+		MyUtils.SystemLogPrint("  OCR登録...");
+		int res = registOcrProcess(dstPath, type);
+		if (res != 0) {
+			//帳票定義なしのケース ⇒ この時点でメール送信
+			
+			//2 Excelオープン
+			// Excelファイルへアクセス(eclipse上でパスをしていないとプロジェクトパスになる)
+			//String xlsPath = this.targetPath + this.kyoten + "-pdf管理表.xlsm";
+			//MyExcel xlsx = new MyExcel();
+			xlsx.openXlsm(xlsPath, true);
+			MyUtils.SystemLogPrint("  Excelオープン..." + xlsPath);
+			// シートを取得
+			xlsx.setSheet("MAIL");
+			//配信メール情報:From
+			mailConf.fmAddr = xlsx.getStringCellValue(1, 1);
+			//配信メール情報:Bcc
+			mailConf.bccAddr = xlsx.getStringCellValue(4, 1);
+			//配信メール情報:Body1,2
+			mailBody1 = xlsx.getStringCellValue(6, 1);
+			mailBody2 = xlsx.getStringCellValue(7, 1);
+			mailConf.body = mailBody1 + "\n" + mailBody2 + "\n" + fileName + "\n";
+			
+			//------------------------------------------------------
+			//FAXNoからFAX送信元 検索
+			xlsx.setSheet("マスタ");
+			xlsx.search(3, "00送信元なし");	//結果をrowにセット。マッチしなければ最下行をセット。
+			//MyUtils.SystemLogPrint("FAX番号から引き当てた送信元: " + soshinMoto);
+			xlsx.getCell(6);			//G列
+			mailConf.toAddr = xlsx.getStringCellValue();
+			xlsx.getCell(7);			//H列
+			mailConf.ccAddr = xlsx.getStringCellValue();
+			xlsx.getCell(0);			//A列:FLAG
+			ctype = xlsx.getCellType(0);
+			if (ctype == CellType.NUMERIC) {
+				int val = (int)xlsx.getNumericCellValue();
+			} else {
+			}
+			xlsx.getCell(1);			//B列:種別
+			syubetsu = xlsx.getStringCellValue();
+			//------------------------------------------------------
+			if (faxNo == "送信元なし") faxNo = "";	//表示は空白
+			xlsx.close();
+			
+			mailConf.subject = this.kyoten + "受信連絡("+ MyUtils.getDate() + " " + soshinMoto + ")";
+			mailConf.body = mailConf.body + "\n<OCR読取り結果>\nOCR帳票定義なし";
+			mailConf.attach = dstPath;
+			sendScanMail(this.kyoten);
+		}
+		
+		return;
 	}
 
 	private int registOcrProcess(String uploadFilePath, int type) {
@@ -259,7 +301,7 @@ public class FaxScanFile implements Runnable {
 			return -1;
 		}
 		String importPath = MyFiles.getParent(uploadFilePath);	//パスからフォルダ名取得
-
+		
 		int sortFlag = 0;
 		String status = "";
 		OcrDataFormBean ocrData = new OcrDataFormBean();
@@ -271,6 +313,10 @@ public class FaxScanFile implements Runnable {
 			status = "SORT";
 		} 
 		OcrFormBean ocrForm = OcrFormDAO.getInstance(config).queryOcrFormImportPath(sortFlag, importPath);
+		if (ocrForm.getDocumentId() == null) {
+			MyUtils.SystemLogPrint("  OCR帳票定義なし");
+			return -1;
+		}
 		ocrData.setUnitName(ocrForm.getFormName());
 		ocrData.setDocumentId(ocrForm.getDocumentId());
 		ocrData.setDocumentName(ocrForm.getDocumentName());

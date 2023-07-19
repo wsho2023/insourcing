@@ -20,6 +20,11 @@ public class MyUtils {
 		return sdf.format(new Date());
 	}
 
+	public static String getToday() {
+		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy/MM/dd");
+		return sdf2.format(new Date());
+	}
+
 	public static String getDateStr() {
 		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		return sdf2.format(new Date());

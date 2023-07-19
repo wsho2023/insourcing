@@ -52,7 +52,7 @@ public class OcrDataFormDAO {
 			System.out.println(sql);	//for debug
 
 			PreparedStatement ps = conn.prepareStatement(sql);
-			int i=1;
+			//int i=1;
 			//ps.setString(i++, type);
             ResultSet rs = ps.executeQuery();
             

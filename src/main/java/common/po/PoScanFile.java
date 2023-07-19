@@ -158,6 +158,7 @@ public class PoScanFile implements Runnable {
 		String datetime = upload.getDatetime();
 		String triCd = upload.getToricd();
 		String code = upload.getCode();
+		String inputPath = upload.getInputPath();
 		//⇒引数として渡す
 	}
 }

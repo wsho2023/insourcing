@@ -267,7 +267,7 @@ public class OcrRirekiDAO {
 			System.out.println("  sql: " + sql);
 
 			PreparedStatement ps = conn.prepareStatement(sql);
-			int i=1;
+			//int i=1;
 			//ps.setString(i++, createdAt);
 			//ps.setString(i++, formName);
 			//ps.setString(i++, formName);
@@ -351,7 +351,7 @@ public class OcrRirekiDAO {
 			System.out.println(sql);	//for debug
 
 			PreparedStatement ps = conn.prepareStatement(sql);
-			int i=1;
+			//int i=1;
 			//ps.setString(i++, type);
             ResultSet rs = ps.executeQuery();
             

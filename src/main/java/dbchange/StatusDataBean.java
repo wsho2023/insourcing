@@ -77,7 +77,6 @@ public class StatusDataBean  {
 				try {
 					conn.close();
 				} catch (SQLException e) {
-					// TODO 自動生成された catch ブロック
 					e.printStackTrace();
 				}
 			}
