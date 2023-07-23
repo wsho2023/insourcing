@@ -969,7 +969,7 @@ public class OcrProcess {
 				MyExcel xlsx = new MyExcel();
 				xlsx.open(tmpXlsPath, null, false);	//1シート目
 		        boolean resultFlag;
-		        String resultMsg;
+		        String resultMsg = "";
 				String renkeiMsg = "";
 		        String strValue;
 				double suryo = 0.0;
@@ -1195,6 +1195,8 @@ public class OcrProcess {
 			}
 		} else {
 			MyUtils.SystemErrPrint("  " + documentName + "テンプレートファイルが見つかりませんでした");
+			ocrData.checkResult = "";	//メール送信時に必要なのでブランクを入れる。
+			ocrData.renkeiResult = "";
 		}
 		try {
 /* 			//テスト：XLSXファイルは削除

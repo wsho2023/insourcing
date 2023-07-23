@@ -521,7 +521,7 @@ public class InsourcingController {
     public String faxDeletePost() {
 		
     	String scanPath = config.getScanPath2();
-    	FaxDeleteFile delete = new FaxDeleteFile(scanPath);
+    	FaxDeleteFile delete = new FaxDeleteFile(scanPath, "", 60);
     	delete.run();
     	
     	return "post_ok";
