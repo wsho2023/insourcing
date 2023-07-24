@@ -103,8 +103,8 @@ public class PoScanFile implements Runnable {
 		String[] cmdList = new String[6];
 		cmdList[0]	=	"cmd";
 		cmdList[1]	=	"/c";
-		cmdList[2]	=	"importChumon.vbs";		//VBSファイル指定
-		cmdList[3]	=	"/file:importChumon.xlsm";
+		cmdList[2]	=	"impChu.vbs";		//VBSファイル指定
+		cmdList[3]	=	"/file:impChu.xlsm";
 		cmdList[4]	=	"/method:run";
 		cmdList[5]	=	"/importFilePath:" + uploadFilePath;
 		System.out.print("  ");

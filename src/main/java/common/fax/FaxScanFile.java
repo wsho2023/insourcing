@@ -218,11 +218,10 @@ public class FaxScanFile implements Runnable {
         //OCR登録処理(注文書)
         //------------------------------------------------------
 		int type = 0;	//FAX経由
-		//if (this.kyoten.equals(this.SCAN_CLASS1) == true) {
-		//	type = 2;
-		//} else 
-		if (this.kyoten.equals(this.SCAN_CLASS2) == true) {
-		//	type = 0;
+		if (this.kyoten.equals(this.SCAN_CLASS1) == true) {
+			type = 2;
+		} else if (this.kyoten.equals(this.SCAN_CLASS2) == true) {
+			type = 0;
 			if (syubetsu.equals("K注文書") == true) {
 				syubetsu = "注文書";
 			}
@@ -303,7 +302,7 @@ public class FaxScanFile implements Runnable {
 		if (importPath.toString().contains("送信元なし") != true) {
 			sortFlag = 0;	//定義名確定
 			status = "REGIST";
-		} else if (importPath.toString().contains("送信元なし") == true) {
+		} else if (importPath.toString().contains("送信元なし") == true && this.kyoten.equals(SCAN_CLASS2) == true) {
 			sortFlag = 1;	//仕分けユニット行き
 			status = "SORT";
 		} 
