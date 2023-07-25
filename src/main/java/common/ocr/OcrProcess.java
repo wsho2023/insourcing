@@ -1357,7 +1357,7 @@ public class OcrProcess {
 				e.printStackTrace();
 			}
 		//zip圧縮前のExcelファイルを **** フォルダへコピー ⇒ ただ、この時点で、マクロ実行すればよい
-		} else if (ocrData.type == 2) {
+		} else if (ocrData.type == 2 || (ocrData.type == 0 && ocrData.docsetName.equals(SCAN_CLASS1) == true)) {
 			String chumonSrc = outputFolderPath + "\\" + ocrData.csvFileName.replace("csv", ".xlsx");
 			String chumonDst = OCR_UPLOAD_PATH + ocrData.csvFileName.replace("csv", ".xlsx");
 			try {
