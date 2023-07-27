@@ -567,8 +567,9 @@ public class FaxScanFile implements Runnable {
 			try {
 				String jsonPath = ".\\data\\deleteinfo.json";
 				JsonNode deleteInfo = MyFiles.parseJson(jsonPath);
+				int TotalMbSize2 = deleteInfo.get("TotalMbSize2").asInt();
 				String diskInfo = "\n※サイズ情報: \n フォルダ " + this.targetPath
-								+ " / サイズ: " + deleteInfo.get("TotalMBSize2").asText()
+								+ " / サイズ: " + Integer.valueOf(TotalMbSize2).toString()
 				 				+ "MB（2か月以前のpdfファイルは自動削除しています。）\n";
 				mailConf.body = mailConf.body + diskInfo;
 			} catch(IOException ex) {

@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -196,4 +197,25 @@ public class MyFiles {
 		
     	return 0;
     }
+
+    //オブジェクトをJsonNode⇒Stringに変換して、ファイルへ書き込み
+	public static int WriteJson2File(Object value, String wirtePath) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonStr = null;
+		try {
+			//JavaオブジェクトからJSONに変換
+			jsonStr = mapper.writeValueAsString(value);
+			MyUtils.SystemLogPrint(jsonStr);	//JSONの出力
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
+		if (jsonStr != null) {
+			File file = new File(wirtePath);
+			FileWriter filewriter = new FileWriter(file);
+			filewriter.write(jsonStr);
+			filewriter.close();
+		}
+    	return 0;
+	}
 }

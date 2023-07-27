@@ -6,8 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import common.utils.MyFiles;
 import common.utils.MyUtils;
@@ -35,7 +34,6 @@ public class FaxDeleteFile {
 		deleteMbSize = 0;
 	}
 	
-	//public void main(String[] args) {
 	public void run() {
 		MyUtils.SystemLogPrint("「" + targetPath + "」フォルダ内のファイル更新日が"
 							+ daysOfDeletion + "日以上のものを削除します。");
@@ -49,34 +47,40 @@ public class FaxDeleteFile {
 				+ " サイズ(MB): " + totalMbSize);
 		
 		DeleteInfo info = new DeleteInfo();
-		info.TotaltotalMbSize2 = totalMbSize;
+		info.TotalMbSize2 = totalMbSize;
 		info.TotalCount2 = totalCount;
-		ObjectMapper mapper = new ObjectMapper();
-		String json = null;
+		
+		//書き込み
 		try {
-			//JavaオブジェクトからJSONに変換
-			json = mapper.writeValueAsString(info);
-			MyUtils.SystemLogPrint(json);	//JSONの出力
-		} catch (JsonProcessingException e) {
+			MyFiles.WriteJson2File(info, ".\\data\\deleteinfo.json");
+			//MyFiles.WriteString2File(jsonStr, ".\\data\\deleteinfo.json");
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
+		//読み込み
 		try {
-			MyFiles.WriteString2File(json, ".\\data\\deleteinfo.json");
-		} catch (IOException e) {
-			e.printStackTrace();
+			String jsonPath = ".\\data\\deleteinfo.json";
+			JsonNode deleteInfo = MyFiles.parseJson(jsonPath);
+			int TotalMbSize2 = deleteInfo.get("TotalMbSize2").asInt();
+			String diskInfo = "\n※サイズ情報: \n フォルダ " + this.targetPath
+							+ " / サイズ: " + Integer.valueOf(TotalMbSize2).toString()
+			 				+ "MB（2か月以前のpdfファイルは自動削除しています。）\n";
+			MyUtils.SystemLogPrint("  diskInfo: \n" + diskInfo);
+		} catch(IOException ex) {
+			ex.printStackTrace();
 		}
 	}
 	
 	private void scanDeleteFile(String targetPath, String backupPath, boolean deleteFlag) {
-		//指定ディレクトリ肺のファイルのみ(またはディレクトリのみ)を取得
+		//指定ディレクトリ内のファイルのみ(またはディレクトリのみ)を取得
         File file = new File(targetPath);
         File fileArray[] = file.listFiles();
         
         for (File f: fileArray) {
             // フォルダ
             if (f.isDirectory()) {
-                MyUtils.SystemLogPrint(f.toString());//フォルダを表示
+                System.out.println(f.toString());//フォルダを表示
                 scanDeleteFile(f.toString(), backupPath, deleteFlag);
             }
             
@@ -92,17 +96,17 @@ public class FaxDeleteFile {
                 	// 現在日時を取得
                     Calendar st = Calendar.getInstance();	//Calendarクラスで現在日時を取得
                     st.add(Calendar.DATE, -daysOfDeletion);	//現在値を取得(n日前)
-                    Date start = st.getTime();           	//Dateに直す
+                    Date start = st.getTime();           	//Dateに変換
                     // ファイルの更新日時
                     Long lastModified = f.lastModified();
-                    Date koushin = new Date(lastModified);	//Dateに直す
+                    Date koushin = new Date(lastModified);	//Dateに変換
                     
                     if (start.compareTo(koushin) > 0) {		//compareToで比較
                         String update_time = MyUtils.sdf.format(koushin);
-                        MyUtils.SystemLogPrint("delete... " + update_time+"： " + filePath);
 	                    deleteSize = deleteSize + f.length();
 	                    deleteCount++;
                         if (deleteFlag == true) {
+                        	System.out.println("delete... " + update_time+"： " + filePath);
 	                        try {
 	                        	MyFiles.delete(filePath);
 	                        } catch (IOException e) {
@@ -118,16 +122,16 @@ public class FaxDeleteFile {
 
 class DeleteInfo {
 	@JsonProperty("UpdatedDate") String UpdatedDate;
-    @JsonProperty("TotaltotalMbSize1") int TotaltotalMbSize1;
+    @JsonProperty("TotalMbSize1") int TotalMbSize1;
     @JsonProperty("TotalCount1") long TotalCount1;
-    @JsonProperty("TotaltotalMbSize2") int TotaltotalMbSize2;
+    @JsonProperty("TotalMbSize2") int TotalMbSize2;
     @JsonProperty("TotalCount2") long TotalCount2;
 
 	DeleteInfo () {
 		UpdatedDate = MyUtils.sdf.format(new Date());
-		TotaltotalMbSize1 = 0;
+		TotalMbSize1 = 0;
 		TotalCount1 = 0;
-		TotaltotalMbSize2 = 0;
+		TotalMbSize2 = 0;
 		TotalCount2 = 0;
 	}
 }
