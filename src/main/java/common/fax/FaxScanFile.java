@@ -217,7 +217,7 @@ public class FaxScanFile implements Runnable {
         //------------------------------------------------------
         //OCR登録処理(注文書)
         //------------------------------------------------------
-		int type = 0;	//FAX経由
+		int type = -1;
 		if (this.kyoten.equals(this.SCAN_CLASS1) == true) {
 			type = 2;
 		} else if (this.kyoten.equals(this.SCAN_CLASS2) == true) {
@@ -401,7 +401,7 @@ public class FaxScanFile implements Runnable {
 			//配信メール情報:Body1,2
 			mailBody1 = xlsx.getStringCellValue(6, 1);
 			mailBody2 = xlsx.getStringCellValue(7, 1);
-			mailConf.body = mailBody1 + "\n" + mailBody2 + "\n" + fileName + "\n";
+			//mailConf.body = mailBody1 + "\n" + mailBody2 + "\n" + fileName + "\n";
 			
 			//FAX送信元 検索
 			xlsx.setSheet("マスタ");
@@ -432,9 +432,13 @@ public class FaxScanFile implements Runnable {
 		mailConf.subject = ocrData.getDocSetName() + "受信連絡" + "(" + ocrData.getCreatedAt() + " " + ocrData.getUnitName() + ")";
 		mailConf.attach = pdfPath;
 		if (ocrData.getRenkeiResult().equals("") != true) {
-			mailConf.body = mailConf.body + "\n<OCR読取り結果>\n" + ocrData.getRenkeiResult();
+			mailConf.body = mailBody1 + "\n<OCR読取り結果>\n" + ocrData.getRenkeiResult() + mailBody2 + "\n" + fileName + "\n"; 
+			//mailConf.body = mailConf.body + "\n<OCR読取り結果>\n" + ocrData.getRenkeiResult();
 		} else if (ocrData.getCheckResult().equals("") != true) {
-			mailConf.body = mailConf.body + "\n<OCR読取り結果>\n" + ocrData.getCheckResult();
+			mailConf.body = mailBody1 + "\n<OCR読取り結果>\n" + ocrData.getCheckResult() + mailBody2 + "\n" + fileName + "\n"; 
+			//mailConf.body = mailConf.body + "\n<OCR読取り結果>\n" + ocrData.getCheckResult();
+		} else {
+			mailConf.body = mailBody1 + "\n<OCR読取り結果>\n正常終了\n\n" + mailBody2 + "\n" + fileName + "\n"; 
 		}
 		if (mailConf.toAddr == null) {
 			//宛先がなければ
@@ -511,22 +515,24 @@ public class FaxScanFile implements Runnable {
 		mailConf.attach = uploadFilePath;
 		if (readValue.equals("") == true) {
 			if (ocrData.getRenkeiResult() != null) {
-				mailConf.body = mailConf.body + "\n<OCR読取り結果>\n" + ocrData.getRenkeiResult() + "\n";
+				mailConf.body = mailBody1 + "\n<OCR読取り結果>\n" + ocrData.getRenkeiResult() + "\n" + mailBody2 + "\n" + fileName + "\n"; 
+				//mailConf.body = mailConf.body + "\n<OCR読取り結果>\n" + ocrData.getRenkeiResult() + "\n";
 			} else if (ocrData.getCheckResult() != null) {
-				mailConf.body = mailConf.body + "\n<OCR読取り結果>\n" + ocrData.getCheckResult() + "\n";
+				mailConf.body = mailBody1 + "\n<OCR読取り結果>\n" + ocrData.getCheckResult() + "\n"  + mailBody2 + "\n" + fileName + "\n"; 
+				//mailConf.body = mailConf.body + "\n<OCR読取り結果>\n" + ocrData.getCheckResult() + "\n";
+			} else {
+				mailConf.body = mailBody1 + "\n<OCR読取り結果>\n正常終了\n\n" + mailBody2 + "\n" + fileName + "\n"; 
 			}
 		} else {
 			if (ocrData.getRenkeiResult() != null) {
-				mailConf.body = mailConf.body + "\n<OCR読取り結果>\n"
-											  + readValue + "\n"
-											  + ocrData.getRenkeiResult() + "\n";
+				mailConf.body = mailBody1 + "\n<OCR読取り結果>\n" + readValue + "\n" + ocrData.getRenkeiResult() + "\n" + mailBody2 + "\n" + fileName + "\n"; 
+				//mailConf.body = mailConf.body + "\n<OCR読取り結果>\n" + readValue + "\n" + ocrData.getRenkeiResult() + "\n";
 			} else if (ocrData.getCheckResult() != null) {
-				mailConf.body = mailConf.body + "\n<OCR読取り結果>\n"
-											  + readValue + "\n"
-											  + ocrData.getCheckResult() + "\n";
+				mailConf.body = mailBody1 + "\n<OCR読取り結果>\n" + readValue + "\n" + ocrData.getCheckResult() + "\n" + mailBody2 + "\n" + fileName + "\n"; 
+				//mailConf.body = mailConf.body + "\n<OCR読取り結果>\n" + readValue + "\n" + ocrData.getCheckResult() + "\n";
 			} else {
-				mailConf.body = mailConf.body + "\n<OCR読取り結果>\n"
-											  + readValue + "\n";
+				mailConf.body = mailBody1 + "\n<OCR読取り結果>\n" + readValue + "\n" + mailBody2 + "\n" + fileName + "\n"; 
+				//mailConf.body = mailConf.body + "\n<OCR読取り結果>\n" + readValue + "\n";
 			}
 		}
 		if (mailConf.toAddr == null) {

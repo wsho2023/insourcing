@@ -781,7 +781,7 @@ public class OcrProcess {
         	}
 			System.out.print("\n");
             if (maxCol < list.get(r).size())
-            	maxCol = list.get(r).size();	//行ごとにレス数が異なる（現状、ヘッダを全カラム設定しないため）
+            	maxCol = list.get(r).size();	//行ごとに列数が異なる（現状、ヘッダを全カラム設定しないため）
         }
         int repeatNum = (maxCol-ocrData.headerNum)/ocrData.meisaiNum;
         int cnvRowWidth = repeatNum * (maxRow-1) + 1;
@@ -815,8 +815,14 @@ public class OcrProcess {
 				boolean addOkFlag = false;
         		for (int p=0; p<repeatNum; p++) {
         			r2 = (r-1)*repeatNum + 1 + p - r2offset;
+					//int w1 = headerNum + p*meisaiNum;
+					//int w2 = list.get(r).size()-1;		//indexのMaxはlen-1
+					if ((list.get(r).size()-1) >= (headerNum + p*meisaiNum))
+						str = list.get(r).get(headerNum + p*meisaiNum);
+					else
+						str = "";
+					MyUtils.SystemLogPrint(str);
 					addOkFlag = true;
-					str = list.get(r).get(headerNum + p*meisaiNum);
 					//特定条件下で、明細行をスキップする
 					if (str.equals("") == true) {
 						//明細先頭カラムが空白 この行はaddしない
