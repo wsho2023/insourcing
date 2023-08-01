@@ -56,7 +56,6 @@ public class InsourcingApplication implements CommandLineRunner {
             //---------------------------------
             //watchdog 書き込み処理
     		try {
-    			//String str = MyUtils.sdf.format(new Date())+"\n"
     			String str = MyUtils.getDateStr()+"\n"
     					   + count+"\n";
     			MyFiles.WriteString2File(str, ".\\data\\watchdog.dat");

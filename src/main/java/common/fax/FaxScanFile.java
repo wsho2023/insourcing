@@ -294,19 +294,21 @@ public class FaxScanFile implements Runnable {
 		if (uploadFilePath.equals("") == true) {
 			return -1;
 		}
-		String importPath = MyFiles.getParent(uploadFilePath);	//パスからフォルダ名取得
+		String importPath = MyFiles.getParent(uploadFilePath);	//ファイルパスからフォルダパス取得
+		String subFolder = MyFiles.getFileName(importPath);		//フォルダパスからフォルダ名取得
 		
 		int sortFlag = 0;
 		String status = "";
 		OcrDataFormBean ocrData = new OcrDataFormBean();
-		if (importPath.toString().contains("送信元なし") != true) {
+		if (subFolder.toString().contains("送信元なし") != true) {
 			sortFlag = 0;	//定義名確定
 			status = "REGIST";
-		} else if (importPath.toString().contains("送信元なし") == true && this.kyoten.equals(SCAN_CLASS2) == true) {
+		} else if (subFolder.toString().contains("送信元なし") == true && this.kyoten.equals(SCAN_CLASS2) == true) {
 			sortFlag = 1;	//仕分けユニット行き
 			status = "SORT";
-		} 
-		OcrFormBean ocrForm = OcrFormDAO.getInstance(config).queryOcrFormImportPath(sortFlag, importPath);
+		}
+		//◆ImportPathを、フォルダ名(subFolder)＋kyotenに変更
+		OcrFormBean ocrForm = OcrFormDAO.getInstance(config).queryOcrFormImportPath(sortFlag, subFolder, this.kyoten);
 		if (ocrForm.getDocumentId() == null) {
 			MyUtils.SystemLogPrint("  OCR帳票定義なし");
 			return -1;
@@ -385,48 +387,43 @@ public class FaxScanFile implements Runnable {
 		File file = new File(pdfPath);
 		String fileName  = file.getName() ;
 		//2 Excelオープン
-		//try {
-			CellType ctype;
-			// Excelファイルへアクセス(eclipse上でパスをしていないとプロジェクトパスになる)
-			String xlsPath = ocrData.getTargetPath() + ocrData.getDocSetName() + "-pdf管理表.xlsm";
-			MyExcel xlsx = new MyExcel();
-			xlsx.openXlsm(xlsPath, true);	//read only
-			MyUtils.SystemLogPrint("  Excelオープン..." + xlsPath);
-			// シートを取得
-			xlsx.setSheet("MAIL");
-			//配信メール情報:From
-			mailConf.fmAddr = xlsx.getStringCellValue(1, 1);
-			//配信メール情報:Bcc
-			mailConf.bccAddr = xlsx.getStringCellValue(4, 1);
-			//配信メール情報:Body1,2
-			mailBody1 = xlsx.getStringCellValue(6, 1);
-			mailBody2 = xlsx.getStringCellValue(7, 1);
-			//mailConf.body = mailBody1 + "\n" + mailBody2 + "\n" + fileName + "\n";
-			
-			//FAX送信元 検索
-			xlsx.setSheet("マスタ");
-			soshinMoto = xlsx.search(3, unitName);	//結果をrowにセット。マッチしなければ最下行をセット。
-			xlsx.getCell(6);				//G列
-			mailConf.toAddr = xlsx.getStringCellValue();
-			xlsx.getCell(7);				//H列
-			mailConf.ccAddr = xlsx.getStringCellValue();
-			xlsx.getCell(0);				//A列:FLAG
-			ctype = xlsx.getCellType(0);
-			if (ctype == CellType.NUMERIC) {
-				int val = (int)xlsx.getNumericCellValue();
-				flag =  String.valueOf(val);
-			} else {
-				flag = xlsx.getStringCellValue();
-			}
-			xlsx.getCell(1);				//B列:種別
-			syubetsu = xlsx.getStringCellValue();
-			//★toAddrが ブランクの時、送信元なしの全員宛先に 変更すること
-			
-			xlsx.close();
-    	//} catch (Throwable t) {
-    	//    //LOG.error("Failure during static initialization", t);
-    	//    throw t;
-    	//}
+		CellType ctype;
+		// Excelファイルへアクセス(eclipse上でパスをしていないとプロジェクトパスになる)
+		String xlsPath = ocrData.getTargetPath() + ocrData.getDocSetName() + "-pdf管理表.xlsm";
+		MyExcel xlsx = new MyExcel();
+		xlsx.openXlsm(xlsPath, true);	//read only
+		MyUtils.SystemLogPrint("  Excelオープン..." + xlsPath);
+		// シートを取得
+		xlsx.setSheet("MAIL");
+		//配信メール情報:From
+		mailConf.fmAddr = xlsx.getStringCellValue(1, 1);
+		//配信メール情報:Bcc
+		mailConf.bccAddr = xlsx.getStringCellValue(4, 1);
+		//配信メール情報:Body1,2
+		mailBody1 = xlsx.getStringCellValue(6, 1);
+		mailBody2 = xlsx.getStringCellValue(7, 1);
+		//mailConf.body = mailBody1 + "\n" + mailBody2 + "\n" + fileName + "\n";
+		
+		//FAX送信元 検索
+		xlsx.setSheet("マスタ");
+		soshinMoto = xlsx.search(3, unitName);	//結果をrowにセット。マッチしなければ最下行をセット。
+		xlsx.getCell(6);				//G列
+		mailConf.toAddr = xlsx.getStringCellValue();
+		xlsx.getCell(7);				//H列
+		mailConf.ccAddr = xlsx.getStringCellValue();
+		xlsx.getCell(0);				//A列:FLAG
+		ctype = xlsx.getCellType(0);
+		if (ctype == CellType.NUMERIC) {
+			int val = (int)xlsx.getNumericCellValue();
+			flag =  String.valueOf(val);
+		} else {
+			flag = xlsx.getStringCellValue();
+		}
+		xlsx.getCell(1);				//B列:種別
+		syubetsu = xlsx.getStringCellValue();
+		//★toAddrが ブランクの時、送信元なしの全員宛先に 変更すること
+		
+		xlsx.close();
 
 		//パターン①: 注文書のケース
 		mailConf.subject = ocrData.getDocSetName() + "受信連絡" + "(" + ocrData.getCreatedAt() + " " + ocrData.getUnitName() + ")";
@@ -466,49 +463,44 @@ public class FaxScanFile implements Runnable {
 		//仕分け帳票フォルダへファイル移動、uploadFilePathを更新
 		String fileName = MyFiles.getFileName(uploadFilePath);	//パスからファイル名取得
 		//2 Excelオープン
-    	try {
-			CellType ctype;
-			// Excelファイルへアクセス(eclipse上でパスをしていないとプロジェクトパスになる)
-			String xlsPath = ocrData.getTargetPath() + ocrData.getDocSetName() + "-pdf管理表.xlsm";
-			MyExcel xlsx = new MyExcel();
-			xlsx.openXlsm(xlsPath, true);	//read only
-			MyUtils.SystemLogPrint("  Excelオープン..." + xlsPath);
-			// シートを取得
-			xlsx.setSheet("MAIL");
-			flag = "0"; 
-			//配信メール情報:From
-			mailConf.fmAddr = xlsx.getStringCellValue(1, 1);
-			//配信メール情報:Bcc
-			mailConf.bccAddr = xlsx.getStringCellValue(4, 1);
-			//配信メール情報:Body1,2
-			mailBody1 = xlsx.getStringCellValue(6, 1);
-			mailBody2 = xlsx.getStringCellValue(7, 1);
-			mailConf.body = mailBody1 + "\n" + mailBody2 + "\n" + fileName + "\n";
-			
-			//FAX送信元 検索
-			xlsx.setSheet("マスタ");
-			soshinMoto = xlsx.search(3, unitName);	//結果をrowにセット。マッチしなければ最下行をセット。
-			xlsx.getCell(6);				//G列
-			mailConf.toAddr = xlsx.getStringCellValue();
-			xlsx.getCell(7);				//H列
-			mailConf.ccAddr = xlsx.getStringCellValue();
-			xlsx.getCell(0);				//A列:FLAG
-			ctype = xlsx.getCellType(0);
-			if (ctype == CellType.NUMERIC) {
-				int val = (int)xlsx.getNumericCellValue();
-				flag =  String.valueOf(val);
-			} else {
-				flag = xlsx.getStringCellValue();
-			}
-			xlsx.getCell(1);				//B列:種別
-			syubetsu = xlsx.getStringCellValue();
-			//★toAddrが ブランクの時、送信元なしの全員宛先に 変更すること
-			
-			xlsx.close();
-    	} catch (Throwable t) {
-    	    //LOG.error("Failure during static initialization", t);
-    	    throw t;
-    	}
+		CellType ctype;
+		// Excelファイルへアクセス(eclipse上でパスをしていないとプロジェクトパスになる)
+		String xlsPath = ocrData.getTargetPath() + ocrData.getDocSetName() + "-pdf管理表.xlsm";
+		MyExcel xlsx = new MyExcel();
+		xlsx.openXlsm(xlsPath, true);	//read only
+		MyUtils.SystemLogPrint("  Excelオープン..." + xlsPath);
+		// シートを取得
+		xlsx.setSheet("MAIL");
+		flag = "0"; 
+		//配信メール情報:From
+		mailConf.fmAddr = xlsx.getStringCellValue(1, 1);
+		//配信メール情報:Bcc
+		mailConf.bccAddr = xlsx.getStringCellValue(4, 1);
+		//配信メール情報:Body1,2
+		mailBody1 = xlsx.getStringCellValue(6, 1);
+		mailBody2 = xlsx.getStringCellValue(7, 1);
+		//mailConf.body = mailBody1 + "\n" + mailBody2 + "\n" + fileName + "\n";
+		
+		//FAX送信元 検索
+		xlsx.setSheet("マスタ");
+		soshinMoto = xlsx.search(3, unitName);	//結果をrowにセット。マッチしなければ最下行をセット。
+		xlsx.getCell(6);				//G列
+		mailConf.toAddr = xlsx.getStringCellValue();
+		xlsx.getCell(7);				//H列
+		mailConf.ccAddr = xlsx.getStringCellValue();
+		xlsx.getCell(0);				//A列:FLAG
+		ctype = xlsx.getCellType(0);
+		if (ctype == CellType.NUMERIC) {
+			int val = (int)xlsx.getNumericCellValue();
+			flag =  String.valueOf(val);
+		} else {
+			flag = xlsx.getStringCellValue();
+		}
+		xlsx.getCell(1);				//B列:種別
+		syubetsu = xlsx.getStringCellValue();
+		//★toAddrが ブランクの時、送信元なしの全員宛先に 変更すること
+		
+		xlsx.close();
 
 		//パターン①: 仕分け後のケース
 		mailConf.subject = ocrData.getDocSetName() + "受信連絡" + "(" + ocrData.getCreatedAt() + " " + ocrData.getUnitName() + ")";
@@ -602,7 +594,6 @@ public class FaxScanFile implements Runnable {
 		
 		xlsx.setSheet("マスタ");
 		xlsx.search(3, "00送信元なし");	//結果をrowにセット。マッチしなければ最下行をセット。
-		//MyUtils.SystemLogPrint("FAX番号から引き当てた送信元: " + soshinMoto);
 		xlsx.getCell(6);			//G列
 		mailConf.toAddr = xlsx.getStringCellValue();
 		xlsx.getCell(7);			//H列

@@ -47,11 +47,10 @@ public class OcrFormDAO {
             ResultSet rs = ps.executeQuery();
             
             while(rs.next()) {
-				//form.setNo(rs.getString("NO"));
-				form.setFormName(rs.getString("NAME"));
-				form.setDocumentId(rs.getString("DOCUMENT_ID"));
-				form.setDocumentName(rs.getString("DOCUMENT_NAME"));
-				form.setDocsetName(rs.getString("DOCSET_NAME"));
+				form.setFormName(rs.getString(1));		//"NAME"
+				form.setDocumentId(rs.getString(2));	//"DOCUMENT_ID"
+				form.setDocumentName(rs.getString(3));	//"DOCUMENT_NAME"
+				form.setDocsetName(rs.getString(4));	//"DOCSET_NAME"
 			}			
 		} catch(SQLException sql_e) {
 			// エラーハンドリング
@@ -77,8 +76,8 @@ public class OcrFormDAO {
 		return form;
 	}
 	
-	public OcrFormBean queryOcrFormImportPath(int sortFlag, String importPath) {
-		String sql = "select NAME,DOCUMENT_ID,DOCUMENT_NAME,DOCSET_NAME from ocrFormTable where IMPORT_PATH=?";
+	public OcrFormBean queryOcrFormImportPath(int sortFlag, String importPath, String docsetName) {
+		String sql = "select NAME,DOCUMENT_ID,DOCUMENT_NAME,DOCSET_NAME from ocrFormTable where IMPORT_PATH=? and DOCSET_NAME=? ";
 		if (sortFlag != 0) {
 			sql = sql + " and DOCUMENT_NAME IS NULL";
 		}
@@ -89,20 +88,20 @@ public class OcrFormDAO {
 		try {
 			Class.forName(DB_DRIVER);
 			conn = DriverManager.getConnection(this.DB_URL, this.DB_USER, this.DB_PASS);
-			System.out.println("  sortFlag: " + sortFlag + "  importPath: " + importPath);
+			System.out.println("  sortFlag: " + sortFlag + "  importPath: " + importPath + "  docsetName: " + docsetName);
 			System.out.println("  sql: " + sql);
 
 			PreparedStatement ps = conn.prepareStatement(sql);
 			int i=1;
 			ps.setString(i++, importPath);
+			ps.setString(i++, docsetName);
             ResultSet rs = ps.executeQuery();
 
             while(rs.next()) {
-				form.setFormName(rs.getString("NAME"));
-				form.setDocumentId(rs.getString("DOCUMENT_ID"));
-				form.setDocumentName(rs.getString("DOCUMENT_NAME"));
-				form.setDocsetName(rs.getString("DOCSET_NAME"));
-				//this.setOcrFlag(rs.getString("OCR_FLAG"));
+				form.setFormName(rs.getString(1));		//"NAME"
+				form.setDocumentId(rs.getString(2));	//"DOCUMENT_ID"
+				form.setDocumentName(rs.getString(3));	//"DOCUMENT_NAME"
+				form.setDocsetName(rs.getString(4));	//"DOCSET_NAME"
 			}
 		} catch(SQLException e) {
 			// エラーハンドリング
@@ -124,7 +123,7 @@ public class OcrFormDAO {
 				}
 			}
 		}
-
+		
 		return form;
 	}
 }
