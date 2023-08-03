@@ -323,9 +323,11 @@ public class OcrRirekiDAO {
 			ps.setString(i++, no);
 			ps.executeUpdate();
 			conn.commit();
-	   } catch (Exception e) {
+			
+		} catch (Exception e) {
 	       e.printStackTrace();
-	   } finally {
+	       
+	   	} finally {
 			// DB接続を解除
 			if (conn != null) {
 				try {
@@ -334,7 +336,7 @@ public class OcrRirekiDAO {
 					e.printStackTrace();
 				}
 			}
-	   }
+	   	}
     }
     
 	public ArrayList<OcrDaichoBean> getDaicho() {
@@ -358,20 +360,20 @@ public class OcrRirekiDAO {
             OcrDaichoBean daicho = new OcrDaichoBean();
     		while(rs.next()) {
     			// ユーザIDと名前をBeanクラスへセット
-    			daicho.objectId = rs.getString("OBJECT_ID");
-    			daicho.createdDate = rs.getString("CREATED_DATE");
-    			daicho.ocrId = rs.getString("OCR_ID");
-    			daicho.meisaiNo = rs.getString("MEISAI_NO");
-    			daicho.toriMei = rs.getString("TORI_MEI");
-    			daicho.chumonBi = rs.getString("CHUMON_BI");
-    			daicho.sofuMei = rs.getString("SOFU_MEI");
-    			daicho.chumonBango = rs.getString("CHUMON_BANGO");
-    			daicho.hinmei = rs.getString("HINMEI");
-    			daicho.suryo = rs.getString("SURYO");
-    			daicho.seizoTanka = rs.getString("SEIZO_TANKA");
-    			daicho.kingaku = rs.getString("KINGAKU");
-    			daicho.youkyuNouki = rs.getString("YOUKYU_NOUKI");
-    			daicho.biko = rs.getString("BIKO");
+    			daicho.objectId = rs.getString(1);		//"OBJECT_ID"
+    			daicho.createdDate = rs.getString(2);	//"CREATED_DATE"
+    			daicho.ocrId = rs.getString(3);			//"OCR_ID"
+    			daicho.meisaiNo = rs.getString(4);		//"MEISAI_NO"
+    			daicho.toriMei = rs.getString(5);		//"TORI_MEI"
+    			daicho.chumonBi = rs.getString(6);		//"CHUMON_BI"
+    			daicho.sofuMei = rs.getString(7);		//"SOFU_MEI"
+    			daicho.chumonBango = rs.getString(8);	//"CHUMON_BANGO"
+    			daicho.hinmei = rs.getString(9);		//"HINMEI"
+    			daicho.suryo = rs.getString(10);		//"SURYO"
+    			daicho.seizoTanka = rs.getString(11);	//"SEIZO_TANKA"
+    			daicho.kingaku = rs.getString(12);		//"KINGAKU"
+    			daicho.youkyuNouki = rs.getString(13);	//"YOUKYU_NOUKI"
+    			daicho.biko = rs.getString(14);			//"BIKO"
             	// リストにBeanクラスごと格納
     			list.add(daicho);
     			//Beanクラスを初期化

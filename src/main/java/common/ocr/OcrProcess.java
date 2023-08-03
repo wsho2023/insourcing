@@ -281,6 +281,15 @@ public class OcrProcess {
 				ocrData.setUnitName("仕分け不可");
 				ocrData.setStatus("COMPLETE");
 				ocrData.setCreatedAt(MyUtils.sdf.format(new Date()));	//yyyy/MM/dd HH:mm:ss
+				OcrDataFormDAO.getInstance(config).updateWithUploadFile(ocrData);
+				//仕分け不可ｍｐメール連絡
+				MyUtils.SystemLogPrint("■addSortingPage: 仕分け不可");
+				ocrData.checkResult = "仕分け不可";
+				try {
+					scan2.sortMatchMailPorcess(ocrData, "");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				return -1;	
 			}
 	        return -1;
@@ -409,11 +418,11 @@ public class OcrProcess {
 			String linkUrl = OCR_HOST_URL + String.format(OCR_LINK_ENTRY, docsetId, documentId);	//Entry画面へのリンク
 			
 			if (sortFlag == true) {
-				//２の場合、documentNameが入っていないのでここに入れる
+				//仕分けユニット経由だと、documentNameが入っていないのでここで入れる(documentIdにはSorterRuleIdが入っているので更新する)
 				ocrData.unitName = documentName;		//仕分け結果を入れる。
 				ocrData.documentId = documentId;		//仕分け結果を入れる。
 				ocrData.documentName = documentName;	//仕分け結果を入れる。
-				//２の場合は、送信元情報を更新
+				//仕分けユニット経由は、送信元情報を更新
 				FaxDataDAO.getInstance(config).updateSoshinmotoWithUploadFile(ocrData.documentName, ocrData.uploadFilePath);
 			}
 			//unitId,statusの更新
@@ -1180,10 +1189,10 @@ public class OcrProcess {
 							
 						} else {
 							MyUtils.SystemErrPrint("注番/日付NG:" + ocrData.chumonNGFlag + " 数値系NG:" + ocrData.numericNGFlag);
-							renkeiMsg = "イレギュラーが発生しため、台帳へ連携できませんでした(注番/日付/数値系NG)";
+							renkeiMsg = rowIdx + "行目: イレギュラーが発生しため、台帳へ連携できませんでした(注番/日付/数値系NG)";
 							MyUtils.SystemErrPrint(renkeiMsg);
 							ocrData.renkeiResult = ocrData.renkeiResult + renkeiMsg + "\n";
-							ocrData.chubanDblFlag = true;
+							//ocrData.chubanDblFlag = true;
 						}
 					}
 		        }	//rowIdx
@@ -1248,7 +1257,7 @@ public class OcrProcess {
         	//}
 			//System.out.print("\n");
             if (maxCol < list.get(r).size())
-            	maxCol = list.get(r).size();	//行ごとにレス数が異なる（現状、ヘッダを全カラム設定しないため）
+            	maxCol = list.get(r).size();	//行ごとに列数が異なる（現状、ヘッダを全カラム設定しないため）
         }
 		//2行目にデータが入っている。
 		String readValue = list.get(1).get(0);
