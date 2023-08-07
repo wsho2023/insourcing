@@ -345,7 +345,7 @@ public class FaxScanFile implements Runnable {
         //フォルダ整理（フォルダ存在を確認し、なければフォルダ作成）
         //------------------------------------------------------
 		try {
-			MyFiles.notExistsCreateDirectory(dstPath);
+			MyFiles.notExistsCreateDirectory(dstDirPath);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -430,10 +430,8 @@ public class FaxScanFile implements Runnable {
 		mailConf.attach = pdfPath;
 		if (ocrData.getRenkeiResult().equals("") != true) {
 			mailConf.body = mailBody1 + "\n<OCR読取り結果>\n" + ocrData.getRenkeiResult() + "\n" + mailBody2 + "\n" + fileName + "\n"; 
-			//mailConf.body = mailConf.body + "\n<OCR読取り結果>\n" + ocrData.getRenkeiResult();
 		} else if (ocrData.getCheckResult().equals("") != true) {
 			mailConf.body = mailBody1 + "\n<OCR読取り結果>\n" + ocrData.getCheckResult() + "\n" + mailBody2 + "\n" + fileName + "\n"; 
-			//mailConf.body = mailConf.body + "\n<OCR読取り結果>\n" + ocrData.getCheckResult();
 		} else {
 			mailConf.body = mailBody1 + "\n<OCR読取り結果>\n正常終了\n\n" + mailBody2 + "\n" + fileName + "\n"; 
 		}
@@ -450,7 +448,7 @@ public class FaxScanFile implements Runnable {
 		MyUtils.SystemLogPrint("sendMailProcess: end");
 	}
 
-	public void sortMatchMailPorcess(OcrDataFormBean ocrData, String readValue) throws IOException {
+	public void sortMatchMailProcess(OcrDataFormBean ocrData, String readValue) throws IOException {
 		String unitName = ocrData.getUnitName();
 		String uploadFilePath = ocrData.getUploadFilePath();
 		String soshinMoto = "";
@@ -459,7 +457,7 @@ public class FaxScanFile implements Runnable {
 		String flag = "0";
 		String syubetsu = "";
 		
-    	MyUtils.SystemLogPrint("sortMatchMailPorcess: start");
+    	MyUtils.SystemLogPrint("sortMatchMailProcess: start");
 		//仕分け帳票フォルダへファイル移動、uploadFilePathを更新
 		String fileName = MyFiles.getFileName(uploadFilePath);	//パスからファイル名取得
 		//2 Excelオープン
@@ -508,23 +506,18 @@ public class FaxScanFile implements Runnable {
 		if (readValue.equals("") == true) {
 			if (ocrData.getRenkeiResult() != null) {
 				mailConf.body = mailBody1 + "\n<OCR読取り結果>\n" + ocrData.getRenkeiResult() + "\n" + mailBody2 + "\n" + fileName + "\n"; 
-				//mailConf.body = mailConf.body + "\n<OCR読取り結果>\n" + ocrData.getRenkeiResult() + "\n";
 			} else if (ocrData.getCheckResult() != null) {
 				mailConf.body = mailBody1 + "\n<OCR読取り結果>\n" + ocrData.getCheckResult() + "\n" + mailBody2 + "\n" + fileName + "\n"; 
-				//mailConf.body = mailConf.body + "\n<OCR読取り結果>\n" + ocrData.getCheckResult() + "\n";
 			} else {
 				mailConf.body = mailBody1 + "\n<OCR読取り結果>\n正常終了\n\n" + mailBody2 + "\n" + fileName + "\n"; 
 			}
 		} else {
 			if (ocrData.getRenkeiResult() != null) {
 				mailConf.body = mailBody1 + "\n<OCR読取り結果>\n" + readValue + "\n" + ocrData.getRenkeiResult() + "\n" + mailBody2 + "\n" + fileName + "\n"; 
-				//mailConf.body = mailConf.body + "\n<OCR読取り結果>\n" + readValue + "\n" + ocrData.getRenkeiResult() + "\n";
 			} else if (ocrData.getCheckResult() != null) {
 				mailConf.body = mailBody1 + "\n<OCR読取り結果>\n" + readValue + "\n" + ocrData.getCheckResult() + "\n" + mailBody2 + "\n" + fileName + "\n"; 
-				//mailConf.body = mailConf.body + "\n<OCR読取り結果>\n" + readValue + "\n" + ocrData.getCheckResult() + "\n";
 			} else {
 				mailConf.body = mailBody1 + "\n<OCR読取り結果>\n" + readValue + "\n" + mailBody2 + "\n" + fileName + "\n"; 
-				//mailConf.body = mailConf.body + "\n<OCR読取り結果>\n" + readValue + "\n";
 			}
 		}
 		if (mailConf.toAddr == null) {
@@ -532,7 +525,7 @@ public class FaxScanFile implements Runnable {
 			getBroadcastMailAddress(ocrData.getTargetPath(), ocrData.getDocSetName());
 		}
 		sendScanMail(ocrData.getDocSetName());
-		MyUtils.SystemLogPrint("sortMatchMailPorcess: end");
+		MyUtils.SystemLogPrint("sortMatchMailProcess: end");
 	}
 
 	public void sendSorting990Mail(OcrDataFormBean ocrData) {

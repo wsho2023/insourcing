@@ -286,7 +286,7 @@ public class OcrProcess {
 				MyUtils.SystemLogPrint("■addSortingPage: 仕分け不可");
 				ocrData.checkResult = "仕分け不可";
 				try {
-					scan2.sortMatchMailPorcess(ocrData, "");
+					scan2.sortMatchMailProcess(ocrData, "");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -672,6 +672,10 @@ public class OcrProcess {
         } 
 
 		if (ocrData.meisaiNum != 0) {
+			//OCR帳票定義ありのケースのOCR結果とマッチング
+			if (ocrData.uploadFilePath.contains("00送信元なし")==true) {
+				//int ret = sortMatchPorcess(ocrData);
+			}
 			convertCSV(ocrData);		//DLしたCSV変換処理
 			if (ocrData.uploadFilePath.contains("00送信元なし")==true) {
 				//送信元なしは、新帳票フォルダへファイルを移動し、ocrData, faxDataのフォルダパスを更新する必要がある。
@@ -679,8 +683,8 @@ public class OcrProcess {
 			}
 			postOcrProcess(ocrData);	//OCR後処理
 		} else {
-			//帳票定義なし、OCR結果とマッチング
-			sortMatchPorcess(ocrData);
+			//OCR帳票定義なしのケースのOCR結果とマッチング
+			sortMatchPorcess2(ocrData);
 		}
      	MyUtils.SystemLogPrint("■exportResultCSV: end");
      	
@@ -1233,10 +1237,71 @@ public class OcrProcess {
 	}
 	
 	//---------------------------------------
-	//OCR後処理
+	//仕分けマッチング処理（注文書）
 	//---------------------------------------
-	private void sortMatchPorcess(OcrDataFormBean ocrData) {
+	private int sortMatchPorcess(OcrDataFormBean ocrData) {
+		int ret = -1;
 		MyUtils.SystemLogPrint("sortMatchPorcess: start");
+		//---------------------------------------
+		//CSV読み込み
+		//---------------------------------------
+        String outputCsvFile = ocrData.outFolderPath + "\\" + ocrData.csvFileName;
+        ArrayList<ArrayList<String>> list = null;
+		try {
+			list = MyFiles.parseCSV(outputCsvFile, "SJIS");
+		} catch (IOException e) {
+			e.printStackTrace();
+			return ret;
+		}
+        int maxRow = list.size();
+		int maxCol = 0;
+        for (int r=1; r<maxRow; r++) {	//ヘッダは除く、明細から
+			//MyUtils.SystemLogPrint("");
+        	//for (int c=0; c<list.get(r).size(); c++) {
+        	//	System.out.print(list.get(r).get(c) + " ");
+        	//}
+			//System.out.print("\n");
+            if (maxCol < list.get(r).size())
+            	maxCol = list.get(r).size();	//行ごとに列数が異なる（現状、ヘッダを全カラム設定しないため）
+        }
+		//2行目にデータが入っている。
+		String readValue = list.get(1).get(0);
+		MyUtils.SystemLogPrint("仕分後のdocument: " + ocrData.unitName);
+		MyUtils.SystemLogPrint("     OCR読取結果: " + readValue);
+
+		if (ocrData.unitName.equals(readValue) == true) {
+			MyUtils.SystemLogPrint("仕分けと読取り結果がマッチング(仕分けOK) ⇒ 注文書外として処理");
+			readValue = ""; //メール本文にいれないよう空白に設定
+			//送信元なしは、新帳票フォルダへファイルを移動し、ocrData, faxDataのフォルダパスを更新する必要がある。
+			scan2.changeFilePath(ocrData);
+			
+			//convertCSV(ocrData);
+			//postOcrProcess(ocrData);	//OCR後処理
+			ret = 0;
+		} else {
+			ocrData.checkResult = "仕分けと読取り結果がアンマッチ(誤仕分け:" + ocrData.unitName + ") ⇒ 仕分け不可として処理";
+			MyUtils.SystemLogPrint(ocrData.checkResult);
+			//
+			FaxDataDAO.getInstance(config).updateSoshinmotoWithUploadFile("仕分け不可", ocrData.uploadFilePath);
+			ocrData.unitName = "00送信元なし";
+			try {
+				 scan2.sortMatchMailProcess(ocrData, readValue);
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
+			ret = -1;
+		}
+
+        MyUtils.SystemLogPrint("sortMatchPorcess: end");
+
+		return ret;
+	}
+    
+	//---------------------------------------
+	//仕分けマッチング処理（注文書外）
+	//---------------------------------------
+	private void sortMatchPorcess2(OcrDataFormBean ocrData) {
+		MyUtils.SystemLogPrint("sortMatchPorcess2: start");
 		//---------------------------------------
 		//CSV読み込み
 		//---------------------------------------
@@ -1278,7 +1343,7 @@ public class OcrProcess {
 		}
 
 		try {
-			 scan2.sortMatchMailPorcess(ocrData, readValue);
+			 scan2.sortMatchMailProcess(ocrData, readValue);
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
@@ -1301,7 +1366,7 @@ public class OcrProcess {
 		//ocrData.setCreatedAt(MyUtils.sdf.format(new Date()));	 //yyyy/MM/dd HH:mm:ss           
 		OcrDataFormDAO.getInstance(config).updateWithUploadFile(ocrData);
 
-        MyUtils.SystemLogPrint("sortMatchPorcess: end");
+        MyUtils.SystemLogPrint("sortMatchPorcess2: end");
 	}
 
 	//---------------------------------------
