@@ -14,7 +14,7 @@ insourcing:
     host: smtp.gmail.com
     port: 587
     username: username
-    password:password
+    password: password
     smtp_auth: true
     smtp_starttls_enable: true
   datasource:
@@ -28,6 +28,7 @@ insourcing:
     username: username
     password: password
   scan:
+    test_flag: false
     def_tgt1: 1FAX
     def_tgt2: 2FAX
     path1: D:\\pleiades\\fax\\

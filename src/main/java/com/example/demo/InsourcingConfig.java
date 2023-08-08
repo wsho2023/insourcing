@@ -44,6 +44,7 @@ public class InsourcingConfig {
     public String getProxyUsername(){	return proxy.get("username");    }
     public String getProxyPassword(){	return proxy.get("password");    }
       
+    public String getScanTestFlag(){	return scan.get("test_flag");	}
     public String getScanDefTgt1(){	return scan.get("def_tgt1");	}
     public String getScanDefTgt2(){	return scan.get("def_tgt2");    }
     public String getScanPath1(){	return scan.get("path1");    }

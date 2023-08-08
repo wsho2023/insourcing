@@ -118,7 +118,17 @@ public class MyExcel {
     public void setCellAlignCenter(int colIdx) {
     }
 
-	private Object getCellValue(Cell cell) {
+	public boolean checkCellTypeNumeric() {
+		CellType ctype = cell.getCellType();
+		if (ctype == CellType.NUMERIC) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	public Object getCellValue(Cell cell) {
 		CellType ctype;
 		ctype = cell.getCellType();
 		if (ctype == CellType.STRING) {

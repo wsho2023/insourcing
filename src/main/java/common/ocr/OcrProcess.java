@@ -673,15 +673,15 @@ public class OcrProcess {
 
 		if (ocrData.meisaiNum != 0) {
 			//OCR帳票定義ありのケースのOCR結果とマッチング
+			int ret = 0;
 			if (ocrData.uploadFilePath.contains("00送信元なし")==true) {
-				//int ret = sortMatchPorcess(ocrData);
+				ret = sortMatchPorcess(ocrData);
 			}
-			convertCSV(ocrData);		//DLしたCSV変換処理
-			if (ocrData.uploadFilePath.contains("00送信元なし")==true) {
-				//送信元なしは、新帳票フォルダへファイルを移動し、ocrData, faxDataのフォルダパスを更新する必要がある。
-				scan2.changeFilePath(ocrData);
+			//送信元ありは無条件、送信元なしはマッチングOKなら
+			if (ret == 0) {
+				convertCSV(ocrData);		//DLしたCSV変換処理
+				postOcrProcess(ocrData);	//OCR後処理
 			}
-			postOcrProcess(ocrData);	//OCR後処理
 		} else {
 			//OCR帳票定義なしのケースのOCR結果とマッチング
 			sortMatchPorcess2(ocrData);
@@ -1274,9 +1274,6 @@ public class OcrProcess {
 			readValue = ""; //メール本文にいれないよう空白に設定
 			//送信元なしは、新帳票フォルダへファイルを移動し、ocrData, faxDataのフォルダパスを更新する必要がある。
 			scan2.changeFilePath(ocrData);
-			
-			//convertCSV(ocrData);
-			//postOcrProcess(ocrData);	//OCR後処理
 			ret = 0;
 		} else {
 			ocrData.checkResult = "仕分けと読取り結果がアンマッチ(誤仕分け:" + ocrData.unitName + ") ⇒ 仕分け不可として処理";
