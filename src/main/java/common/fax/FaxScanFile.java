@@ -131,6 +131,7 @@ public class FaxScanFile implements Runnable {
 		String jobNo = "";
 		String soshinMoto = "";
 		
+		MyUtils.SystemLogPrint("■scanProcess: start");
 		//1 ファイル名をパース
 		if (this.kyoten.equals(this.SCAN_CLASS1) == true) {
 			faxNo = fileName.substring(3, (fileName.length() -20 -4));	//doc + datetimeJOB + .pdf分差し引く
@@ -233,6 +234,7 @@ public class FaxScanFile implements Runnable {
 			mailConf.subject = this.kyoten + "受信連絡("+ MyUtils.getDate() + " " + soshinMoto + ")";
 			mailConf.attach = dstPath;
 			sendScanMail(this.kyoten);
+			MyUtils.SystemLogPrint("■scanProcess: end");
 			
 			return;
 		}
@@ -281,10 +283,11 @@ public class FaxScanFile implements Runnable {
 			xlsx.close();
 			
 			mailConf.subject = this.kyoten + "受信連絡("+ MyUtils.getDate() + " " + soshinMoto + ")";
-			mailConf.body = mailConf.body + "\n<OCR読取り結果>\nOCR帳票定義なし\n\n";
+			mailConf.body = mailBody1 + "\n<OCR読取り結果>\nOCR帳票定義なし\n\n" + mailBody2 + "\n" + fileName + "\n";
 			mailConf.attach = dstPath;
 			sendScanMail(this.kyoten);
 		}
+		MyUtils.SystemLogPrint("■scanProcess: end");
 		
 		return;
 	}
@@ -438,7 +441,17 @@ public class FaxScanFile implements Runnable {
 			getBroadcastMailAddress(ocrData.getTargetPath(), ocrData.getDocSetName());
 		}
 		sendScanMail(ocrData.getDocSetName());
-
+		
+		if (this.kyoten.equals(this.SCAN_CLASS1) == true) {
+			//type = 2;
+		} else if (this.kyoten.equals(this.SCAN_CLASS2) == true) {
+			//type = 0;
+			if (syubetsu.equals("K注文書") == true) {
+				syubetsu = "注文書";
+			}
+		} else {
+			return;
+		}
 		//メール送信第2弾
 		//本文に ocrData.getChubanlist()
 		//sendScanMail(ocrData.getDocSetName());

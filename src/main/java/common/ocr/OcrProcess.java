@@ -276,13 +276,13 @@ public class OcrProcess {
 		//---------------------------------------
         if (res != HttpURLConnection.HTTP_OK) {
 	        MyUtils.SystemErrPrint("HTTP Connection Failed " + res);
-			if (res == 400) {
+			if (res == 400 || res == 406) {
 				//仕分け不可
 				ocrData.setUnitName("仕分け不可");
 				ocrData.setStatus("COMPLETE");
 				ocrData.setCreatedAt(MyUtils.sdf.format(new Date()));	//yyyy/MM/dd HH:mm:ss
 				OcrDataFormDAO.getInstance(config).updateWithUploadFile(ocrData);
-				//仕分け不可ｍｐメール連絡
+				//仕分け不可のメール連絡
 				MyUtils.SystemLogPrint("■addSortingPage: 仕分け不可");
 				ocrData.checkResult = "仕分け不可";
 				try {
