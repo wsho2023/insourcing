@@ -752,7 +752,7 @@ public class OcrProcess {
     }
     /*
 	private void debug_copyCsvFile(String csvPath, String csvFileName) {
-		String srcPath = "D:\\pleiades\\output\\2FAX\\テスト定義名\\" + csvFileName;
+		String srcPath = "D:\\pleiades\\output\\CSV\\" + csvFileName;
 		String dstPath = csvPath + csvFileName;
     	try {
 			MyFiles.copyOW(srcPath, dstPath);	//上書きコピー
@@ -892,6 +892,7 @@ public class OcrProcess {
 							if (xlsx.getCell(colIdx) == false)
 								continue;
 							ctype = xlsx.getCellType(colIdx);
+							str = "";
 							if (ctype == CellType.STRING) {
 								str = xlsx.getStringCellValue();
 								if (str.equals("") == true) 
@@ -917,32 +918,27 @@ public class OcrProcess {
     		MyUtils.SystemErrPrint("  置換マスタファイルが見つかりませんでした");
     	}
 		if (res == 0) {
+			MyUtils.SystemLogPrint("検出行: " + repList.size());
 			//置換処理
-			int repRowWidth2;
 			int col2;
 			String before = "";
 			String after = "";
 			String org = "";
-			for (col2=0; col2 < repList.size(); col2=col2+2) {
-				repRowWidth2 = 0;
-				for (int row2 = (repRowWidth-1); row2>0; row2--) {
-					if (repList.get(row2).get(col2) != null) {
-						repRowWidth2 = row2;
-						break;
-					}
-				}
-				//変換値あり
-				if (repRowWidth2 > 1) {
-					for (int row2=2; row2<=repRowWidth2; row2++) {
+			for (col2=0; col2 < repColWidth; col2=col2+2) {
+				for (int row2 = (repList.size()-1); row2>0; row2--) {
+					str = repList.get(row2).get(col2);
+					if (str.equals("") != true) {
+						//変換値あり
 						before = repList.get(row2).get(col2);
 						after = repList.get(row2).get(col2+1);
 						int colIdx;
-						for (int rowIdx=0; rowIdx < cnvRowWidth; rowIdx++) {
+						for (int rowIdx=1; rowIdx < cnvRowWidth; rowIdx++) {	//2行開始？
 							colIdx = col2/2;
 							org = cnvList.get(rowIdx).get(colIdx);
 							if (org.equals("") != true) {
 								str = org.replace(before, after);
-								MyUtils.SystemLogPrint("  replace: " + org + "→" + str);
+								if (org.equals(str) != true)
+									MyUtils.SystemLogPrint("  replace: " + org + "→" + str);
 								cnvList.get(rowIdx).set(colIdx, str);
 							}
 						}
