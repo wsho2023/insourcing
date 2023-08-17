@@ -679,9 +679,9 @@ public class OcrProcess {
 			}
 			//送信元ありは無条件、送信元なしはマッチングOKなら
 			if (ret == 0) {
-				convertCSV(ocrData);		//DLしたCSV変換処理
-				postOcrProcess(ocrData);	//OCR後処理
+				convertCSV(ocrData);	//DLしたCSV変換処理
 			}
+			postOcrProcess(ocrData);	//OCR後処理
 		} else {
 			//OCR帳票定義なしのケースのOCR結果とマッチング
 			sortMatchPorcess2(ocrData);
@@ -831,9 +831,9 @@ public class OcrProcess {
 					//int w1 = headerNum + p*meisaiNum;
 					//int w2 = list.get(r).size()-1;		//indexのMaxはlen-1
 					if ((list.get(r).size()-1) >= (headerNum + p*meisaiNum))
-						str = list.get(r).get(headerNum + p*meisaiNum);
+						str = list.get(r).get(headerNum + p*meisaiNum);	//先頭カラムのデータ取得
 					else
-						str = "";
+						str = "";	//CSVパースでlistに追加できなかったので、空白設定
 					MyUtils.SystemLogPrint(str);
 					addOkFlag = true;
 					//特定条件下で、明細行をスキップする
@@ -908,7 +908,7 @@ public class OcrProcess {
 						res = 0;	//置換情報の読込完了
 					}
 				} else {
-					MyUtils.SystemErrPrint("  定義が存在しませんでした");
+					MyUtils.SystemErrPrint("  置換マスタに定義が存在しませんでした");
 				}
 				xlsx.close();
 			} catch (IOException e) {
@@ -925,14 +925,14 @@ public class OcrProcess {
 			String after = "";
 			String org = "";
 			for (col2=0; col2 < repColWidth; col2=col2+2) {
-				for (int row2 = (repList.size()-1); row2>0; row2--) {
+				for (int row2 = (repList.size()-1); row2>1; row2--) {
 					str = repList.get(row2).get(col2);
 					if (str.equals("") != true) {
 						//変換値あり
 						before = repList.get(row2).get(col2);
 						after = repList.get(row2).get(col2+1);
 						int colIdx;
-						for (int rowIdx=1; rowIdx < cnvRowWidth; rowIdx++) {	//2行開始？
+						for (int rowIdx=2; rowIdx < cnvRowWidth; rowIdx++) {	//2行目から開始
 							colIdx = col2/2;
 							org = cnvList.get(rowIdx).get(colIdx);
 							if (org.equals("") != true) {

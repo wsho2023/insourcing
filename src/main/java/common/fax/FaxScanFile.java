@@ -259,7 +259,6 @@ public class FaxScanFile implements Runnable {
 			//配信メール情報:Body1,2
 			mailBody1 = xlsx.getStringCellValue(6, 1);
 			mailBody2 = xlsx.getStringCellValue(7, 1);
-			mailConf.body = mailBody1 + "\n" + mailBody2 + "\n" + fileName + "\n";
 			
 			//------------------------------------------------------
 			//FAXNoからFAX送信元 検索
