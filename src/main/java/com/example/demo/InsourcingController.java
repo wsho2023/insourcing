@@ -28,6 +28,7 @@ import common.fax.FaxDataDAO;
 import common.fax.FaxDeleteFile;
 import common.ocr.OcrColmunsBean;
 import common.ocr.OcrDaichoBean;
+import common.ocr.OcrDaichoDAO;
 import common.ocr.OcrDataFormBean;
 import common.ocr.OcrDataFormDAO;
 import common.ocr.OcrFormBean;
@@ -110,13 +111,12 @@ public class InsourcingController {
     
     @PostMapping("/ocr/list")
     public String ocrPost(Model model, @RequestParam("form") String form, 
-   			@RequestParam("date_fr") String date_fr, @RequestParam("date_to") String date_to, String soushimotonashi) {
+   			@RequestParam("date_fr") String date_fr, @RequestParam("date_to") String date_to) {
         System.out.println("form: " + form);
         System.out.println("date_fr: " + date_fr);
         System.out.println("date_to: " + date_to);
 
 		String title = "OCR結果一覧表";
-		
 		ArrayList<OcrDataFormBean> list = null;
         list = OcrDataFormDAO.getInstance(config).read(form, date_fr, date_to);
 		// 次の画面に値を渡す
@@ -506,8 +506,26 @@ public class InsourcingController {
 		String title = "台帳データリスト";
 		
 		ArrayList<OcrDaichoBean> list;
-        list = OcrRirekiDAO.getInstance(config).getDaicho();
+        list = OcrDaichoDAO.getInstance(config).read(null, null, null);
         
+		// 次の画面に値を渡す
+		model.addAttribute("title", title);
+		model.addAttribute("list", list);
+		
+		// 次の画面に遷移
+		return "daicholist";
+    }
+	
+    @PostMapping("/daicho")
+    public String daichoPost(Model model, @RequestParam("form") String form, 
+   			@RequestParam("date_fr") String date_fr, @RequestParam("date_to") String date_to) {
+        System.out.println("form: " + form);
+        System.out.println("date_fr: " + date_fr);
+        System.out.println("date_to: " + date_to);
+
+		String title = "台帳データリスト";
+		ArrayList<OcrDaichoBean> list;
+        list = OcrDaichoDAO.getInstance(config).read(form, date_fr, date_to);
 		// 次の画面に値を渡す
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
@@ -531,7 +549,7 @@ public class InsourcingController {
     public void apiDaicho(HttpServletResponse response){
 		ArrayList<OcrDaichoBean> list;
 		try {
-	        list = OcrRirekiDAO.getInstance(config).getDaicho();
+	        list = OcrDaichoDAO.getInstance(config).read(null, null, null);
 	        
 			response.setContentType("text/tsv;charset=UTF8");
 			String fileName = new String("daicho.tsv".getBytes("Shift_JIS"), "ISO-8859-1");

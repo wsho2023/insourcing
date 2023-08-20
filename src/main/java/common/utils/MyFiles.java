@@ -173,8 +173,30 @@ public class MyFiles {
 		return text;
 	}
 	
-	//List<String>を新規作成したファイルに書き込む。
-    public static int WriteList2File(ArrayList<String> list, String writePath) throws IOException {
+	//List<List<String>>を新規作成したTSVファイルに書き込む。
+    public static int WriteList2File(ArrayList<ArrayList<String>> list, String writePath) throws IOException {
+		File file = new File(writePath);
+		FileWriter filewriter = new FileWriter(file);
+    	
+		String line;
+		int rowLen = list.size();
+		for (int r=0; r<rowLen; r++) {
+			int colLen = list.get(r).size();
+			//タブ区切り1行文字列(+改行)を作成
+			line = "";
+			for (int c=0; c<colLen-1; c++) {
+				line = line + list.get(r).get(c) + "\t";
+			}
+			line = line + list.get(r).get(colLen-1) + "\r\n";
+  			filewriter.write(line);
+		}
+		filewriter.close();
+		
+    	return 0;
+    }
+    
+	//List<String>を新規作成したTSVファイルに書き込む。
+    public static int WriteData2File(ArrayList<String> list, String writePath) throws IOException {
 		File file = new File(writePath);
 		FileWriter filewriter = new FileWriter(file);
     	

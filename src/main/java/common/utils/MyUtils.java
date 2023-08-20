@@ -1,6 +1,7 @@
 package common.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class MyUtils {
@@ -25,6 +26,24 @@ public class MyUtils {
 		return sdf2.format(new Date());
 	}
 
+	public static String getToday(int day) {
+        //日時を格納するためのDateクラスを宣言(現在時刻)
+        Date date = new Date();
+		if (day != 0) {
+	        Calendar calendar = Calendar.getInstance();
+	        calendar.setTime(date);
+	        //Date型の持つ日時を表示
+	        //System.out.println(date);
+	        //Date型の持つ日時の4年後を表示(日時の加算/減算)
+	        calendar.add(Calendar.DAY_OF_MONTH, day);
+	        date = calendar.getTime();
+	        //System.out.println(date);
+		}
+		
+		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy/MM/dd");
+		return sdf2.format(date);
+	}
+	
 	public static String getDateStr() {
 		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		return sdf2.format(new Date());
