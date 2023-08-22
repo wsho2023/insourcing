@@ -1,5 +1,9 @@
 package common.utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -47,5 +51,25 @@ public class MyUtils {
 	public static String getDateStr() {
 		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		return sdf2.format(new Date());
+	}
+	
+	//コマンド実行
+	public static void exeCmd(String[] cmdList) throws IOException, InterruptedException {
+		//https://blog.goo.ne.jp/xmldtp/e/beb03fb01fb1d1a2c37db8d69b43dcdd
+		//コマンドラインから****.vbsを呼び出せる。
+		System.out.print("  ");
+		for (String cmd : cmdList)
+			System.out.print(cmd + " ");
+		System.out.print("\n");
+		//https://qiita.com/mitsumizo/items/836ce2e00e91c33fcf95
+		ProcessBuilder pb = new ProcessBuilder(cmdList);
+		Process process = pb.start();
+		System.out.println("  戻り値：" + process.waitFor());	//応答待ち
+		try (BufferedReader r = new BufferedReader(new InputStreamReader(process.getInputStream(), Charset.defaultCharset()))) {
+            String line;
+            while ((line = r.readLine()) != null) {
+                MyUtils.SystemLogPrint(line);
+            }
+        }
 	}
 }

@@ -2,11 +2,8 @@ package common.po;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -21,27 +18,27 @@ import common.utils.MyFiles;
 import common.utils.MyUtils;
 
 public class PoScanFile implements Runnable {
-	String scanPath;
+	String targetPath;
 	InsourcingConfig config;
 
 	public PoScanFile(InsourcingConfig argConfig) {
 		MyUtils.SystemLogPrint("■PoScanFileコンストラクタ");
 		config = argConfig;
-		this.scanPath = config.getOcrUploadPath();
+		this.targetPath = config.getOcrUploadPath();
 	}
 	
 	//public static void main(String[] args) throws Exception {
 	@Override
 	public void run() {
-		ScanRemainedFile(this.scanPath);	//すでにフォルダにあるpdfをScan
+		ScanRemainedFile(this.targetPath);	//すでにフォルダにあるpdfをScan
 		//指定ディレクトリ配下のファイルのみ(またはディレクトリ)を取得
 		// https://qiita.com/fumikomatsu/items/67f012b364dda4b03bf1
-		Path dir = Paths.get(this.scanPath);
-	    WatchService watcher;
 		try {
+	        WatchService watcher;
 			watcher = FileSystems.getDefault().newWatchService();
+			Path dir = Paths.get(this.targetPath);
 			dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-			MyUtils.SystemLogPrint("■PoScanFile: scan: " + this.scanPath);
+			MyUtils.SystemLogPrint("■PoScanFile: scan: " + this.targetPath);
 	        for (;;) {
 	            WatchKey watchKey = watcher.take();
 	            for (WatchEvent<?> event: watchKey.pollEvents()) {
@@ -56,15 +53,15 @@ public class PoScanFile implements Runnable {
 	                    //String extension = fileName.substring(fileName.lastIndexOf("."));	//
 	                    //String extension = fileName.substring(fileName.length()-3);	//拡張子：後ろから3文字
 	                    //if (extension.equals("pdf") == true) {
-	                		MyUtils.SystemLogPrint("  ファイル検出...: " + fileName);
-							uploadProcess(src.toString());
+                    		MyUtils.SystemLogPrint("  ファイル検出...: " + fileName);
+							scanProcess(src.toString());
 						//}
 	                }
 	            }
 	            watchKey.reset();
 	        }
-		} catch (IOException | InterruptedException e1) {
-			e1.printStackTrace();
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
@@ -75,18 +72,17 @@ public class PoScanFile implements Runnable {
         return (WatchEvent<T>)event;
     }
 
-	void ScanRemainedFile(String scanPath) {
+	void ScanRemainedFile(String targetPath) {
 		//指定ディレクトリ配下のファイルのみ(またはディレクトリのみ)を取得
-	    File file = new File(scanPath);
-	    File fileArray[] = file.listFiles();
-	    
+        File file = new File(targetPath);
+        File fileArray[] = file.listFiles();
+        
 		try {
 			for (File f: fileArray){
 				if (f.isFile()) {
-					String fileName = MyFiles.getFileName(f.toString());
+					String fileName = MyFiles.getFileName(f.toString());	//フルパスからファイル名取得
 					MyUtils.SystemLogPrint("  ファイル検出...: " + fileName);
-					uploadProcess(f.toString());
-					importData(f.toString());
+					scanProcess(f.toString());
 	            }
 			}
 		} catch (Throwable e) {
@@ -94,7 +90,8 @@ public class PoScanFile implements Runnable {
 		}
 	}
 	
-	void uploadProcess(String uploadFilePath) throws Throwable {
+	void scanProcess(String uploadFilePath) {
+		importData(uploadFilePath);
 	    //------------------------------------------------------
 	    //取り込み実行
 	    //------------------------------------------------------
@@ -107,22 +104,12 @@ public class PoScanFile implements Runnable {
 		cmdList[3]	=	"/file:impChu.xlsm";
 		cmdList[4]	=	"/method:run";
 		cmdList[5]	=	"/importFilePath:" + uploadFilePath;
-		System.out.print("  ");
-		for (String cmd : cmdList)
-			System.out.print(cmd + " ");
-		System.out.print("\n");
-		//https://qiita.com/mitsumizo/items/836ce2e00e91c33fcf95
-		ProcessBuilder pb = new ProcessBuilder(cmdList);
 		try {
-			Process process = pb.start();
-			System.out.println("  戻り値：" + process.waitFor());	//応答待ち
-			try (BufferedReader r = new BufferedReader(new InputStreamReader(process.getInputStream(), Charset.defaultCharset()))) {
-	            String line;
-	            while ((line = r.readLine()) != null) {
-	                MyUtils.SystemLogPrint(line);
-	            }
-	        }
+		    MyUtils.exeCmd(cmdList);
 		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 			return;
 		}
@@ -130,14 +117,18 @@ public class PoScanFile implements Runnable {
 		//------------------------------------------------------
 	    //フォルダ整理（フォルダ存在を確認し、なければフォルダ作成）
 	    //------------------------------------------------------
-	    String dstDirPath = this.scanPath + "done\\";
-	    MyFiles.notExistsCreateDirectory(dstDirPath);
+	    String dstDirPath = this.targetPath + "done\\";
+	    try {
+			MyFiles.notExistsCreateDirectory(dstDirPath);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	    
 	    //------------------------------------------------------
 	    //フォルダへ退避（doneフォルダへ移動）
 	    //------------------------------------------------------
 		String fileName = MyFiles.getFileName(uploadFilePath);
-	    String dstPath = this.scanPath + "done\\" + fileName;
+	    String dstPath = this.targetPath + "done\\" + fileName;
 		try {
 			MyFiles.moveOW(uploadFilePath, dstPath);	//上書き移動
 		} catch (NoSuchFileException e) {
