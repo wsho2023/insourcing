@@ -11,30 +11,6 @@
 <!--   <script type="text/javascript" src="js/jquery.ui.datepicker-ja.min.js"></script> -->
   <link rel="stylesheet" th:href="@{/css/theme.blue.css}">
   <link rel="stylesheet" th:href="@{/css/jquery-ui.css}">
-  <script type="text/javascript">
-    $(document).ready(function() {
-    	$("table").tablesorter({
-			theme: 'blue',
-			widthFixed: true,
-			//zebra:1行ごとに色を変える
-			//columns:選択した列の色を変える
-			//filter:列にフィルタ機能を追加する
-			//resizable:列のリサイズをする
-			//stickyHeaders:スクロールの際にヘッダを固定する
-			//scroller:ヘッダを固定
-			widgets: ['zebra', 'columns', 'resizable', 'pager', 'sticyHeaders', 'scroller'],
-	        widgetOptions: {
-	            scroller_height : 500	// テーブルの髙さの指定
-	        }
-		});
-		$("table").tablesorterPager({
-			container: $(".pager"),
-		});
-	});
-  	$(function() {
-		$(".datepicker").datepicker();
-	});
-  </script>
   <style>
     html,body {
         font-family:sans-serif;
@@ -117,7 +93,7 @@
      <button type="submit">検索</button><br>
      <chuui>IEサポート終了に伴い...</chuui>
   </form>
-  <div id="pager" class="pager">
+<!--  <div id="pager" class="pager">
     <button type="button" class="first"><<</button>
     <button type="button" class="prev"><</button>
     <span class="pagedisplay"></span>
@@ -130,10 +106,10 @@
         <option value="40">40</option>
     </select>
     <select class="gotoPage" title="Select page number"></select>
-  </div>
+  </div>-->
   <table id="table" class="tablesorter">	 <!--tablesorter-blue-->
   	<thead><tr align=center>
-   		<th style="font-size: 11pt;">ObjNo</th>
+   		<th style="font-size: 11pt;">No</th>
   		<th style="font-size: 11pt;">日時</th>
 		<th style="font-size: 11pt;">ID</th>
   		<th style="font-size: 11pt;">明細No</th>
@@ -163,5 +139,31 @@
 		<td th:text="${obj.youkyuNouki}"></td>
   	</tr></tbody>
   </table>
+  <script type="text/javascript">
+    $(document).ready(function() {
+    	$("table").tablesorter({
+			theme: 'blue',
+			widthFixed: true,
+			//zebra:1行ごとに色を変える
+			//columns:選択した列の色を変える
+			//filter:列にフィルタ機能を追加する
+			//resizable:列のリサイズをする
+			//stickyHeaders:スクロールの際にヘッダを固定する
+			//scroller:ヘッダを固定
+			//widgets: ['zebra', 'columns', 'resizable', 'pager', 'sticyHeaders', 'scroller'],
+			widgets: ['zebra', 'columns', 'resizable', 'pager', 'stickyHeaders123', 'scroller'],
+			//https://qiita.com/fj58p/items/2b47b84fd7223de8b9be
+	        widgetOptions: {
+	            scroller_height : 600	// テーブルの髙さの指定
+	        }
+		});
+		//$("table").tablesorterPager({
+		//	container: $(".pager"),
+		//});
+	});
+  	$(function() {
+		$(".datepicker").datepicker();
+	});
+  </script>
 </body>  
 </html>

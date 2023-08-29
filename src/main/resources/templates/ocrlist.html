@@ -11,32 +11,6 @@
 <!--   <script type="text/javascript" src="js/jquery.ui.datepicker-ja.min.js"></script> -->
   <link rel="stylesheet" th:href="@{/css/theme.blue.css}">
   <link rel="stylesheet" th:href="@{/css/jquery-ui.css}">
-  <script type="text/javascript">
-    $(document).ready(function() {
-    	$("table").tablesorter({
-			theme: 'blue',
-			widthFixed: true,
-			//zebra:1行ごとに色を変える
-			//columns:選択した列の色を変える
-			//filter:列にフィルタ機能を追加する
-			//resizable:列のリサイズをする
-			//stickyHeaders:スクロールの際にヘッダを固定する	????
-			//scroller:ヘッダを固定
-            //widgets: ['zebra', 'columns', 'filter', 'pager', 'resizable', 'stickyHeaders'],
-			widgets: ['zebra', 'columns', 'resizable', 'pager', 'sticyHeaders', 'scroller'],
-	        widgetOptions: {
-	            // テーブルの髙さの指定
-	            scroller_height : 500
-	        }
-		});
-		$("table").tablesorterPager({
-			container: $(".pager"),
-		});
-	});
-  	$(function() {
-		$(".datepicker").datepicker();
-	});
-  </script>
   <style>
     html,body {
         font-family:sans-serif;
@@ -151,5 +125,31 @@
 		<td th:text="${obj.linkUrl != null}? 'OCR' : '-'"></td>
   	</tr></tbody>
   </table>
+  <script type="text/javascript">
+    $(document).ready(function() {
+    	$("table").tablesorter({
+			theme: 'blue',
+			widthFixed: true,
+			//zebra:1行ごとに色を変える
+			//columns:選択した列の色を変える
+			//filter:列にフィルタ機能を追加する
+			//resizable:列のリサイズをする
+			//stickyHeaders:スクロールの際にヘッダを固定する
+			//scroller:ヘッダを固定
+			//widgets: ['zebra', 'columns', 'resizable', 'pager', 'sticyHeaders', 'scroller'],
+			widgets: ['zebra', 'columns', 'resizable', 'pager', 'stickyHeaders123', 'scroller'],
+			//https://qiita.com/fj58p/items/2b47b84fd7223de8b9be
+	        widgetOptions: {
+	            scroller_height : 600	// テーブルの髙さの指定
+	        }
+		});
+		//$("table").tablesorterPager({
+		//	container: $(".pager"),
+		//});
+	});
+  	$(function() {
+		$(".datepicker").datepicker();
+	});
+  </script>
 </body>  
 </html>

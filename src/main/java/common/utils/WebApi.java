@@ -14,6 +14,7 @@ import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -39,6 +40,7 @@ public class WebApi {
     StringBuffer responseBody;
     String responseStr;
     JsonNode responseJson;
+    ArrayList<ArrayList<String>> list;
    
     public static class FormData {
     	public String userId;
@@ -59,6 +61,7 @@ public class WebApi {
 	public FormData getFormData() {return formData;}
 	public String getResponseStr() {return this.responseStr;}
 	public JsonNode getResponseJson() {return this.responseJson;}
+	public ArrayList<ArrayList<String>> getListData() {return this.list;}
 
 	public void setFormData(FormData formData) {
 		this.formData = formData;
@@ -250,6 +253,12 @@ public class WebApi {
     }
 
 	public int download(String saveFile) throws IOException {
+		return download(saveFile, 0);
+	}
+
+	//https://dk521123.hatenablog.com/entry/34362429
+	//dlFlag 0:ファイル出力 1:List読み込み
+	public int download(String saveFile, int dlFlag) throws IOException {
 		if (saveFile == null)
             return -1;
 		
@@ -295,8 +304,10 @@ public class WebApi {
 
     	    if (this.responseCode == HttpURLConnection.HTTP_OK) {
                 //レスポンスボディの読み出し	正常系の場合はgetInputStream
-				//レスポンスボディの読み出し
-				writeStream(con.getInputStream(), saveFile);
+    	    	if (dlFlag == 0)
+    	    		writeStream(con.getInputStream(), saveFile);
+    	    	else
+    	    		list = readStream(con.getInputStream());
 				System.out.println("Download completed!!");
 			}
 		} catch (Exception ex) {
@@ -306,6 +317,7 @@ public class WebApi {
 		return this.responseCode;
 	}
 	
+	//レスポンスストリームをファイルに出力
 	private void writeStream(InputStream inputStream, String outputPath) throws Exception {
 		final int BufferSize = 4096;
 		
@@ -319,6 +331,34 @@ public class WebApi {
 		   }
 		} catch (Exception ex) {
 		   throw ex;
+		}
+	}
+	
+	//レスポンスストリーム(TSVファイル)を、List<List<String>>に読み込む
+	//https://www.javalife.jp/2018/04/25/java-インターネットのサイトからhtmlを取得する/
+	private ArrayList<ArrayList<String>> readStream(InputStream inputStream) throws Exception {
+		
+		String charset = "UTF-8";
+		try(InputStreamReader isr = new InputStreamReader(inputStream, charset);
+			BufferedReader br = new BufferedReader(isr)) {
+
+			ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
+			String line = null;
+			String[] columns;
+			ArrayList<String> data;
+			while((line = br.readLine()) != null) {
+	            columns = line.split("\t");	//"\t" でsplitする。
+	            if (columns != null) {
+		            data = new ArrayList<String>();
+		            for (String str : columns) {
+		            	data.add(str);
+		            }
+		            list.add(data);
+	            }
+			}
+
+			return list;
+
 		}
 	}
 }

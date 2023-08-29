@@ -48,3 +48,4 @@ gradlew.bat
 settings.gradle
 *.bat
 *.jar
+output/*

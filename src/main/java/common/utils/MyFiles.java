@@ -173,6 +173,12 @@ public class MyFiles {
 		return text;
 	}
 	
+	public static byte[] readAllBytes(String sqlPath) throws IOException {
+		Path path = Paths.get(sqlPath);
+		
+		return Files.readAllBytes(path);
+	}
+	
 	//List<List<String>>を新規作成したTSVファイルに書き込む。
     public static int WriteList2File(ArrayList<ArrayList<String>> list, String writePath) throws IOException {
 		File file = new File(writePath);

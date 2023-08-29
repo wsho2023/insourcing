@@ -31,11 +31,13 @@ public class SecurityConfig {
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 .requestMatchers("/").permitAll()	//ログインなしでもアクセス可能URL
                 .requestMatchers("/fax").permitAll()
-                .requestMatchers("/fax/delete").permitAll()
                 .requestMatchers("/ocr/list").permitAll()
                 .requestMatchers("/ocr/result").permitAll()
                 .requestMatchers("/daicho").permitAll()
+                //REST API
                 .requestMatchers("/api/daicho").permitAll()
+                .requestMatchers("/fax/delete").permitAll()
+                .requestMatchers("/api/shukei").permitAll()
                 .requestMatchers("/general").hasRole("GENERAL")
                 .requestMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated()	//他のURLはログイン後のみアクセス可能
