@@ -35,7 +35,7 @@ public class ShukeiObjInfo {
 		obj = argObj;
 		objName = null;
 		colFormat = null;
-		System.out.println("/" + sys + " obj: " + obj);
+		System.out.println(sys + " obj: " + obj);
 		sendMail = new SendMail(config);
 	}
 	

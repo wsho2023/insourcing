@@ -34,10 +34,9 @@ public class SecurityConfig {
                 .requestMatchers("/ocr/list").permitAll()
                 .requestMatchers("/ocr/result").permitAll()
                 .requestMatchers("/daicho").permitAll()
-                //REST API
-                .requestMatchers("/api/daicho").permitAll()
                 .requestMatchers("/fax/delete").permitAll()
-                .requestMatchers("/api/shukei").permitAll()
+                //REST API
+                .requestMatchers("/api/*").permitAll()
                 .requestMatchers("/general").hasRole("GENERAL")
                 .requestMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated()	//他のURLはログイン後のみアクセス可能

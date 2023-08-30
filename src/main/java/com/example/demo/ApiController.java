@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import common.api.ApiObjInfo;
 import common.api.BakObjInfo;
 import common.api.DbObjInfo;
+import common.api.GaihiObjInfo;
 import common.api.ShukeiObjInfo;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -109,11 +110,26 @@ public class ApiController {
     
     //----------------------------------------------------------------------
     final String backup = "/api/backup";
-    @PostMapping("/backup")
-    //public String backupPost(@RequestParam("obj") String obj) {
-    public String backupPost() {
+    @PostMapping(backup)
+    public String backupPost(@RequestParam("obj") String obj) {
     //----------------------------------------------------------------------
-    	BakObjInfo objInfo = new BakObjInfo(config, backup, null);
+    	BakObjInfo objInfo = new BakObjInfo(config, backup, obj);
+    	String msg = objInfo.makeObject();
+		if (msg != null) return msg;
+        
+        msg = objInfo.execute();
+		if (msg != null) return msg;
+		
+    	return "OK";
+    }
+    
+    //----------------------------------------------------------------------
+    final String gaihi = "/api/gaihi";
+    @PostMapping(gaihi)
+    //public String gaihiPost(@RequestParam("obj") String obj) {
+    public String gaihiPost() {
+    //----------------------------------------------------------------------
+    	GaihiObjInfo objInfo = new GaihiObjInfo(config, gaihi, null);
     	String msg = objInfo.makeObject();
 		if (msg != null) return msg;
         

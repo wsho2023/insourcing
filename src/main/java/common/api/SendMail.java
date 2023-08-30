@@ -38,7 +38,7 @@ public class SendMail {
 		System.out.println("  MAIL Subject: " + mailConf.subject);
 		System.out.println("  MAIL Body: \n" + mailConf.body);
 		System.out.println("  MAIL Attach: " + mailConf.attach);
-		//mailConf.sendRawMail();
+		mailConf.sendRawMail();
 		
 		return 0;
 	}
