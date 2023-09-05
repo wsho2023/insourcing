@@ -4,6 +4,142 @@
   <meta charset="UTF-8">
   <title th:text="${title}"></title>
   <script type="text/javascript" th:src="@{/js/jquery-3.5.1.min.js}"></script>
+  <style>
+    html,body {
+        font-family:sans-serif;
+        background-color: #ffffff;
+    }
+    .user-icon-dnd-wrapper {
+    	position: relative;
+    	width: 250px;
+    	height: 20px;
+    }
+    #preview_field {
+    	position: absolute;
+    	top: 0;
+    	left: 0;
+    	width: 250px;
+    	height: 20px;
+    }
+    #drop_area {
+    	position: absolute;
+    	top: 0;
+    	left: 0;
+    	width: 250px;
+    	height: 20px;
+    	border-radius: 1rem;
+    	cursor: pointer;
+    }
+    #icon_clear_button {
+    	display: none;
+    	position: absolute;
+    	top: -4px;
+    	right: -8px;
+    	width: 24px;
+    	height: 24px;
+    	border: 1px solid #777;
+		border-radius: 50%;
+    	cursor: pointer;
+    }
+    #input_file {
+    	width: 250px;
+    	height: 20px;
+    	opacity: 0;
+    }
+    #input_file:focus {
+    	opacity: 1;
+    }
+    #control {
+    	background-color: rgb(178 224, 208);
+    	border-collapse: collapse;
+    	width: auto;
+    	white-space: nowrap;
+    }
+    #control th {
+    	background-color: #F9E2A0;
+    	border: 1px solid blue;
+    	color: black;
+    	font-weight: normal;
+    	padding: 0px 5px;
+    }
+    #control td {
+    	background-color: #F4B7AF;
+    	border: 1px solid blue;
+    	padding: 0px 5px;
+    }
+    #listtable {
+    	border-collapse: collapse;
+    	width: auto;
+    	white-space: nowrap;
+    }
+    #listtable th {
+    	background-color: #B2C4DD;
+    	border: 1px solid blue;
+    	color: black;
+    	font-weight: normal;
+    	padding: 0px 5px;
+    }
+    #listtable td {
+    	border: 1px solid blue;
+    	padding: 0px 5px;
+    }
+    #text_user {
+    	font-size: 105%
+   	}
+    #select-1 {
+    	font-size: 105%
+   	}
+    #uploadButton {
+    	font-size: 105%
+   	}
+    #logoutButton {
+    	font-size: 105%
+   	}
+        
+    #completeButton, #closeButton {
+    	font-size: 105%;
+    	cursor: pointer;
+    } 
+    space {
+  		width: 40px;
+  		height: auto;
+  		display: inline-block;
+	}
+	h1 {
+	    background-color: darkseagreen;
+	}	
+  </style>
+</head>
+<body>
+  <h1>アップロード</h1>
+  <table id="control">
+  	<tr>
+  		<th>User</th>
+  		<td><label th:text="${userName}"></label></td>
+  		<input type="hidden" id="text_id" size="30" th:value="${userId}">
+  		<input type="hidden" id="text_user" size="30" th:value="${userName}">
+  		<input type="hidden" id="text_code" size="30" th:value="${code}">
+  		<th>Form</th>
+  		<td><select name="form" id="select-1" class="target">
+  			<option value="" label="" selected></option>
+  		</select></td>
+  		<th>File</th>
+  		<td>
+			<div class="user-icon-dnd-wrapper">
+			<input type="file" name="icon" id="input_file" 
+  				accept="application/pdf,.txt,.csv,.tsv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+  			<div id="preview_field"></div>
+  			<div id="drop_area">drop & drop or clieck here.</div>
+  			<div id="icon_clear_button">X</div>
+  		</td>
+  	</tr>
+  </table>
+  <br>
+  <input type="button" id="uploadButton" value="アップロード">
+  <span>　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　</span>
+  <a href="/logout"><button type="button" id="logoutButton">ログアウト</button></a>   
+  <h3>History</h3>
+  <div id='listtable'></div>
   <script th:inline="javascript">
   	$(function() {
   	  	var userId = /*[[${userId}]]*/ null;
@@ -122,7 +258,7 @@
 			} else {
 				file_type =file.type;
 			}
-			console.log('file_type'+file_type);
+			console.log('file_type: '+file_type);
 			var pdfType= 'pdf';
 			if (!(file_type.match('pdf')||file_type.match('tsv')||file_type.match(
 					'application/vnd.ms-excel')||file_type.match('text/plain')||file_type.match('text/csv')
@@ -245,139 +381,5 @@
 		};
 	});
    </script>
-   <style>
-    html,body {
-    	font-size: 10pt;
-        font-family:sans-serif;
-        background-color: #ffffff;
-    }
-    .user-icon-dnd-wrapper {
-    	position: relative;
-    	width: 250px;
-    	height: 20px;
-    }
-    #preview_field {
-    	position: absolute;
-    	top: 0;
-    	left: 0;
-    	width: 250px;
-    	height: 20px;
-    }
-    #drop_area {
-    	position: absolute;
-    	top: 0;
-    	left: 0;
-    	width: 250px;
-    	height: 20px;
-    	border-radius: 1rem;
-    	cursor: pointer;
-    }
-    #icon_clear_button {
-    	display: none;
-    	position: absolute;
-    	top: -4px;
-    	right: -8px;
-    	width: 24px;
-    	height: 24px;
-    	border: 1px solid #777;
-		border-radius: 50%;
-    	cursor: pointer;
-    }
-    #input_file {
-    	width: 250px;
-    	height: 20px;
-    	opacity: 0;
-    }
-    #input_file:focus {
-    	opacity: 1;
-    }
-    #control {
-    	background-color: rgb(178 224, 208);
-    	border-collapse: collapse;
-    	width: auto;
-    	white-space: nowrap;
-    }
-    #control th {
-    	background-color: #F9E2A0;
-    	border: 1px solid blue;
-    	color: black;
-    	font-weight: normal;
-    	padding: 0px 5px;
-    }
-    #control td {
-    	background-color: #F4B7AF;
-    	border: 1px solid blue;
-    	padding: 0px 5px;
-    }
-    #listtable {
-    	border-collapse: collapse;
-    	width: auto;
-    	white-space: nowrap;
-    }
-    #listtable th {
-    	background-color: #B2C4DD;
-    	border: 1px solid blue;
-    	color: black;
-    	font-weight: normal;
-    	padding: 0px 5px;
-    }
-    #listtable td {
-    	border: 1px solid blue;
-    	padding: 0px 5px;
-    }
-    #text_user {
-    	font-size: 105%
-   	}
-    #select-1 {
-    	font-size: 105%
-   	}
-    #uploadButton {
-    	font-size: 105%
-   	}
-        
-    #completeButton, #closeButton {
-    	font-size: 105%;
-    	cursor: pointer;
-    } 
-    space {
-  		width: 40px;
-  		height: auto;
-  		display: inline-block;
-	}
-   </style>
-</head>
-<body>
-  <h1>アップロード</h1>
-  <table id="control">
-  	<tr>
-  		<th>User</th>
-  		<td><label th:text="${userName}"></label></td>
-  		<input type="hidden" id="text_id" size="30" th:value="${userId}">
-  		<input type="hidden" id="text_user" size="30" th:value="${userName}">
-  		<input type="hidden" id="text_code" size="30" th:value="${code}">
-  		<th>Form</th>
-  		<td><select name="form" id="select-1" class="target">
-  			<option value="" label="" selected></option>
-  		</select></td>
-  		<th>File</th>
-  		<td>
-			<div class="user-icon-dnd-wrapper">
-			<input type="file" name="icon" id="input_file" 
-  				accept="application/pdf,.txt,.csv,.tsv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
-  			<div id="preview_field"></div>
-  			<div id="drop_area">drop & drop or clieck here.</div>
-  			<div id="icon_clear_button">X</div>
-  		</td>
-  	</tr>
-  </table>
-  <br>
-  <input type="button" id="uploadButton" value="アップロード">
-  <span>　　　　　　</span>
-  <a href="/logout">
-  		<button type="button">ログアウト</button>
-  </a>   
-  <h3>History</h3>
-  <div id='listtable'></div>
-  	
 </body>
 </html>

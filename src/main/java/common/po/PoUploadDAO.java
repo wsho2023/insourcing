@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import com.example.demo.InsourcingConfig;
 
@@ -28,12 +29,12 @@ public class PoUploadDAO {
 		return new PoUploadDAO(config);
 	}
 	
-	public PoUploadBean read(String userId) {
+	public ArrayList<PoUploadBean> read(String userId) {
 		String sql = "select * from POUPLOADTABLE where LOGIN_ID = ?";
 		
 		//接続処理
 		Connection conn = null;
-		//ArrayList<PoUploadBean> list = new ArrayList<PoUploadBean>();
+		ArrayList<PoUploadBean> list = new ArrayList<PoUploadBean>();
 		try {
 			Class.forName(DB_DRIVER);
 			conn = DriverManager.getConnection(DB_URL,DB_USER,DB_PASS);
@@ -43,20 +44,20 @@ public class PoUploadDAO {
 			ps.setString(1, userId);
             ResultSet rs = ps.executeQuery();
             
-            PoUploadBean upload = new PoUploadBean();
+            PoUploadBean upload = null;
 			while(rs.next()) {
-				upload.setUserId(rs.getString("LOGIN_ID"));
-				upload.setUserName(rs.getString("USER_NAME"));
-				upload.setDatetime(rs.getString("CREATED_DATE"));
-				upload.setToriCd(rs.getString("TORIHIKISAKI_CD"));
-				upload.setUploadPath(rs.getString("UPLOAD_PATH"));
-				upload.setCode(rs.getString("CODE"));
+	            upload = new PoUploadBean();
+				upload.setUserId(rs.getString(1));		//"LOGIN_ID"
+				upload.setUserName(rs.getString(2));	//"USER_NAME"
+				upload.setDatetime(rs.getString(3));	//"CREATED_DATE"
+				upload.setToriCd(rs.getString(4));		//"TORIHIKISAKI_CD"
+				upload.setUploadPath(rs.getString(5));	//"UPLOAD_PATH"
+				upload.setCode(rs.getString(6));		//"CODE"
+				upload.setInputPath(rs.getString(7));	//"INPUT_PATH"
             	// リストにBeanクラスごと格納
-				//list.add(upload);
-				//Beanクラスを初期化
-				//upload = new PoUploadBean();
+				list.add(upload);
 			}
-			return upload;
+			return list;
 		} catch(SQLException e) {
 			// エラーハンドリング
 			System.out.println("sql実行失敗");
@@ -75,7 +76,7 @@ public class PoUploadDAO {
 				}
 			}
 		}
-
+		
 		return null;
 	}
 

@@ -263,6 +263,12 @@ public class InsourcingController {
         //return null;
     }
 
+    @GetMapping("/")
+    public String getDefault(Model model){
+    	//トップページアクセス時のリダイレクト先
+    	return "redirect:/upload";
+    }
+    
     @GetMapping("/upload")
     public String upload(Model model){
 		String userId = securitySession.getUsername();
@@ -282,7 +288,7 @@ public class InsourcingController {
     
     @PostMapping("/select")
     @ResponseBody	//＠ResponseBody アノテーションを付けることで、戻り値を HTTP レスポンスのコンテンツとすることができます。
-    public ArrayList<PoFormBean> selectPost(@RequestParam("type") String type, @RequestParam("userId") String userId) {
+    public ArrayList<PoFormBean> postSelect(@RequestParam("type") String type, @RequestParam("userId") String userId) {
         System.out.println("type: " + type + "  userId: " + userId);
         //Form list 
 		ArrayList<PoFormBean> select = PoFormDAO.getInstance(config).read(userId);
@@ -303,10 +309,10 @@ public class InsourcingController {
     
     @PostMapping("/rireki")	//アップロード履歴
     @ResponseBody	//＠ResponseBody アノテーションを付けることで、戻り値を HTTP レスポンスのコンテンツとすることができます。
-    public PoUploadBean rirekiPost(@RequestParam("type") String type, @RequestParam("userId") String userId) {
+    public ArrayList<PoUploadBean> postRireki(@RequestParam("type") String type, @RequestParam("userId") String userId) {
         System.out.println("type: " + type + "  userId: " + userId);
-	    //History list
-		PoUploadBean rireki = PoUploadDAO.getInstance(config).read(userId);
+	    //履歴リスト
+		ArrayList<PoUploadBean> rireki = PoUploadDAO.getInstance(config).read(userId);
         ObjectMapper mapper = new ObjectMapper();
         try {
             //JavaオブジェクトからJSONに変換
@@ -324,7 +330,7 @@ public class InsourcingController {
     
     @PostMapping("/upload")
     @ResponseBody	//＠ResponseBody アノテーションを付けることで、戻り値を HTTP レスポンスのコンテンツとすることができます。
-    public String uploadPost(
+    public String postUpload(
     	@RequestParam("type") String type,
     	@RequestParam("file") final MultipartFile uploadFile,
     	@RequestParam("userId") String userId, 
@@ -350,7 +356,7 @@ public class InsourcingController {
         
 		String ch = formId.substring(5, 6);		//6桁目
 		String toriCd;
-		if (ch.equals("") == true) {
+		if (ch.equals(" ") == true) {
 			toriCd = formId.substring(0, 5);	//5桁
 			formId = formId.substring(5, 10);	//5桁
 		} else {
@@ -502,7 +508,7 @@ public class InsourcingController {
 	}
 	
     @GetMapping("/daicho")
-    public String daicho(Model model){
+    public String getDaicho(Model model){
 		String title = "台帳データリスト";
 		
 		ArrayList<OcrDaichoBean> list;
@@ -517,7 +523,7 @@ public class InsourcingController {
     }
 	
     @PostMapping("/daicho")
-    public String daichoPost(Model model, @RequestParam("form") String form, 
+    public String postDaicho(Model model, @RequestParam("form") String form, 
    			@RequestParam("date_fr") String date_fr, @RequestParam("date_to") String date_to) {
         System.out.println("form: " + form);
         System.out.println("date_fr: " + date_fr);
@@ -536,7 +542,7 @@ public class InsourcingController {
 	
     //curl -X POST http://localhost/fax/delete
     @PostMapping("/fax/delete")
-    public String faxDeletePost() {
+    public String postFaxDelete() {
 		
     	String scanPath = config.getScanPath2();
     	FaxDeleteFile delete = new FaxDeleteFile(scanPath, "", 60);
@@ -546,7 +552,7 @@ public class InsourcingController {
     }
     
     @GetMapping("/api/daicho")
-    public void apiDaicho(HttpServletResponse response){
+    public void getApiDaicho(HttpServletResponse response){
 		ArrayList<OcrDaichoBean> list;
 		try {
 	        list = OcrDaichoDAO.getInstance(config).read(null, null, null);

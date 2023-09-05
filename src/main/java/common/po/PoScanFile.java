@@ -97,13 +97,12 @@ public class PoScanFile implements Runnable {
 	    //------------------------------------------------------
 		//https://blog.goo.ne.jp/xmldtp/e/beb03fb01fb1d1a2c37db8d69b43dcdd
 		//コマンドラインから****.vbsを呼び出せる。
-		String[] cmdList = new String[6];
-		cmdList[0]	=	"cmd";
-		cmdList[1]	=	"/c";
-		cmdList[2]	=	"impChu.vbs";		//VBSファイル指定
-		cmdList[3]	=	"/file:impChu.xlsm";
-		cmdList[4]	=	"/method:run";
-		cmdList[5]	=	"/importFilePath:" + uploadFilePath;
+		String[] cmdList = new String[5];
+		cmdList[0]	=	"cscript";
+		cmdList[1]	=	"impChu.vbs";		//VBSファイル指定
+		cmdList[2]	=	"/file:impChu.xlsm";
+		cmdList[3]	=	"/method:run";
+		cmdList[4]	=	"/importFilePath:" + uploadFilePath;
 		try {
 		    MyUtils.exeCmd(cmdList);
 		} catch (IOException e) {

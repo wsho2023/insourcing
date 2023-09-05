@@ -29,7 +29,8 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/login")
         ).authorizeHttpRequests(authz -> authz
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .requestMatchers("/").permitAll()	//ログインなしでもアクセス可能URL
+                //ログインなしでも閲覧可能URL
+                .requestMatchers("/").permitAll()
                 .requestMatchers("/fax").permitAll()
                 .requestMatchers("/ocr/list").permitAll()
                 .requestMatchers("/ocr/result").permitAll()
