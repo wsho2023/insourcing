@@ -111,7 +111,7 @@
   </style>
 </head>
 <body>
-  <h1>アップロード</h1>
+  <h1 th:text="${title}"></h1>
   <table id="control">
   	<tr>
   		<th>User</th>
@@ -180,7 +180,7 @@
   	  	  	var html = '<table border="1" />'
   	  	  	$('#listtable').append(html);
   	  	  	//テーブルヘッダ
-  	  	  	var thead = '<thead><tr align="center"><th>REG</th><th>DATE</th><th>NAME</th><th>FORM</th></tr></thead>'
+  	  	  	var thead = '<thead><tr align="center"><th>REG</th><th>DATE</th><<th>FORM</th></tr></thead>'
   	  	  	$('#listtable').append(thead);
 			$.each(data, function(i, registdata){
 				var tbody = $('<tbody />');
@@ -188,11 +188,11 @@
 				var id = $('<td />').text(registdata.username);
 				var registered = $('<td />').text(registdata.datetime);
 				var org_file_name = $('<td />').text("");
-				var form_id = $('<td />').text(registdata.toricd);
+				var formname = $('<td />').text(registdata.toricd);
 				tr.append(id);
 				tr.append(registered);
-				tr.append(org_file_name);
-				tr.append(form_id);
+				//tr.append(org_file_name);
+				tr.append(formname);
 				tbody.append(tr);
 				$('#listtable').append(tbody);
 			});
@@ -362,7 +362,7 @@
 				alert("アップロードしました。\n システムに登録が完了したらログインID宛にメールを送信します。\n　宛先: " + userId);
 				$("#listtable tr.last").remove();
 				//1行目に追加
-				var addline = '<tr><td>' + userName + '</td><td>' + dtStr + '</td><td>' + fileName + '</td><td>' + formName + '</td></tr>'
+				var addline = '<tr><td>' + userName + '</td><td>' + dtStr + '</td><td>' + formName + '</td></tr>'	//<td>' + fileName + '</td>
 				$('#listtable tr:first').after(addline);
 				console.log("add: " + addline);
 			}).fail(function(err) {

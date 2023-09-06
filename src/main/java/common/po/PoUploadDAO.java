@@ -30,7 +30,9 @@ public class PoUploadDAO {
 	}
 	
 	public ArrayList<PoUploadBean> read(String userId) {
-		String sql = "select * from POUPLOADTABLE where LOGIN_ID = ?";
+		String sql = "select u.USER_NAME,u.REGISTEREDDT,u.ORG_FILE_NAME,f.FORM_NAME " 
+				   + "from POUPLOADTABLE u left outer join  POFORMTABLE f on u.TORIHIKISAKI_CD=f.CODE "
+				   + "where LOGIN_ID = '" + userId + "' and rownum <= 10 order by u.REGISTEREDDT desc";
 		
 		//接続処理
 		Connection conn = null;
@@ -41,19 +43,16 @@ public class PoUploadDAO {
 			System.out.println(sql);
 
 			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, userId);
+			//ps.setString(1, userId);
             ResultSet rs = ps.executeQuery();
             
             PoUploadBean upload = null;
 			while(rs.next()) {
 	            upload = new PoUploadBean();
-				upload.setUserId(rs.getString(1));		//"LOGIN_ID"
-				upload.setUserName(rs.getString(2));	//"USER_NAME"
-				upload.setDatetime(rs.getString(3));	//"CREATED_DATE"
-				upload.setToriCd(rs.getString(4));		//"TORIHIKISAKI_CD"
-				upload.setUploadPath(rs.getString(5));	//"UPLOAD_PATH"
-				upload.setCode(rs.getString(6));		//"CODE"
-				upload.setInputPath(rs.getString(7));	//"INPUT_PATH"
+				upload.setUserName(rs.getString(1));
+				upload.setDatetime(rs.getString(2));
+				upload.setOrgFileName(rs.getString(3));
+				upload.setFormName(rs.getString(4));
             	// リストにBeanクラスごと格納
 				list.add(upload);
 			}
@@ -196,8 +195,7 @@ public class PoUploadDAO {
 	}
 
 	private void insert(PoUploadBean poUpload) {
-		String sql = "INSERT INTO POUPLOADTABLE(LOGIN_ID,USER_NAME,CREATED_DATE,TORIHIKISAKI_CD,UPLOAD_PATH,CODE,INPUT_PATH) " + 
-					 "VALUES(?,?,TO_DATE(?,'YYYY/MM/DD HH24:MI:SS'),?,?,?,?)";
+		String sql = "INSERT INTO POUPLOADTABLE VALUES(?,?,?,?,?,?,?,?)";
 		
 		//接続処理
 		Connection conn = null;
@@ -213,6 +211,7 @@ public class PoUploadDAO {
             ps.setString(i++, poUpload.getUserName());
             ps.setString(i++, poUpload.getDatetime());
             ps.setString(i++, poUpload.getToricd());
+            ps.setString(i++, poUpload.getOrgFileName());
             ps.setString(i++, poUpload.getUploadPath());
             ps.setString(i++, poUpload.getCode());
             ps.setString(i++, poUpload.getInputPath());
@@ -234,7 +233,7 @@ public class PoUploadDAO {
 	}
 
 	private void update(PoUploadBean poUpload) {
-		String sql = "UPDATE POUPLOADTABLE SET LOGIN_ID=?,USER_NAME=?,CREATED_DATE=TO_DATE(?,'YYYY/MM/DD HH:MM:SS'),TORIHIKISAKI_CD=?,CODE=?,INPUT_PATH=? " + 
+		String sql = "UPDATE POUPLOADTABLE SET LOGIN_ID=?,USER_NAME=?,REGISTEREDDT=?,TORIHIKISAKI_CD=?,FLAG=?,INPUT_PATH=? " + 
 				 	 "WHERE UPLOAD_PATH=?";
 		
 		//接続処理

@@ -52,8 +52,8 @@ public class PoFormDAO {
 				// ユーザIDと名前をBeanクラスへセット
 				poForm.setNo(rs.getInt(1));			//"NO"
 				poForm.setCode(rs.getString(2));	//"CODE"
-				poForm.setFormId(rs.getString(3));	//"FORM_ID"
-				poForm.setFormName(rs.getString(4));//"FORM_NAME"
+				poForm.setFormName(rs.getString(3));//"FORM_NAME"(順番逆★)
+				poForm.setFormId(rs.getString(4));	//"FORM_ID"
 				poForm.setMember(rs.getString(5));	//"MEMBER"
 				list.add(poForm);
 				//Beanクラスを初期化

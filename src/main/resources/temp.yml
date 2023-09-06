@@ -33,6 +33,8 @@ insourcing:
     def_tgt2: 2FAX
     path1: D:\\pleiades\\fax\\
     path2: D:\\pleiades\\fax\\
+    form_type1: 1帳票
+    form_type2: 2帳票
   ocr:
     upload_path: D:\\pleiades\\upload\\
     input_path: D:\\pleiades\\input\\

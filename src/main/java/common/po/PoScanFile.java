@@ -50,12 +50,11 @@ public class PoScanFile implements Runnable {
 	                    Path src = dir.resolve(name);	//フルパス
 	                    String fileName = name.toString();
 	                    System.out.format("%s: %s %s\n", event.kind().name(), src, name);
-	                    //String extension = fileName.substring(fileName.lastIndexOf("."));	//
-	                    //String extension = fileName.substring(fileName.length()-3);	//拡張子：後ろから3文字
-	                    //if (extension.equals("pdf") == true) {
+						File f = Paths.get("", src.toString()).toFile();
+						if (f.isFile()) {
                     		MyUtils.SystemLogPrint("  ファイル検出...: " + fileName);
 							scanProcess(src.toString());
-						//}
+						}
 	                }
 	            }
 	            watchKey.reset();

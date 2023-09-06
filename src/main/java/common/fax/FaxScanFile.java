@@ -30,6 +30,8 @@ public class FaxScanFile implements Runnable {
 	String TEST_FLAG;
 	String SCAN_CLASS1;
 	String SCAN_CLASS2;
+	String FORM_TYPE1;
+	String FORM_TYPE2;
 	String OCR_INPUT_PATH;
 	static InsourcingConfig config;
 	static MyMail mailConf;
@@ -50,6 +52,8 @@ public class FaxScanFile implements Runnable {
 		this.TEST_FLAG = config.getScanTestFlag();
 		this.SCAN_CLASS1 = config.getScanDefTgt1();
 		this.SCAN_CLASS2 = config.getScanDefTgt2();
+		this.FORM_TYPE1 = config.getScanFormType1();
+		this.FORM_TYPE2 = config.getScanFormType2();
 
 		if (this.kyoten.equals(this.SCAN_CLASS1) == true ) {
 			this.targetPath = config.getScanPath1();
@@ -223,7 +227,7 @@ public class FaxScanFile implements Runnable {
 			type = 2;
 		} else if (this.kyoten.equals(this.SCAN_CLASS2) == true) {
 			type = 0;
-			if (syubetsu.equals("K注文書") == true) {
+			if (syubetsu.equals(FORM_TYPE1) == true) {
 				syubetsu = "注文書";
 			}
 		} else {

@@ -49,6 +49,8 @@ public class InsourcingConfig {
     public String getScanDefTgt2(){	return scan.get("def_tgt2");    }
     public String getScanPath1(){	return scan.get("path1");    }
     public String getScanPath2(){	return scan.get("path2");    }
+    public String getScanFormType1(){	return scan.get("form_type1");    }
+    public String getScanFormType2(){	return scan.get("form_type2");    }
     
     public String getOcrUploadPath(){	return ocr.get("upload_path");	}
     public String getOcrInputPath(){	return ocr.get("input_path");    }

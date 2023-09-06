@@ -289,7 +289,7 @@ public class InsourcingController {
     @PostMapping("/select")
     @ResponseBody	//＠ResponseBody アノテーションを付けることで、戻り値を HTTP レスポンスのコンテンツとすることができます。
     public ArrayList<PoFormBean> postSelect(@RequestParam("type") String type, @RequestParam("userId") String userId) {
-        System.out.println("type: " + type + "  userId: " + userId);
+        System.out.println("type: " + type + "  userId: " + userId + "  userName: " + securitySession.getName());
         //Form list 
 		ArrayList<PoFormBean> select = PoFormDAO.getInstance(config).read(userId);
         ObjectMapper mapper = new ObjectMapper();
