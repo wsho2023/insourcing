@@ -371,6 +371,7 @@ public class MyExcel {
 		    //System.out.println(rowIdx + "行目の高さ：" + row.getHeight());
 		    row = tableSheet.createRow(rowIdx);		//行の生成
 			row.setHeight((short) 315);		//15.75pt	//https://blog.java-reference.com/poi-width-height/
+			maxCol = list.get(rowIdx).size();
 			for (int colIdx=0; colIdx<maxCol; colIdx++) {
 				strValue = list.get(rowIdx).get(colIdx);
 				cell = row.createCell(colIdx);
@@ -384,7 +385,7 @@ public class MyExcel {
 									cell.setCellStyle(suryoStyle);
 									cell.setCellValue(tmpVal);
 								} catch(NumberFormatException e) {
-									System.err.println("変換NG: " + strValue);
+									System.err.println("colIdx + SURYO変換NG: " + strValue);
 									cell.setCellValue(strValue);
 								}
 								//System.out.println(calFmt[1] + ":" + strValue);
@@ -396,7 +397,7 @@ public class MyExcel {
 									cell.setCellStyle(tankaStyle);
 									cell.setCellValue(tmpVal);
 								} catch(NumberFormatException e) {
-									System.err.println("変換NG: " + strValue);
+									System.err.println("colIdx + TANKA変換NG: " + strValue);
 									cell.setCellValue(strValue);
 								}
 								//System.out.println(calFmt[1] + ":" + strValue);
@@ -408,7 +409,7 @@ public class MyExcel {
 									cell.setCellStyle(kingakuStyle);
 									cell.setCellValue(tmpVal);
 								} catch(NumberFormatException e) {
-									System.err.println("変換NG: " + strValue);
+									System.err.println("colIdx + KINGAKU変換NG: " + strValue);
 									cell.setCellValue(strValue);
 								}
 								//System.out.println(calFmt[1] + ":" + strValue);
@@ -421,7 +422,7 @@ public class MyExcel {
 									cell.setCellStyle(dateStyle);
 									cell.setCellValue(tmpVal);
 								} catch (ParseException e) {
-									System.err.println("変換NG: " + strValue);
+									System.err.println("DATE変換NG: " + strValue);
 									cell.setCellValue(strValue);
 								}								
 								//System.out.println(calFmt[1] + ":" + strValue);
@@ -434,7 +435,7 @@ public class MyExcel {
 									cell.setCellStyle(dtimeStyle);
 									cell.setCellValue(tmpVal);
 								} catch (ParseException e) {
-									System.err.println("変換NG: " + strValue);
+									System.err.println("DATETIME変換NG: " + strValue);
 									cell.setCellValue(strValue);
 								}								
 								//System.out.println(calFmt[1] + ":" + strValue);

@@ -345,14 +345,33 @@ public class WebApi {
 			ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
 			String line = null;
 			String[] columns;
+			int colLen;
 			ArrayList<String> data;
+			//ヘッダ
+			line = br.readLine();
+			columns = line.split("\t");	//"\t" でsplitする。
+			colLen = columns.length;
+			if (columns != null) {
+				data = new ArrayList<String>();
+				for (String str : columns) {
+					data.add(str);
+				}
+				list.add(data);
+			}
+
+			//データ(カラム数は、ヘッダのカラム数で固定する版)
+			String str = "";
 			while((line = br.readLine()) != null) {
 	            columns = line.split("\t");	//"\t" でsplitする。
 	            if (columns != null) {
 		            data = new ArrayList<String>();
-		            for (String str : columns) {
+					for (int col=0; col<colLen; col++) {
+						if (col < columns.length) 
+							str = columns[col]	 ;
+						else
+							str = "";
 		            	data.add(str);
-		            }
+					}
 		            list.add(data);
 	            }
 			}

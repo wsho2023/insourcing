@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -107,7 +106,8 @@ public class MyFiles {
 
 	//TSVパーサー
 	public static ArrayList<ArrayList<String>> parseTSV(String filePath, String charSet) throws IOException {
-		//ダブルクォーテーション、途中改行 はなしとする。
+		//ダブルクォーテーション、途中改行 はなしとする(簡易版)。
+/* 
 		ArrayList<ArrayList<String>> list = null;
 		
 	    try (BufferedReader br = Files.newBufferedReader(Paths.get(filePath), Charset.forName(charSet))) {
@@ -130,18 +130,30 @@ public class MyFiles {
 	            sb.setLength(0);
 	        }
 	    }
+*/		
+	    BufferedReader br = Files.newBufferedReader(Paths.get(filePath), Charset.forName(charSet));
+		ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
+
+		String line;
+		//while ((line = br.readLine()) != null) {
+		while (true) {
+			line = br.readLine();
+			if (line == null)
+				break;
+			// ファイルから読み取った行を連結する
+			String[] columns = line.split("\t");	//"\t" でsplitする。
+			if (columns != null) {
+				ArrayList<String> data = new ArrayList<String>();
+				for (String str : columns) {
+					data.add(str);
+				}
+				list.add(data);
+			}
+		}
+
         return list;
 	}
 	
-	public static JsonNode parseJson(String jsonPath) throws IOException {
-		Path path = Paths.get(jsonPath);
-		String content = Files.readString(path);
-		ObjectMapper mapper = new ObjectMapper();
-		JsonNode jnode = mapper.readTree(content);
-		
-		return jnode;
-	}
-
 	//フルパスからファイル名取得
     public static String getFileName(String path) {
 		Path p = Paths.get(path);
@@ -226,17 +238,26 @@ public class MyFiles {
     	return 0;
     }
 
+	public static JsonNode parseJson(String jsonPath) throws IOException {
+		Path path = Paths.get(jsonPath);
+		String content = Files.readString(path);
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode jnode = mapper.readTree(content);
+		
+		return jnode;
+	}
+
     //オブジェクトをJsonNode⇒Stringに変換して、ファイルへ書き込み
 	public static int WriteJson2File(Object value, String wirtePath) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonStr = null;
-		try {
+		//try {
 			//JavaオブジェクトからJSONに変換
 			jsonStr = mapper.writeValueAsString(value);
 			MyUtils.SystemLogPrint(jsonStr);	//JSONの出力
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
+		//} catch (JsonProcessingException e) {
+		//	e.printStackTrace();
+		//}
 		
 		if (jsonStr != null) {
 			File file = new File(wirtePath);

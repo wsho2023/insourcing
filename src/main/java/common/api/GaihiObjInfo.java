@@ -28,6 +28,7 @@ public class GaihiObjInfo {
 	String READ_FILE_PATH1;
 	String READ_FILE_PATH2;
 	String WRITE_PATH;
+	String BACKUP_PATH;
 	String OUTPUT_PATH;
 	String FTP_BAT_PATH;  
 	String COPY_BAT_PATH;  
@@ -44,17 +45,13 @@ public class GaihiObjInfo {
 		
 		CONNECT_INFO = "scsales@sacles@orcl";
 		TABLE_NAME = "GAIHI_HASHIN_TRN";
-		TARGET_PATH = System.getProperty("user.dir") + System.getProperty("file.separator") + "output";; 
-		READ_FILE_PATH1 = TARGET_PATH + "complete.tsv";
-		READ_FILE_PATH2 = TARGET_PATH + "complete_makepdf.tsv";
-		WRITE_PATH = TARGET_PATH + "write_%s.tsv";
-		OUTPUT_PATH = TARGET_PATH + "Excel.xlsx";
-		FTP_BAT_PATH = TARGET_PATH + "gaihi_ftp.bat";  
-		
-		//カレントディレクトリ設定
-		//System.out.println("CurDir: " + System.getProperty("user.dir"));
-		System.setProperty("user.dir", TARGET_PATH);
-		System.out.println("CurDir: " + System.getProperty("user.dir"));
+		TARGET_PATH = System.getProperty("user.dir") + System.getProperty("file.separator"); 
+		READ_FILE_PATH1 = "complete.tsv";
+		READ_FILE_PATH2 = "complete_makepdf.tsv";
+		WRITE_PATH = "complete.txt";
+		BACKUP_PATH = "write_%s.tsv";
+		OUTPUT_PATH = "Excel.xlsx";
+		FTP_BAT_PATH = "gaihi_ftp.bat";  
 	}
 	
 	public String makeObject() {
@@ -81,10 +78,8 @@ public class GaihiObjInfo {
 		if (MyFiles.exists(FTP_BAT_PATH) != true) {
 			return "ファイルなしエラー: " + FTP_BAT_PATH;
 		}
-		cmdList = new String[3];
-		cmdList[0]	=	"cmd";
-		cmdList[1]	=	"/c";
-		cmdList[2]	=	FTP_BAT_PATH;
+		cmdList = new String[1];
+		cmdList[0]	=	FTP_BAT_PATH;
 		try {
 		    MyUtils.exeCmd(cmdList);
 		} catch (Exception e) {
@@ -94,16 +89,17 @@ public class GaihiObjInfo {
 		cmdList = null;
 		
 		//---------------------------------------
-		//②complete.tsv(SJIS)から 前稼働日読込み
+		//②complete.tsv(SJIS)から 前日分読込み
 		//---------------------------------------
-		if (MyFiles.exists(READ_FILE_PATH1) != false) {
-			return "ファイルなしエラー: " + FTP_BAT_PATH;
+		if (MyFiles.exists(READ_FILE_PATH1) != true) {
+			return "ファイルなしエラー: " + READ_FILE_PATH1;
 		}
 		ArrayList<ArrayList<String>> list1 = null;
 		ArrayList<ArrayList<String>> list2 = null;
 		list1 = new ArrayList<ArrayList<String>>();
 		try {
-			list1 = MyFiles.parseTSV(READ_FILE_PATH1, "SJIS");	//or "UTF-8"
+			//https://itsakura.com/it-shiftjis-ms932
+			list1 = MyFiles.parseTSV(READ_FILE_PATH1, "MS932");	//"SJIS" or "UTF-8"
 		} catch (IOException e) {
 			e.printStackTrace();
         	return e.toString();
@@ -115,25 +111,26 @@ public class GaihiObjInfo {
 		String procDate11;
 		list2 = new ArrayList<ArrayList<String>>();
 		for (ArrayList<String> line : list1) {
-			procDate11 = line.get(23);	//処理日時11
-			//if (procDate11.equals("") != true && procDate11.equals("処理日時11") != true) {
+			procDate11 = line.get(24);	//処理日時11
+			if (procDate11.equals("") != true && procDate11.equals("処理日時11") != true) {
+				procDate11 = procDate11.substring(0,10);	//YYYY/MM/DDの前方10桁を抽出
 				if (procDate11.equals(kinou) == true) {
 					list2.add(line);
 				}
-			//}
+			}
 		}
 		
 		//---------------------------------------
-		//③0だったら、もう一つのファイルから 前稼働日読込み（5のつく日）
+		//③0だったら、もう1つのファイルから 前日分読込み（5のつく日）
 		//---------------------------------------
 		if (list2.size() == 0) {
-			if (MyFiles.exists(READ_FILE_PATH2) != false) {
+			if (MyFiles.exists(READ_FILE_PATH2) != true) {
 				return "ファイルなしエラー: " + FTP_BAT_PATH;
 			}
 			list2 = null;
 			list1 = new ArrayList<ArrayList<String>>();
 			try {
-				list1 = MyFiles.parseTSV(READ_FILE_PATH2, "SJIS");	//or "UTF-8"
+				list1 = MyFiles.parseTSV(READ_FILE_PATH2, "MS932");	//"SJIS" or "UTF-8"
 			} catch (IOException e) {
 				e.printStackTrace();
 	        	return e.toString();
@@ -142,12 +139,13 @@ public class GaihiObjInfo {
 			//String data;
 			list2 = new ArrayList<ArrayList<String>>();
 			for (ArrayList<String> line : list1) {
-				procDate11 = line.get(23);	//処理日時11
-				//if (procDate11.equals("") != true && procDate11.equals("処理日時11") != true) {
+				procDate11 = line.get(24);	//処理日時11
+				if (procDate11.equals("") != true && procDate11.equals("処理日時11") != true) {
+					procDate11 = procDate11.substring(0,10);	//YYYY/MM/DDの前方10桁を抽出
 					if (procDate11.equals(kinou) == true) {
 						list2.add(line);
 					}
-				//}
+				}
 			}
 		}
 		
@@ -156,15 +154,12 @@ public class GaihiObjInfo {
 		//---------------------------------------
 		if (list2.size() == 0) {
 			String msg = "抽出データなし"; 
-			MyUtils.SystemErrPrint(msg);
 			return msg;
 		}
 		
 		//TSVファイル書き出し(UTF-8)
-		String yomitoriDay = kinou.replace("\\", "");	//YYYYMMDD
-		String writePath = String.format(WRITE_PATH, yomitoriDay);
 		try {
-			MyFiles.WriteList2File(list2, writePath);
+			MyFiles.WriteList2File(list2, WRITE_PATH);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return e.toString();
@@ -173,15 +168,13 @@ public class GaihiObjInfo {
 		//---------------------------------------
 		//⑤sqrldrで、TMPテーブルへロード
 		//---------------------------------------
-		cmdList = new String[8];
-		cmdList[0]	=	"cmd";
-		cmdList[1]	=	"/c";
-		cmdList[2]	=	"sqlldr";
-		cmdList[3]	=	CONNECT_INFO;
-		cmdList[4]	=	"control=" + TABLE_NAME + ".ctl";
-		cmdList[5]	=	"log=" + TABLE_NAME + "_" + MyUtils.getDateStr() + ".log";;
-		cmdList[6]	=	"readsize=1000000";
-		cmdList[7]	=	"rows=128";
+		cmdList = new String[6];
+		cmdList[0]	=	"sqlldr";
+		cmdList[1]	=	CONNECT_INFO;
+		cmdList[2]	=	"control=" + TABLE_NAME + ".ctl";
+		cmdList[3]	=	"log=" + TABLE_NAME + "_" + MyUtils.getDateStr() + ".log";;
+		cmdList[4]	=	"readsize=1000000";
+		cmdList[5]	=	"rows=128";
 		try {
 		    MyUtils.exeCmd(cmdList);
 		} catch (Exception e) {
@@ -190,14 +183,22 @@ public class GaihiObjInfo {
 		}
 		cmdList = null;
 		
+		//Backupの作成
+		String yomitoriDay = kinou.replace("/", "");	//YYYYMMDD
+		String backupPath = String.format(BACKUP_PATH, yomitoriDay);
+		try {
+			MyFiles.copyOW(WRITE_PATH, backupPath);
+		} catch (IOException e) {
+			e.printStackTrace();
+        	return e.toString();
+		}
+
 		//⑥upload.sqlを実行（sqlplus）
-		cmdList = new String[6];
-		cmdList[0]	=	"cmd";
-		cmdList[1]	=	"/c";
-		cmdList[2]	=	"sqlplus";
-		cmdList[3]	=	"-S";
-		cmdList[4]	=	CONNECT_INFO;
-		cmdList[5]	=	"@updateGaihi.sql";
+		cmdList = new String[4];
+		cmdList[0]	=	"sqlplus";
+		cmdList[1]	=	"-S";
+		cmdList[2]	=	CONNECT_INFO;
+		cmdList[3]	=	"@updateGaihi.sql";
 		try {
 		    MyUtils.exeCmd(cmdList);
 		} catch (Exception e) {
@@ -215,23 +216,26 @@ public class GaihiObjInfo {
 		try {
 			//Excelファイルオープン(xlsPath=nullなら、新規作成)
 			xlsx.open(xlsPath, sheetName);
-			int lastRow = xlsx.sheet.getLastRowNum() + 1;	//書き込み行＝末尾行＋１
-			int maxRow = lastRow + list2.size();
-			int maxCol = list2.get(0).size();
+			int lastRow = xlsx.sheet.getLastRowNum();
+			int maxRow = list2.size();
+			int maxCol;
 			String strValue;
-			int rowIdx;
-			for (rowIdx=lastRow; rowIdx<maxRow; rowIdx++) {
+			int rowIdx = lastRow + 1;	//書き込み行＝末尾行＋１
+			for (int Idx=0; Idx<maxRow; Idx++) {
 				xlsx.createRow(rowIdx);			//行の生成
+				maxCol = list1.get(Idx).size();
 				for (int colIdx=0; colIdx<maxCol; colIdx++) {
-					strValue = list2.get(rowIdx).get(colIdx);
+					strValue = list2.get(Idx).get(colIdx);
 					xlsx.cell = xlsx.row.createCell(colIdx);
 					xlsx.cell.setCellValue(strValue);
 				}
+				rowIdx++;
 			}
 			//末尾行をアクティブセルにする。
 			xlsx.getRow(rowIdx-1);	
 			xlsx.cell = xlsx.row.getCell(0);
 			xlsx.cell.setAsActiveCell();
+			xlsx.save(xlsPath);
 			xlsx.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -241,10 +245,8 @@ public class GaihiObjInfo {
 		//---------------------------------------
 		//⑧そのExcelマスタをサーバーへコピー
 		//---------------------------------------
-		cmdList = new String[3];
-		cmdList[0]	=	"cmd";
-		cmdList[1]	=	"/c";
-		cmdList[2]	=	"gaihi_copy.bat";
+		cmdList = new String[1];
+		cmdList[0]	=	"gaihi_copy.bat";
 		try {
 		    MyUtils.exeCmd(cmdList);
 		} catch (Exception e) {
@@ -252,6 +254,8 @@ public class GaihiObjInfo {
 			return e.toString();
 		}
 		cmdList = null;
+		
+		MyUtils.SystemErrPrint("完了");
 		
 		return null;
 	}

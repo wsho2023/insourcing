@@ -298,7 +298,7 @@
 		//アップロードボタンクリック時のアクション
 		$('#uploadButton').click(function() {
 			if ($('#input_file')[0].files.length == 0) {
-				alert('ファイルを選択してください')
+				alert('ファイルを選択してください');
 				return;
 			}
 			const files = $('#input_file')[0].files;
@@ -306,14 +306,14 @@
 			var formName = $('#select-1 option:selected').text();
 			console.log("formName: " + formName);
 			if (formName == "") {
-				alert("帳票を選択してください")
+				alert("帳票を選択してください");
 				return;
 			}
 			var formId =  $('#select-1 option:selected').val();
 			console.log("formId: " + formId);
 			var toriCd = formId.substr(0, 5);
 			if (fileName.indexOf(toriCd) == -1) {
-				alert("ファイル名に指定した帳票の取引先ｺｰﾄﾞ("+ toriCd +")含まれていません。確認してください。")
+				alert("ファイル名に指定した帳票の取引先ｺｰﾄﾞ(" + toriCd +")が含まれていません。確認してください。");
 				return;
 			}
 			console.log("fileName:" + fileName);
@@ -327,7 +327,7 @@
 			var code = $('#text_code').val();
 			console.log("code:" + code);
 
-			var result = window.confirm("以下の条件でアプロード実行していますか？\n 帳票名:" + formName + "\n ファイル名: " + fileName);
+			var result = window.confirm("以下の条件でアップロード実行しますか？\n  帳票名: " + formName + "\n  ファイル名: " + fileName);
 			if (result != true) {
 				//キャンセル
 				return;
@@ -359,7 +359,7 @@
 				$('#icon_clear_button').hide();	//icon_clear_buttonを非表示
 				$('#drop_area').css('border', '1px dashed #aaa');		//枠を点線に変更
 				//var id = "<%= request.getAttribute("id") %>";
-				alert("アップロードしました。\n システムに登録が完了したらログインID宛にメールを送信します。\n　宛先: " + userId);
+				alert("アップロードしました。\n システムに登録が完了したらログインID宛にメールを送信します。\n 宛先: " + userId);
 				$("#listtable tr.last").remove();
 				//1行目に追加
 				var addline = '<tr><td>' + userName + '</td><td>' + dtStr + '</td><td>' + formName + '</td></tr>'	//<td>' + fileName + '</td>

@@ -56,7 +56,12 @@ public class InsourcingController {
     public String login() {
         return "login";
     }
-
+    
+    @GetMapping("/error")
+    public String getError() {
+        return "redirect:/upload";
+    }
+    
     @GetMapping("/fax")
     public String fax(Model model) {
 		String title = "FAXデータリスト";
@@ -290,7 +295,7 @@ public class InsourcingController {
     @ResponseBody	//＠ResponseBody アノテーションを付けることで、戻り値を HTTP レスポンスのコンテンツとすることができます。
     public ArrayList<PoFormBean> postSelect(@RequestParam("type") String type, @RequestParam("userId") String userId) {
         System.out.println("type: " + type + "  userId: " + userId + "  userName: " + securitySession.getName());
-        //Form list 
+        //ログインIDをもとに、帳票定義リストを取得する。
 		ArrayList<PoFormBean> select = PoFormDAO.getInstance(config).read(userId);
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -358,10 +363,10 @@ public class InsourcingController {
 		String toriCd;
 		if (ch.equals(" ") == true) {
 			toriCd = formId.substring(0, 5);	//5桁
-			formId = formId.substring(5, 10);	//5桁
+			formId = formId.substring(6, formId.length());	//6桁目から最後まで
 		} else {
 			toriCd = formId.substring(0, 6);	//6桁
-			formId = formId.substring(6, 11);	//5桁
+			formId = formId.substring(7, formId.length());	//7桁から最後まで
 		}
 		
 		String dtStr = dt.substring(0,4) + dt.substring(5,7) + dt.substring(8,10) + dt.substring(11,13) + dt.substring(14,16) + dt.substring(17,19);
@@ -482,7 +487,8 @@ public class InsourcingController {
 		ocrData.setDocumentId(documentId);
 		ocrData.setDocumentName(ocrForm.getDocumentName());
 		//ocrData.setCreatedAt("");
-		ocrData.setType(2);
+		int type = 3;	//2:本番	3:テスト環境
+		ocrData.setType(type);
 		OcrDataFormDAO.getInstance(config).insertReadingUnitDB(ocrData);
 	}
 	

@@ -102,7 +102,7 @@ public class OcrProcess {
 		ArrayList<OcrDataFormBean> list = OcrDataFormDAO.getInstance(config).queryNotComplete(type);
 		int count = list.size();
 		if (count != 0) {
-			MyUtils.SystemLogPrint("  find data: " + count);
+			MyUtils.SystemLogPrint("  find data(type " + type + "): " + count);
 		}
 		for (int o=0; o<count; o++) {
 			OcrDataFormBean ocrDataForm = (OcrDataFormBean)list.get(o);
@@ -671,8 +671,8 @@ public class OcrProcess {
 	        return -1;
         } 
 
-		if (ocrData.meisaiNum != 0) {
-			//OCR帳票定義ありのケースのOCR結果とマッチング
+		if (ocrData.headerNum != 0 || ocrData.meisaiNum != 0) {
+			//★★OCR帳票定義ありのケースのOCR結果とマッチング★★
 			int ret = 0;
 			if (ocrData.uploadFilePath.contains("00送信元なし")==true) {
 				ret = sortMatchPorcess(ocrData);
@@ -1009,8 +1009,8 @@ public class OcrProcess {
 		        			if (colIdx==colSuryo) {
 								try {
 									suryo = Double.parseDouble(cnvList.get(rowIdx).get(colIdx));
-									xlsx.setCellValue(colIdx, suryo);
 									strValue = String.valueOf(suryo);
+									xlsx.setCellValue(colIdx, strValue);
 									numFlag = true;
 								} catch(NumberFormatException e) {
 								}	
@@ -1018,8 +1018,8 @@ public class OcrProcess {
 		        			if (colIdx==colTanka) {
 								try {
 									tanka = Double.parseDouble(cnvList.get(rowIdx).get(colIdx));
-									xlsx.setCellValue(colIdx, tanka);
 									strValue = String.valueOf(tanka);
+									xlsx.setCellValue(colIdx, strValue);
 									numFlag = true;
 								} catch(NumberFormatException e) {
 								}	
@@ -1027,8 +1027,8 @@ public class OcrProcess {
 		        			if (colIdx==colKingaku) {
 								try {
 									kingaku = Double.parseDouble(cnvList.get(rowIdx).get(colIdx));	//金額も.00のケースあり
-									xlsx.setCellValue(colIdx, kingaku);
 									strValue = String.valueOf(kingaku);
+									xlsx.setCellValue(colIdx, strValue);
 									numFlag = true;
 								} catch(NumberFormatException e) {
 								}
