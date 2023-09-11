@@ -1,25 +1,17 @@
 package common.po;
 
-import static java.nio.file.StandardWatchEventKinds.*;
-
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
 
 import com.example.demo.InsourcingConfig;
 
 import common.utils.MyFiles;
 import common.utils.MyUtils;
 
-public class PoScanFile implements Runnable {
-	String targetPath;
+public class PoScanFile {
 	InsourcingConfig config;
+	String targetPath;
 
 	public PoScanFile(InsourcingConfig argConfig) {
 		MyUtils.SystemLogPrint("■PoScanFileコンストラクタ");
@@ -27,7 +19,7 @@ public class PoScanFile implements Runnable {
 		this.targetPath = config.getOcrUploadPath();
 	}
 	
-	//public static void main(String[] args) throws Exception {
+/*	//public static void main(String[] args) throws Exception {
 	@Override
 	public void run() {
 		ScanRemainedFile(this.targetPath);	//すでにフォルダにあるpdfをScan
@@ -38,7 +30,7 @@ public class PoScanFile implements Runnable {
 			watcher = FileSystems.getDefault().newWatchService();
 			Path dir = Paths.get(this.targetPath);
 			dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-			MyUtils.SystemLogPrint("■PoScanFile: scan: " + this.targetPath);
+			MyUtils.SystemLogPrint("■PoScanFile: scan... " + this.targetPath);
 	        for (;;) {
 	            WatchKey watchKey = watcher.take();
 	            for (WatchEvent<?> event: watchKey.pollEvents()) {
@@ -50,8 +42,7 @@ public class PoScanFile implements Runnable {
 	                    Path src = dir.resolve(name);	//フルパス
 	                    String fileName = name.toString();
 	                    System.out.format("%s: %s %s\n", event.kind().name(), src, name);
-						File f = Paths.get("", src.toString()).toFile();
-						if (f.isFile()) {
+						if (MyFiles.isFile(src.toString())) {
                     		MyUtils.SystemLogPrint("  ファイル検出...: " + fileName);
 							scanProcess(src.toString());
 						}
@@ -70,26 +61,31 @@ public class PoScanFile implements Runnable {
     static <T> WatchEvent<T> cast(WatchEvent<?> event) {
         return (WatchEvent<T>)event;
     }
-
-	void ScanRemainedFile(String targetPath) {
+*/
+	public String scanGetTargetPath() {
+		return this.targetPath;
+	}
+	
+	public void scanRemainedFile() {
 		//指定ディレクトリ配下のファイルのみ(またはディレクトリのみ)を取得
-        File file = new File(targetPath);
+        File file = new File(this.targetPath);
         File fileArray[] = file.listFiles();
-        
+		//MyUtils.SystemLogPrint("■scanRemainedFile: start..." + this.targetPath);
 		try {
 			for (File f: fileArray){
 				if (f.isFile()) {
 					String fileName = MyFiles.getFileName(f.toString());	//フルパスからファイル名取得
-					MyUtils.SystemLogPrint("  ファイル検出...: " + fileName);
+					MyUtils.SystemLogPrint("  ファイル検出: " + fileName);
 					scanProcess(f.toString());
 	            }
 			}
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
+		//MyUtils.SystemLogPrint("■scanRemainedFile: end");
 	}
 	
-	void scanProcess(String uploadFilePath) {
+	public void scanProcess(String uploadFilePath) {
 		importData(uploadFilePath);
 	    //------------------------------------------------------
 	    //取り込み実行

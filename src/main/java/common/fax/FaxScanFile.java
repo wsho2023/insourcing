@@ -1,16 +1,8 @@
 package common.fax;
 
-import static java.nio.file.StandardWatchEventKinds.*;
-
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
 
 import com.example.demo.InsourcingConfig;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,7 +16,8 @@ import common.utils.MyFiles;
 import common.utils.MyMail;
 import common.utils.MyUtils;
 
-public class FaxScanFile implements Runnable {
+public class FaxScanFile {
+	static InsourcingConfig config;
 	String kyoten;
 	String targetPath;
 	String TEST_FLAG;
@@ -33,7 +26,6 @@ public class FaxScanFile implements Runnable {
 	String FORM_TYPE1;
 	String FORM_TYPE2;
 	String OCR_INPUT_PATH;
-	static InsourcingConfig config;
 	static MyMail mailConf;
 
 	public FaxScanFile(InsourcingConfig argConfig, String argKyoten) {
@@ -65,7 +57,7 @@ public class FaxScanFile implements Runnable {
 		}
 	}
 	
-	//public static void main(String[] args) throws Exception {
+/*	//public static void main(String[] args) throws Exception {
 	@Override
 	public void run() {
 		ScanRemainedFile(this.targetPath);	//すでにフォルダにあるpdfをScan
@@ -76,7 +68,7 @@ public class FaxScanFile implements Runnable {
 			watcher = FileSystems.getDefault().newWatchService();
 			Path dir = Paths.get(this.targetPath);
 			dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-			MyUtils.SystemLogPrint("■FaxScanFile: scan " + this.kyoten + ": " + this.targetPath);
+			MyUtils.SystemLogPrint("■FaxScanFile: scan... " + this.targetPath);
 	        for (;;) {
 	            WatchKey watchKey = watcher.take();
 	            for (WatchEvent<?> event: watchKey.pollEvents()) {
@@ -105,11 +97,20 @@ public class FaxScanFile implements Runnable {
 		}
 	}
 	
-	void ScanRemainedFile(String targetPath) {
+	@SuppressWarnings("unchecked")
+    static <T> WatchEvent<T> cast(WatchEvent<?> event) {
+        return (WatchEvent<T>)event;
+    }
+*/
+	public String scanGetTargetPath() {
+		return this.targetPath;
+	}
+	
+	public void scanRemainedFile() {
 		//指定ディレクトリ配下のファイルのみ(またはディレクトリのみ)を取得
-        File file = new File(targetPath);
+        File file = new File(this.targetPath);
         File fileArray[] = file.listFiles();
-        
+		//MyUtils.SystemLogPrint("■scanRemainedFile: start..." + this.targetPath);
 		try {
 			for (File f: fileArray){
 				if (f.isFile()) {
@@ -117,7 +118,7 @@ public class FaxScanFile implements Runnable {
 					String extension = fileName.substring(fileName.length()-3);	//拡張子：後ろから3文字
 					if (extension.equals("pdf") == true) {
 						//String extension = fileName.substring(fileName.lastIndexOf("."));	//
-						MyUtils.SystemLogPrint("  ファイル検出...: " + fileName);
+						MyUtils.SystemLogPrint("  ファイル検出: " + fileName);
 						scanProcess(fileName);
 					}
                 }
@@ -125,9 +126,10 @@ public class FaxScanFile implements Runnable {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
+		//MyUtils.SystemLogPrint("■scanRemainedFile: end");
 	}
-
-	void scanProcess(String fileName) throws Throwable {
+	
+	public void scanProcess(String fileName) throws Throwable {
 		String faxNo = "";
 		String createdAt = "";
 		String dateStr = "";
@@ -332,11 +334,6 @@ public class FaxScanFile implements Runnable {
 		
 		return 0;		
 	}
-	
-	@SuppressWarnings("unchecked")
-    static <T> WatchEvent<T> cast(WatchEvent<?> event) {
-        return (WatchEvent<T>)event;
-    }
 	
 	public void changeFilePath(OcrDataFormBean ocrData) {
     	MyUtils.SystemLogPrint("changeFilePath: start");

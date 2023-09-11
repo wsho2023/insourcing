@@ -17,9 +17,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MyFiles {
 	//ファイルの存在チェック
-	public static Boolean exists(String srcPath) {
-		Path src = Paths.get(srcPath);
-		return Files.exists(src);
+	public static Boolean exists(String path) {
+		Path p = Paths.get(path);
+		return Files.exists(p);
+	}
+	
+	//ファイルかを調べる
+	public static Boolean isFile(String path) {
+		File f = Paths.get("", path).toFile();
+		return f.isFile();
 	}
 	
 	//存在を確認し、なければディレクトリ作成

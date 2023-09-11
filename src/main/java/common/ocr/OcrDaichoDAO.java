@@ -46,8 +46,10 @@ public class OcrDaichoDAO {
 			//ps.setString(i++, type);
             ResultSet rs = ps.executeQuery();
             
-            OcrDaichoBean daicho = new OcrDaichoBean();
+            OcrDaichoBean daicho = null;
     		while(rs.next()) {
+    			//Beanクラスを初期化
+    			daicho = new OcrDaichoBean();
     			// ユーザIDと名前をBeanクラスへセット
     			daicho.objectId = rs.getString(1);		//"OBJECT_ID"
     			daicho.createdDate = rs.getString(2);	//"CREATED_DATE"
@@ -65,8 +67,6 @@ public class OcrDaichoDAO {
     			daicho.biko = rs.getString(14);			//"BIKO"
             	// リストにBeanクラスごと格納
     			list.add(daicho);
-    			//Beanクラスを初期化
-    			daicho = new OcrDaichoBean();
     		}			
 		} catch (SQLException e) {
 			// エラーハンドリング

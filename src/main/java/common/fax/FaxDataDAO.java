@@ -55,8 +55,10 @@ public class FaxDataDAO {
 			PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
 
-            FaxDataBean fax = new FaxDataBean();
+            FaxDataBean fax = null;
 			while(rs.next()) {
+				//Beanクラスを初期化
+				fax = new FaxDataBean();
 				// ユーザIDと名前をBeanクラスへセット
 				fax.setNo(rs.getInt("NO"));
 				fax.setFaxNo(rs.getString("FAX_NO"));
@@ -67,11 +69,8 @@ public class FaxDataDAO {
 				fax.setSoshinMoto(rs.getString("SOUSHN_MOTO"));
 				fax.setFullPath(rs.getString("FULLPATH"));
 				fax.setKyoten(rs.getString("UNIT_ID"));
-
             	// リストにBeanクラスごと格納
 				fax_dao.add(fax);
-				//Beanクラスを初期化
-				fax = new FaxDataBean();
 			}
 		} catch(SQLException e) {
 			// エラーハンドリング

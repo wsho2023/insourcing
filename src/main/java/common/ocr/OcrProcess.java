@@ -56,10 +56,10 @@ public class OcrProcess {
 	static String SCAN_TARGET_PATH1;
 	static String SCAN_TARGET_PATH2;
 
-	public OcrProcess(InsourcingConfig arg_config, FaxScanFile arg_scan) {
+	public OcrProcess(InsourcingConfig arg_config) {
     	MyUtils.SystemLogPrint("■OcrProcessコンストラクタ");
 		config = arg_config;
-		scan2 = arg_scan;
+    	scan2 = new FaxScanFile(config, config.getScanDefTgt2()); 
 		PROXY_HOST = config.getProxyHost();
 		PROXY_PORT = config.getProxyPort();
 		PROXY_USER = config.getProxyUsername();

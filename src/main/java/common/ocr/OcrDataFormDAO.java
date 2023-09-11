@@ -56,8 +56,10 @@ public class OcrDataFormDAO {
 			//ps.setString(i++, type);
             ResultSet rs = ps.executeQuery();
             
-            OcrDataFormBean dataform = new OcrDataFormBean();
+            OcrDataFormBean dataform = null;
     		while(rs.next()) {
+       			//Beanクラスを初期化
+    			dataform = new OcrDataFormBean();
     			// ユーザIDと名前をBeanクラスへセット
     			dataform.unitId = rs.getString("UNIT_ID");
     			dataform.unitName = rs.getString("UNIT_NAME");
@@ -71,8 +73,6 @@ public class OcrDataFormDAO {
     			dataform.type = rs.getInt("TYPE");
             	// リストにBeanクラスごと格納
     			list.add(dataform);
-    			//Beanクラスを初期化
-    			dataform = new OcrDataFormBean();
     		}
 			
 		} catch(SQLException sql_e) {

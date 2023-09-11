@@ -32,7 +32,6 @@ public class PoFormDAO {
 	// 検索処理
 	// 戻り値		：ArrayList<Beanクラス>
 	public ArrayList<PoFormBean> read(String userId) {
-		//String sql = "select * from POFORMTABLE where MEMBER like '%?%'";
         String sql = "select * from POFORMTABLE where MEMBER like '%" + userId + "%' order by CODE";
 		
 		//接続処理
@@ -47,8 +46,10 @@ public class PoFormDAO {
 			//ps.setString(1, userId);
             ResultSet rs = ps.executeQuery();
 
-            PoFormBean poForm = new PoFormBean();
+            PoFormBean poForm = null;
 			while(rs.next()) {
+				//Beanクラスを初期化
+				poForm = new PoFormBean();
 				// ユーザIDと名前をBeanクラスへセット
 				poForm.setNo(rs.getInt(1));			//"NO"
 				poForm.setCode(rs.getString(2));	//"CODE"
@@ -56,8 +57,6 @@ public class PoFormDAO {
 				poForm.setFormId(rs.getString(4));	//"FORM_ID"
 				poForm.setMember(rs.getString(5));	//"MEMBER"
 				list.add(poForm);
-				//Beanクラスを初期化
-				poForm = new PoFormBean();
 			}
 		} catch(SQLException e) {
 			// エラーハンドリング

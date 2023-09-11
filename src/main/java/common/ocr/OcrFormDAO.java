@@ -36,7 +36,7 @@ public class OcrFormDAO {
 		
 		//接続処理
 		Connection conn = null;
-        OcrFormBean form = new OcrFormBean();
+        OcrFormBean form = null;
 		try {
 			Class.forName(DB_DRIVER);
 			conn = DriverManager.getConnection(DB_URL,DB_USER,DB_PASS);
@@ -47,6 +47,7 @@ public class OcrFormDAO {
             ResultSet rs = ps.executeQuery();
             
             while(rs.next()) {
+            	form = new OcrFormBean();
 				form.setFormName(rs.getString(1));		//"NAME"
 				form.setDocumentId(rs.getString(2));	//"DOCUMENT_ID"
 				form.setDocumentName(rs.getString(3));	//"DOCUMENT_NAME"

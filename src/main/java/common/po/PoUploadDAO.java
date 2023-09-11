@@ -95,8 +95,9 @@ public class PoUploadDAO {
 			ps.setString(1, uploadPath);
             ResultSet rs = ps.executeQuery();
             
-            PoUploadBean upload = new PoUploadBean();
+            PoUploadBean upload = null;
 			while (rs.next()) {
+				upload = new PoUploadBean();
     			//Beanクラスへセット(getString:1始まり)
 				upload.setUserId(rs.getString(1));		//LOGIN_ID
 				upload.setUserName(rs.getString(2));	//USER_NAME
@@ -107,8 +108,6 @@ public class PoUploadDAO {
 				upload.setInputPath(rs.getString(7));	//INPUT_PATH
             	// リストにBeanクラスごと格納
 				//list.add(upload);
-				//Beanクラスを初期化
-				//upload = new PoUploadBean();
 			}
 			return upload;
 		} catch(SQLException e) {

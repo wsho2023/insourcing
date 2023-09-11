@@ -51,17 +51,17 @@ public class OcrRirekiDAO {
 			ps.setString(1, unitIdName);
             ResultSet rs = ps.executeQuery();
             
-            OcrRirekiBean rireki = new OcrRirekiBean();
+            OcrRirekiBean rireki = null;
 			String col = "";
 			while (rs.next()) {
+				//Beanクラスを初期化
+				rireki = new OcrRirekiBean();
 				for (int i=0; i<cols.length; i++) {
 					col = rs.getString(cols[i]);
 	            	rireki.setCOL(i, col);
 				}
             	// リストにBeanクラスごと格納
 				list.add(rireki);
-				//Beanクラスを初期化
-				rireki = new OcrRirekiBean();
 			}
 			
 		} catch(SQLException e) {
