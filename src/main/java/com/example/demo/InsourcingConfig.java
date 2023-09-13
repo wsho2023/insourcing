@@ -33,6 +33,7 @@ public class InsourcingConfig {
     public String getMailPassword(){	return mail.get("password");    }
     public String getMailSmtpAuth(){	return mail.get("smtp_auth");    }
     public String getMailSmtpStarttlsEnable(){	return mail.get("smtp_starttls_enable");    }
+    public String getMailFrom(){	return mail.get("from");	}
     
     public String getDBUrl(){	return datasource.get("url");	}
     public String getDBUsername(){	return datasource.get("username");    }

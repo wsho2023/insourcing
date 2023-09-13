@@ -137,7 +137,22 @@ public class PoScanFile {
 
 	void importData(String uploadFilePath) {
 		PoUploadBean upload = null;
-		upload = PoUploadDAO.getInstance(config).quertyWithUploadPath(uploadFilePath);
+		int RetryCnt = 0;
+		for (;;) {
+			upload = PoUploadDAO.getInstance(config).quertyWithUploadPath(uploadFilePath);
+			if (upload != null)
+				break;
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			RetryCnt++;
+			if (RetryCnt > 10) {
+				MyUtils.SystemErrPrint("リトライエラー");
+				return;
+			}
+		} 
 		
 		String userId = upload.getUserId();
 		String datetime = upload.getDatetime();
