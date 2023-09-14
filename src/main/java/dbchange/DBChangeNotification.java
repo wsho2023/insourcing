@@ -7,15 +7,15 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import common.utils.MyMail;
-import common.utils.MyQueue;
-import common.utils.MyUtils;
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OracleDriver;
 import oracle.jdbc.OracleStatement;
 import oracle.jdbc.dcn.DatabaseChangeEvent;
 import oracle.jdbc.dcn.DatabaseChangeListener;
 import oracle.jdbc.dcn.DatabaseChangeRegistration;
+import utils.MyMail;
+import utils.MyQueue;
+import utils.MyUtils;
  
 //https://docs.oracle.com/cd/E16338_01/java.112/b56281/dbchgnf.htm
 public class DBChangeNotification {

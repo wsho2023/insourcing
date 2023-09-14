@@ -13,15 +13,15 @@ import java.nio.file.WatchService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import common.po.PoScanFile;
-import common.utils.MyFiles;
-import common.utils.MyUtils;
+import po.PoScanFile;
+import utils.MyFiles;
+import utils.MyUtils;
 
 @Service
 public class PoScanService {
 
 	@Async
-	public void run(InsourcingConfig config) {
+	public void run(SpringConfig config) {
 		String targetPath;
 		PoScanFile scan;
 		

@@ -13,14 +13,14 @@ import java.nio.file.WatchService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import common.fax.FaxScanFile;
-import common.utils.MyUtils;
+import fax.FaxScanFile;
+import utils.MyUtils;
 
 @Service
 public class FaxScanService {
 
 	@Async
-	public void run(InsourcingConfig config, String kyoten) {
+	public void run(SpringConfig config, String kyoten) {
 		String targetPath;
 		FaxScanFile scan;
 		

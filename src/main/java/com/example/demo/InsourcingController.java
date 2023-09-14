@@ -23,37 +23,43 @@ import com.example.demo.login.SecuritySession;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import common.fax.FaxDataBean;
-import common.fax.FaxDataDAO;
-import common.fax.FaxDeleteFile;
-import common.ocr.OcrColmunsBean;
-import common.ocr.OcrDaichoBean;
-import common.ocr.OcrDaichoDAO;
-import common.ocr.OcrDataFormBean;
-import common.ocr.OcrDataFormDAO;
-import common.ocr.OcrFormBean;
-import common.ocr.OcrFormDAO;
-import common.ocr.OcrRirekiBean;
-import common.ocr.OcrRirekiDAO;
-import common.po.PoFormBean;
-import common.po.PoFormDAO;
-import common.po.PoUploadBean;
-import common.po.PoUploadDAO;
-import common.utils.MyMail;
-import common.utils.MyUtils;
+import fax.FaxDataBean;
+import fax.FaxDataDAO;
+import fax.FaxDeleteFile;
 import jakarta.servlet.http.HttpServletResponse;
+import ocr.OcrColmunsBean;
+import ocr.OcrDaichoBean;
+import ocr.OcrDaichoDAO;
+import ocr.OcrDataFormBean;
+import ocr.OcrDataFormDAO;
+import ocr.OcrFormBean;
+import ocr.OcrFormDAO;
+import ocr.OcrRirekiBean;
+import ocr.OcrRirekiDAO;
+import po.PoFormBean;
+import po.PoFormDAO;
+import po.PoUploadBean;
+import po.PoUploadDAO;
+import utils.MyMail;
+import utils.MyUtils;
 
 @Controller
 public class InsourcingController {
 	
     @Autowired
-    private InsourcingConfig config;
+    private SpringConfig config;
     @Autowired
     private SecuritySession securitySession;
     
     @GetMapping("/login")
     public String login() {
         return "login";
+    }
+
+    @GetMapping("/")
+    public String getDefault(Model model){
+    	//トップページアクセス時のリダイレクト先
+    	return "redirect:/upload";
     }
     
     //ログイン成功しているのに、/error?continueにリダイレクトされる対処
@@ -267,12 +273,6 @@ public class InsourcingController {
 		}
         //return null;
     }
-
-    @GetMapping("/")
-    public String getDefault(Model model){
-    	//トップページアクセス時のリダイレクト先
-    	return "redirect:/upload";
-    }
     
     @GetMapping("/upload")
     public String upload(Model model){
@@ -429,7 +429,7 @@ public class InsourcingController {
 			*/		
 		}
 		
-		//ユーザーがアップロードしたことを通知するメール送信
+		//ユーザーがアップロードしたことを通知するメール送信(別スレッドで非同期)
 		SendMail sendMail = new SendMail(config, userId, dt, toriCd, fileName);
 		new Thread(sendMail).start();        
         //レスポンス
@@ -439,7 +439,7 @@ public class InsourcingController {
     public class SendMail implements Runnable {
 		MyMail mailConf;
     	
-    	public SendMail(InsourcingConfig config, String userId, String dt, String toriCd, String fileName) {
+    	public SendMail(SpringConfig config, String userId, String dt, String toriCd, String fileName) {
 			mailConf = new MyMail();
 			mailConf.host = config.getMailHost();
 			mailConf.port = config.getMailPort();

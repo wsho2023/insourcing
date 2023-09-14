@@ -10,16 +10,16 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-import common.ocr.OcrProcess;
-import common.utils.MyFiles;
-import common.utils.MyUtils;
+import ocr.OcrProcess;
+import utils.MyFiles;
+import utils.MyUtils;
 
 @SpringBootApplication
 @EnableAsync
 public class InsourcingApplication implements CommandLineRunner {
 
     @Autowired
-    private InsourcingConfig config;
+    private SpringConfig config;
     @Autowired
     private PoScanService poScanService;
     @Autowired
