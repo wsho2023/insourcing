@@ -51,12 +51,15 @@ public class SpringConfig {
     public String getScanTestFlag(){	return scan.get("test_flag");	}
     public String getScanDefTgt1(){	return scan.get("def_tgt1");	}
     public String getScanDefTgt2(){	return scan.get("def_tgt2");    }
+    public String getScanDefUrl1(){	return scan.get("def_url1");	}
+    public String getScanDefUrl2(){	return scan.get("def_url2");    }
     public String getScanPath1(){	return scan.get("path1");    }
     public String getScanPath2(){	return scan.get("path2");    }
     public String getScanFormType1(){	return scan.get("form_type1");    }
     public String getScanFormType2(){	return scan.get("form_type2");    }
     
-    public String getOcrUploadPath(){	return ocr.get("upload_path");	}
+    public String getOcrUploadPath1(){	return ocr.get("upload_path1");	}
+    public String getOcrUploadPath2(){	return ocr.get("upload_path2");	}
     public String getOcrInputPath(){	return ocr.get("input_path");    }
     public String getOcrOutputPath(){	return ocr.get("output_path");    }
     public String getOcrHostUrl(){	return ocr.get("host_url");    }

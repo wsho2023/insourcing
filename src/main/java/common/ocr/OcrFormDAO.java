@@ -1,4 +1,4 @@
-package ocr;
+package common.ocr;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

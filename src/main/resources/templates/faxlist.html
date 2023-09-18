@@ -16,10 +16,11 @@
         font-family:sans-serif;
     }
     header {
-    	background: #333;
-    	color: #fff;
+    	background: darkseagreen;
+    	color: #000;
     	padding: .5rem;
 		font-size: 1.5rem;
+		font-weight: bolder;
 		text-align: left;
     }
     #aa {
@@ -28,13 +29,14 @@
 		white-space: nowrap;
     }
     li {
-		margin: 2rem 0;
+		margin: 1rem 0;
     }
 	/*ボタン*/
     .btn-menu {
     	border: 1px solid #999;
 		background: transparent;
-    	color: #fff;
+    	color: #000;
+		font-weight: bolder;
     	padding: .5rem 1rem;
 		cursor: pointer;
 		line-height: 1;
@@ -44,10 +46,10 @@
 		background: #0bd;
 		position: absolute;
 		z-index: 1;
-		top: 3.125rem;
+		top: 3.7rem;	/*メニューの縦位置*/
 		left: 0;
 		overflow-x: hidden;
-		text-align: center;
+		text-align: left;
 		width: 0;
 		transition: .1s;
 	}
@@ -66,9 +68,9 @@
   	<button class="btn-menu" id="btn-menu">メニュー</button>
   	<nav>
   		<ul>
-  			<li><a href="/ocr/list" id="aa">OCR管理表</a>
-  			<li><a href="/fax" id="aa">FAX管理表</a>
-  			<li><a href="/daicho" id="aa">Daicho管理表</a>
+  			<li><a href="/daicho" id="aa">台帳管理表</a>
+  			<li><a href="/fax/tokyo" id="aa">FAX管理表</a>
+  			<li><a href="/ocr/list" id="aa">OCRリスト</a>
   		</ul>
   	</nav>
   	<label th:text="${title}"></label>
@@ -81,13 +83,13 @@
   	function btnClick() {
   	  	nav.classList.toggle('open-menu');
   	  	if (btn.innerHTML == 'メニュー') {
-  	  	  	btn.innerHTML = '閉じる';
+  	  	  	btn.innerHTML = '閉じる　';
   	  	} else {
   	  	  	btn.innerHTML = 'メニュー';
   	  	}
   	};
   </script>
-  <form action=fax method="post">
+  <form th:action="${url}" method="post">
      帳票名: <input type="text" name="form">
      日付:  <input type="date" name="date_fr">～<input type="date" name="date_to">
 	 送信元なし: <input type="checkbox" name="soushimotonashi" value="true">
@@ -122,11 +124,12 @@
 		<td th:text="${obj.faxNo}"></td>
 		<td th:text="${obj.cDate + ' ' + obj.cTime}"></td>
 		<td><a th:href="${obj.fullPath}" target="_blank" th:text="${obj.fileName}"></a></td>
-		<td th:text="${obj.soshinMoto}"></td>
+<!--		<td th:text="${obj.soshinMoto}"></td>-->
+		<td><a th:href="${'/fax/' + url + '?form=' + obj.soshinMoto}" target="_blank" th:text="${obj.soshinMoto}"></a></td>
 		<td>-</td>
 	</tr></tbody>
   </table>
-  <script type="text/javascript">
+  <script th:inline="javascript">
     $(document).ready(function() {
     	$("table").tablesorter({
 			theme: 'blue',
@@ -138,7 +141,7 @@
 			//stickyHeaders:スクロールの際にヘッダを固定する
 			//scroller:ヘッダを固定
 			//widgets: ['zebra', 'columns', 'resizable', 'pager', 'sticyHeaders', 'scroller'],
-			widgets: ['zebra', 'columns', 'resizable', 'pager', 'stickyHeaders123', 'scroller'],
+			widgets: ['zebra', 'columns', 'resizable', 'pager', 'stickyHeaders', 'scroller'],
 			//https://qiita.com/fj58p/items/2b47b84fd7223de8b9be
 	        widgetOptions: {
 	            scroller_height : 600	// テーブルの髙さの指定
@@ -152,5 +155,5 @@
 		$(".datepicker").datepicker();
 	});
   </script>
-</body>  
+</body>
 </html>

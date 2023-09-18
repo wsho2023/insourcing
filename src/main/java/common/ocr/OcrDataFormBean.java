@@ -1,4 +1,4 @@
-package ocr;
+package common.ocr;
 
 import java.io.Serializable;
 
@@ -9,6 +9,7 @@ public class OcrDataFormBean implements Serializable {
 	@JsonProperty("unitId")	String unitId;
 	@JsonProperty("unitName") String unitName;
 	@JsonProperty("uploadFilePath")	String uploadFilePath;
+	@JsonProperty("fileName")	String fileName;
 	@JsonProperty("status")	String status;
 	@JsonProperty("csvFileName") String csvFileName;
 	@JsonProperty("createdAt")	String createdAt;
@@ -47,12 +48,14 @@ public class OcrDataFormBean implements Serializable {
 	@JsonProperty("chubanlist") String chubanlist;
     
 	public OcrDataFormBean() {
-   }
+	}
 
 	public String getUnitId() {return this.unitId;	}
 	public String getUnitName() {return this.unitName;	}
 	public String getUploadFilePath() {return this.uploadFilePath;	}
+	public String getFileName() {return this.fileName;	}
 	public String getStatus() {return this.status;	}
+	public String getCsvFileName() {return this.csvFileName;	}
 	public String getCreatedAt() {return this.createdAt;	}
 	public String getLinkUrl() {return this.linkUrl;	}
 	public String getDocSetName() {return this.docsetName;	}

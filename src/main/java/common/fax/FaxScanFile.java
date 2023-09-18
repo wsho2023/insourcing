@@ -1,4 +1,4 @@
-package fax;
+package common.fax;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,14 +7,14 @@ import java.nio.file.NoSuchFileException;
 import com.example.demo.SpringConfig;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import ocr.OcrDataFormBean;
-import ocr.OcrDataFormDAO;
-import ocr.OcrFormBean;
-import ocr.OcrFormDAO;
-import utils.MyExcel;
-import utils.MyFiles;
-import utils.MyMail;
-import utils.MyUtils;
+import common.ocr.OcrDataFormBean;
+import common.ocr.OcrDataFormDAO;
+import common.ocr.OcrFormBean;
+import common.ocr.OcrFormDAO;
+import common.utils.MyExcel;
+import common.utils.MyFiles;
+import common.utils.MyMail;
+import common.utils.MyUtils;
 
 public class FaxScanFile {
 	static SpringConfig config;
@@ -57,51 +57,6 @@ public class FaxScanFile {
 		}
 	}
 	
-/*	//public static void main(String[] args) throws Exception {
-	@Override
-	public void run() {
-		ScanRemainedFile(this.targetPath);	//すでにフォルダにあるpdfをScan
-		//指定ディレクトリ配下のファイルのみ(またはディレクトリ)を取得
-		// https://qiita.com/fumikomatsu/items/67f012b364dda4b03bf1
-		try {
-	        WatchService watcher;
-			watcher = FileSystems.getDefault().newWatchService();
-			Path dir = Paths.get(this.targetPath);
-			dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-			MyUtils.SystemLogPrint("■FaxScanFile: scan... " + this.targetPath);
-	        for (;;) {
-	            WatchKey watchKey = watcher.take();
-	            for (WatchEvent<?> event: watchKey.pollEvents()) {
-	                if (event.kind() == OVERFLOW) continue;
-	                //新規作成
-	                if (event.kind() == ENTRY_CREATE) {
-	                    WatchEvent<Path> ev = cast(event);
-	                    Path name = ev.context();		//ファイル名
-	                    Path src = dir.resolve(name);	//フルパス
-	                    String fileName = name.toString();
-	                    System.out.format("%s: %s %s\n", event.kind().name(), src, name);
-	                    //String extension = fileName.substring(fileName.lastIndexOf("."));	//
-	                    String extension = fileName.substring(fileName.length()-3);	//拡張子：後ろから3文字
-	                    if (extension.equals("pdf") == true) {
-                    		MyUtils.SystemLogPrint("  ファイル検出...: " + fileName);
-							scanProcess(fileName);
-	                    }
-	                }
-	            }
-	            watchKey.reset();
-	        }
-		} catch (IOException | InterruptedException e) {
-			e.printStackTrace();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-    static <T> WatchEvent<T> cast(WatchEvent<?> event) {
-        return (WatchEvent<T>)event;
-    }
-*/
 	public String scanGetTargetPath() {
 		return this.targetPath;
 	}
@@ -453,6 +408,9 @@ public class FaxScanFile {
 		}
 		//メール送信第2弾
 		//本文に ocrData.getChubanlist()
+		String chubanlist = ocrData.getChubanlist();
+		String chubanlistMsg = "注文番号(PO)\n" + chubanlist;
+		chubanlist = chubanlist.replace("\n", " ");
 		//sendScanMail(ocrData.getDocSetName());
 
 		MyUtils.SystemLogPrint("sendMailProcess: end");

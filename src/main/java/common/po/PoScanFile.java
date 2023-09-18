@@ -1,4 +1,4 @@
-package po;
+package common.po;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,62 +6,19 @@ import java.nio.file.NoSuchFileException;
 
 import com.example.demo.SpringConfig;
 
-import utils.MyFiles;
-import utils.MyUtils;
+import common.utils.MyFiles;
+import common.utils.MyUtils;
 
 public class PoScanFile {
 	SpringConfig config;
 	String targetPath;
 
-	public PoScanFile(SpringConfig argConfig) {
+	public PoScanFile(SpringConfig argConfig, String argTargetPath) {
 		MyUtils.SystemLogPrint("■PoScanFileコンストラクタ");
 		config = argConfig;
-		this.targetPath = config.getOcrUploadPath();
+		this.targetPath = argTargetPath;
 	}
 	
-/*	//public static void main(String[] args) throws Exception {
-	@Override
-	public void run() {
-		ScanRemainedFile(this.targetPath);	//すでにフォルダにあるpdfをScan
-		//指定ディレクトリ配下のファイルのみ(またはディレクトリ)を取得
-		// https://qiita.com/fumikomatsu/items/67f012b364dda4b03bf1
-		try {
-	        WatchService watcher;
-			watcher = FileSystems.getDefault().newWatchService();
-			Path dir = Paths.get(this.targetPath);
-			dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-			MyUtils.SystemLogPrint("■PoScanFile: scan... " + this.targetPath);
-	        for (;;) {
-	            WatchKey watchKey = watcher.take();
-	            for (WatchEvent<?> event: watchKey.pollEvents()) {
-	                if (event.kind() == OVERFLOW) continue;
-	                //新規作成
-	                if (event.kind() == ENTRY_CREATE) {
-	                    WatchEvent<Path> ev = cast(event);
-	                    Path name = ev.context();		//ファイル名
-	                    Path src = dir.resolve(name);	//フルパス
-	                    String fileName = name.toString();
-	                    System.out.format("%s: %s %s\n", event.kind().name(), src, name);
-						if (MyFiles.isFile(src.toString())) {
-                    		MyUtils.SystemLogPrint("  ファイル検出...: " + fileName);
-							scanProcess(src.toString());
-						}
-	                }
-	            }
-	            watchKey.reset();
-	        }
-		} catch (IOException | InterruptedException e) {
-			e.printStackTrace();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-    static <T> WatchEvent<T> cast(WatchEvent<?> event) {
-        return (WatchEvent<T>)event;
-    }
-*/
 	public String scanGetTargetPath() {
 		return this.targetPath;
 	}
@@ -88,25 +45,29 @@ public class PoScanFile {
 	public void scanProcess(String uploadFilePath) {
 		MyUtils.SystemLogPrint("■scanProcess: start... 取込開始");
 		importData(uploadFilePath);
-	    //------------------------------------------------------
-	    //取り込み実行
-	    //------------------------------------------------------
-		//https://blog.goo.ne.jp/xmldtp/e/beb03fb01fb1d1a2c37db8d69b43dcdd
-		//コマンドラインから****.vbsを呼び出せる。
-		String[] cmdList = new String[5];
-		cmdList[0]	=	"cscript";
-		cmdList[1]	=	"impChu.vbs";		//VBSファイル指定
-		cmdList[2]	=	"/file:impChu.xlsm";
-		cmdList[3]	=	"/method:run";
-		cmdList[4]	=	"/importFilePath:" + uploadFilePath;
-		try {
-		    MyUtils.exeCmd(cmdList);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			return;
+		if (uploadFilePath.equals(config.getOcrUploadPath1())==true) {
+		    //------------------------------------------------------
+		    //取り込み実行
+		    //------------------------------------------------------
+			//https://blog.goo.ne.jp/xmldtp/e/beb03fb01fb1d1a2c37db8d69b43dcdd
+			//コマンドラインから****.vbsを呼び出せる。
+			String[] cmdList = new String[5];
+			cmdList[0]	=	"cscript";
+			cmdList[1]	=	"impChu.vbs";		//VBSファイル指定
+			cmdList[2]	=	"/file:impChu.xlsm";
+			cmdList[3]	=	"/method:run";
+			cmdList[4]	=	"/importFilePath:" + uploadFilePath;
+			try {
+			    MyUtils.exeCmd(cmdList);
+			} catch (IOException e) {
+				e.printStackTrace();
+				return;
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				return;
+			}
+		} else if (uploadFilePath.equals(config.getOcrUploadPath2())==true) {
+			
 		}
 		
 		//------------------------------------------------------

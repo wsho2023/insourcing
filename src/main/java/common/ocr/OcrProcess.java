@@ -1,4 +1,4 @@
-package ocr;
+package common.ocr;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,12 +17,12 @@ import com.example.demo.SpringConfig;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fax.FaxDataDAO;
-import fax.FaxScanFile;
-import utils.MyExcel;
-import utils.MyFiles;
-import utils.MyUtils;
-import utils.WebApi;
+import common.fax.FaxDataDAO;
+import common.fax.FaxScanFile;
+import common.utils.MyExcel;
+import common.utils.MyFiles;
+import common.utils.MyUtils;
+import common.utils.WebApi;
 
 public class OcrProcess {
 	static SpringConfig config;
@@ -36,7 +36,8 @@ public class OcrProcess {
 	static String OCR_API_KEY_VALUE;
 	static String OCR_USER_ID;
 	static String OCR_OUTPUT_PATH;
-	static String OCR_UPLOAD_PATH;
+	static String OCR_UPLOAD_PATH1;
+	String OCR_UPLOAD_PATH2;
 	static String OCR_ADD_PAGE;
 	static String OCR_ADD_SORT;
 	static String OCR_READ_SORT;
@@ -69,7 +70,8 @@ public class OcrProcess {
 		OCR_API_KEY = config.getOcrApiKey();
 		OCR_API_KEY_VALUE = config.getOcrApiKeyValye();
 		OCR_USER_ID = config.getOcrUserId();
-		OCR_UPLOAD_PATH = config.getOcrUploadPath();
+		OCR_UPLOAD_PATH1 = config.getOcrUploadPath1();
+		OCR_UPLOAD_PATH2 = config.getOcrUploadPath2();
 		OCR_OUTPUT_PATH = config.getOcrOutputPath();
 		OCR_ADD_PAGE = config.getOcrAddPage();
 		OCR_ADD_SORT = config.getOcrAddSort();
@@ -994,7 +996,7 @@ public class OcrProcess {
 		        ocrData.checkResult = "";
 				ocrData.renkeiResult = "";
 		        ocrData.chubanDblFlag = false;
-				ocrData.chubanlist = "注文番号(PO)";
+				ocrData.chubanlist = "";
 		        for (int rowIdx=1; rowIdx<cnvRowWidth; rowIdx++) {	//データ2行目（明細）から開始
 		        	resultFlag = false;
 		        	resultMsg = "";
@@ -1129,7 +1131,7 @@ public class OcrProcess {
 							continue;	//以降の処理はスキップして、ループを回す。
 							//DblFlagをOcrDataTableへ設定(カラム追加)
 						}
-						ocrData.chubanlist = ocrData.chubanlist + "\n" + chuban;
+						ocrData.chubanlist = ocrData.chubanlist + chuban + "\n";
 						//---------------------------------------------------------------//
 						//String hinmei = No.get(4);
 						colConv = Integer.parseInt(No.get(5));	//8
@@ -1429,10 +1431,19 @@ public class OcrProcess {
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
+		} else if (ocrData.type == 1) {
+			String chumonSrc = outputFolderPath + "\\" + ocrData.csvFileName.replace("csv", ".xlsx");
+			String chumonDst = OCR_UPLOAD_PATH2 + ocrData.csvFileName.replace("csv", ".xlsx");
+			try {
+				MyFiles.copyOW(chumonSrc, chumonDst);	//上書きコピー
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			MyUtils.SystemLogPrint("  OCR変換結果を注文書取込へ連携2");
 		//zip圧縮前のExcelファイルを **** フォルダへコピー ⇒ ただ、この時点で、マクロ実行すればよい
 		} else if (ocrData.type == 2 || (ocrData.type == 0 && ocrData.docsetName.equals(SCAN_CLASS1) == true)) {
 			String chumonSrc = outputFolderPath + "\\" + ocrData.csvFileName.replace("csv", ".xlsx");
-			String chumonDst = OCR_UPLOAD_PATH + ocrData.csvFileName.replace("csv", ".xlsx");
+			String chumonDst = OCR_UPLOAD_PATH1 + ocrData.csvFileName.replace("csv", ".xlsx");
 			try {
 				MyFiles.copyOW(chumonSrc, chumonDst);	//上書きコピー
 			} catch (IOException e) {

@@ -1,4 +1,4 @@
-package backup;
+package common.backup;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -14,8 +14,8 @@ import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import utils.MyFiles;
-import utils.MyUtils;
+import common.utils.MyFiles;
+import common.utils.MyUtils;
 
 public class ScanBackupFile {
 	public String targetPath;

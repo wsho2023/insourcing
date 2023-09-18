@@ -1,4 +1,4 @@
-package fax;
+package common.fax;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,8 +8,8 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import utils.MyFiles;
-import utils.MyUtils;
+import common.utils.MyFiles;
+import common.utils.MyUtils;
 
 public class FaxDeleteFile {
 	public String targetPath;

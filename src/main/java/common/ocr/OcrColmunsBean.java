@@ -1,4 +1,4 @@
-package ocr;
+package common.ocr;
 
 import java.io.Serializable;
 

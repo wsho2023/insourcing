@@ -13,8 +13,8 @@ import java.nio.file.WatchService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import fax.FaxScanFile;
-import utils.MyUtils;
+import common.fax.FaxScanFile;
+import common.utils.MyUtils;
 
 @Service
 public class FaxScanService {

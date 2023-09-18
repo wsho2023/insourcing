@@ -16,10 +16,11 @@
         font-family:sans-serif;
     }
     header {
-    	background: #333;
-    	color: #fff;
+    	background: darkseagreen;
+    	color: #000;
     	padding: .5rem;
 		font-size: 1.5rem;
+		font-weight: bolder;
 		text-align: left;
     }
     #aa {
@@ -28,13 +29,14 @@
 		white-space: nowrap;
     }
     li {
-		margin: 2rem 0;
+		margin: 1rem 0;
     }
 	/*ボタン*/
     .btn-menu {
     	border: 1px solid #999;
 		background: transparent;
-    	color: #fff;
+    	color: #000;
+		font-weight: bolder;
     	padding: .5rem 1rem;
 		cursor: pointer;
 		line-height: 1;
@@ -44,10 +46,10 @@
 		background: #0bd;
 		position: absolute;
 		z-index: 1;
-		top: 3.125rem;
+		top: 3.7rem;	/*メニューの縦位置*/
 		left: 0;
 		overflow-x: hidden;
-		text-align: center;
+		text-align: left;
 		width: 0;
 		transition: .1s;
 	}
@@ -66,9 +68,10 @@
   	<button class="btn-menu" id="btn-menu">メニュー</button>
   	<nav>
   		<ul>
-  			<li><a href="/ocr/list" id="aa">OCR管理表</a>
-  			<li><a href="/fax" id="aa">FAX管理表</a>
-  			<li><a href="/daicho" id="aa">Daicho管理表</a>
+  			<li><a href="/daicho" id="aa">台帳管理表</a>
+  			<li><a href="/fax/tokyo" id="aa">FAX管理表</a>
+  			<li><a href="/ocr/list" id="aa">OCRリスト</a>
+  			<li><a href="javascript:btnClick()" id="aa">閉じる</a>
   		</ul>
   	</nav>
   	<label th:text="${title}"></label>
@@ -81,7 +84,7 @@
   	function btnClick() {
   	  	nav.classList.toggle('open-menu');
   	  	if (btn.innerHTML == 'メニュー') {
-  	  	  	btn.innerHTML = '閉じる';
+  	  	  	btn.innerHTML = '閉じる　';
   	  	} else {
   	  	  	btn.innerHTML = 'メニュー';
   	  	}
@@ -113,7 +116,7 @@
   		<th style="font-size: 11pt;">帳票</th>
   		<th style="font-size: 11pt;">ステータス</th>
   		<th style="font-size: 11pt;">日時</th>
-  		<th style="font-size: 11pt;">ファイルパス</th>
+  		<th style="font-size: 11pt;">ファイル名</th>
   		<th style="font-size: 11pt;">OCR</th>
   	</tr></thead>
     <tbody><tr th:each="obj : ${list}">
@@ -121,7 +124,7 @@
 		<td><a th:href="${'/ocr/result?unitId=' + obj.unitId + '&type=1'}" target="_blank" th:text="${obj.unitName}"></a></td>
 		<td th:text="${obj.status}"></td>
 		<td th:text="${obj.createdAt}"></td>
-		<td><a th:href="${obj.uploadFilePath}" target="_blank" th:text="${obj.uploadFilePath}"></a></td>
+		<td><a th:href="${obj.uploadFilePath}" target="_blank" th:text="${obj.fileName}"></a></td>
 		<td th:text="${obj.linkUrl != null}? 'OCR' : '-'"></td>
   	</tr></tbody>
   </table>
@@ -137,7 +140,7 @@
 			//stickyHeaders:スクロールの際にヘッダを固定する
 			//scroller:ヘッダを固定
 			//widgets: ['zebra', 'columns', 'resizable', 'pager', 'sticyHeaders', 'scroller'],
-			widgets: ['zebra', 'columns', 'resizable', 'pager', 'stickyHeaders123', 'scroller'],
+			widgets: ['zebra', 'columns', 'resizable', 'pager', 'stickyHeaders', 'scroller'],
 			//https://qiita.com/fj58p/items/2b47b84fd7223de8b9be
 	        widgetOptions: {
 	            scroller_height : 600	// テーブルの髙さの指定

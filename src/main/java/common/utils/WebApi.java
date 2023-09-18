@@ -1,4 +1,4 @@
-package utils;
+package common.utils;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;

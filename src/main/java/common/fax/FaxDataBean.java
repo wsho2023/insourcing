@@ -1,4 +1,4 @@
-package fax;
+package common.fax;
 
 import java.io.Serializable;
 

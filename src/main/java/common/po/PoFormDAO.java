@@ -1,4 +1,4 @@
-package po;
+package common.po;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

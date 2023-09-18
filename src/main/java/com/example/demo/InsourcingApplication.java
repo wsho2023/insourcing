@@ -10,9 +10,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-import ocr.OcrProcess;
-import utils.MyFiles;
-import utils.MyUtils;
+import common.ocr.OcrProcess;
+import common.utils.MyFiles;
+import common.utils.MyUtils;
 
 @SpringBootApplication
 @EnableAsync
@@ -21,11 +21,13 @@ public class InsourcingApplication implements CommandLineRunner {
     @Autowired
     private SpringConfig config;
     @Autowired
-    private PoScanService poScanService;
-    @Autowired
     private FaxScanService faxScanService1;
     @Autowired
     private FaxScanService faxScanService2;
+    @Autowired
+    private PoScanService poScanService1;
+    @Autowired
+    private PoScanService poScanService2;
     private boolean ocrExlusiveFlag;
 
 	public static void main(String[] args) {
@@ -38,7 +40,9 @@ public class InsourcingApplication implements CommandLineRunner {
 		Thread.sleep(1000);
 		faxScanService2.run(config, config.getScanDefTgt2());
 		Thread.sleep(1000);
-		poScanService.run(config);
+		poScanService1.run(config, config.getOcrUploadPath1());
+		Thread.sleep(1000);
+		poScanService2.run(config, config.getOcrUploadPath2());
 		OcrProcess process = new OcrProcess(config);
         Timer timer = new Timer(); // 今回追加する処理
         ocrExlusiveFlag = false;

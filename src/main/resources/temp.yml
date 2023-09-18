@@ -31,12 +31,15 @@ spring:
     test_flag: false
     def_tgt1: 1FAX
     def_tgt2: 2FAX
+    def_url1: 1fax
+    def_url2: 2fax
     path1: D:\pleiades\\fax\
     path2: D:\pleiades\\fax\
     form_type1: 1帳票
     form_type2: 2帳票
   ocr:
-    upload_path: D:\pleiades\upload\
+    upload_path1: D:\pleiades\upload1\
+    upload_path2: D:\pleiades\upload2\
     input_path: D:\pleiades\input\
     output_path: D:\pleiades\output\
     host_url: host_url

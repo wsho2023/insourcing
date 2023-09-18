@@ -1,4 +1,4 @@
-package ocr;
+package common.ocr;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.example.demo.SpringConfig;
+
+import common.utils.MyFiles;
 
 public class OcrDataFormDAO {
 	//DB接続情報
@@ -64,6 +66,7 @@ public class OcrDataFormDAO {
     			dataform.unitId = rs.getString("UNIT_ID");
     			dataform.unitName = rs.getString("UNIT_NAME");
     			dataform.uploadFilePath = rs.getString("UPLOAD_PATH");
+    			dataform.fileName = MyFiles.getFileName(dataform.uploadFilePath);
     			dataform.status = rs.getString("STATUS");
     			dataform.csvFileName = rs.getString("CSV_FILENAME");
     			dataform.createdAt = rs.getString("CREATEDAT");
@@ -195,7 +198,7 @@ public class OcrDataFormDAO {
 		try {
 			Class.forName(DB_DRIVER);
 			conn = DriverManager.getConnection(DB_URL,DB_USER,DB_PASS);
-			//System.out.println(sql);	//for debug
+			System.out.println(sql);	//for debug
 
 			PreparedStatement ps = conn.prepareStatement(sql);
 			int i=1;

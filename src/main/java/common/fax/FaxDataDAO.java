@@ -1,4 +1,4 @@
-package fax;
+package common.fax;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -37,6 +37,7 @@ public class FaxDataDAO {
         	date_fr = date_fr.replace("-", "/");	//(yyyy-MM-dd) → (yyyy/MM/dd)
         	sql = sql + " and f.CDATE >= '" + date_fr + "'";
         }
+        if (soushinMotoNashi == null) soushinMotoNashi = "false"; 
         if (formName != null && formName.equals("") != true && soushinMotoNashi.equals("true") == false) {
         	sql = sql + " and f.SOUSHN_MOTO like '%" + formName + "%'";
         } else if (soushinMotoNashi != null && soushinMotoNashi.equals("true") == true) {
