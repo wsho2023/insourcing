@@ -30,16 +30,14 @@ public class SecurityConfig {
         ).authorizeHttpRequests(authz -> authz
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 //ログインなしでも閲覧可能URL
-                //.requestMatchers("/").permitAll()
-                .requestMatchers("/fax/*").permitAll()
-                .requestMatchers("/ocr/list").permitAll()
-                .requestMatchers("/ocr/result").permitAll()
-                .requestMatchers("/daicho").permitAll()
-                .requestMatchers("/fax/delete").permitAll()
+                //.antMatchers("/").permitAll()
+                .antMatchers("/fax/*").permitAll()
+                .antMatchers("/ocr/*").permitAll()
+                .antMatchers("/errl/*").permitAll()
                 //REST API
-                .requestMatchers("/api/*").permitAll()
-                .requestMatchers("/general").hasRole("GENERAL")
-                .requestMatchers("/admin").hasRole("ADMIN")
+                .antMatchers("/api/*").permitAll()
+                //.antMatchers("/general").hasRole("GENERAL")
+                //.antMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated()	//他のURLはログイン後のみアクセス可能
         );
         //https://qiita.com/Oki0837/items/89d424d1606168f218c1

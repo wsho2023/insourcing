@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,7 +31,8 @@ import common.ocr.OcrDataFormBean;
 import common.ocr.OcrDataFormDAO;
 import common.ocr.OcrRirekiBean;
 import common.ocr.OcrRirekiDAO;
-import jakarta.servlet.http.HttpServletResponse;
+import common.po.PoErrlBean;
+import common.po.PoErrlDAO;
 
 @Controller
 public class OcrController {
@@ -122,6 +125,38 @@ public class OcrController {
 		
 		// 次の画面に遷移
 		return "ocrlist";
+    }
+    
+    @GetMapping("/errl/list")
+    public String errlGet(Model model){
+		String title = "ERRL結果一覧表";
+		
+		ArrayList<PoErrlBean> list = null;
+        list = PoErrlDAO.getInstance(config).read(null, null, null);
+		// 次の画面に値を渡す
+		model.addAttribute("title", title);
+		model.addAttribute("list", list);
+		
+		// 次の画面に遷移
+		return "errllist";
+    }
+    
+    @PostMapping("/errl/list")
+    public String errlPost(Model model, @RequestParam("form") String form, 
+   			@RequestParam("date_fr") String date_fr, @RequestParam("date_to") String date_to) {
+        System.out.println("form: " + form);
+        System.out.println("date_fr: " + date_fr);
+        System.out.println("date_to: " + date_to);
+
+		String title = "ERRL結果一覧表";
+		ArrayList<PoErrlBean> list = null;
+        list = PoErrlDAO.getInstance(config).read(form, date_fr, date_to);
+		// 次の画面に値を渡す
+		model.addAttribute("title", title);
+		model.addAttribute("list", list);
+		
+		// 次の画面に遷移
+		return "errllist";
     }
     
     @GetMapping("/ocr/result")

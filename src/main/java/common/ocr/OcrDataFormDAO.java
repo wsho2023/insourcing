@@ -102,11 +102,11 @@ public class OcrDataFormDAO {
 		return list;
 	}
 	
-	public ArrayList<OcrDataFormBean> queryNotComplete(String type) {
+	public ArrayList<OcrDataFormBean> queryNotComplete(String type1, String type2, String type3, String type4) {
 		
 		String sql = "select o.UNIT_ID,o.UNIT_NAME,o.UPLOAD_PATH,o.STATUS,CSV_FILENAME,CREATEDAT,LINK_URL,TYPE, " + 
 					 "t.*, o.DOCUMENT_ID DOCUMENT_ID2, o.DOCUMENT_NAME DOCUMENT_NAME2, o.DOCSET_NAME DOCSET_NAME2 from OCRDATATABLE o, OCRFORMTABLE t " +
-					 "where o.STATUS <> 'COMPLETE' and o.UNIT_NAME=t.NAME(+) and o.Type=? order by o.CREATEDAT";
+					 "where o.STATUS <> 'COMPLETE' and o.UNIT_NAME=t.NAME(+) and o.Type IN (?,?,?,?) order by o.CREATEDAT";
 		
 		//接続処理
 		Connection conn = null;
@@ -118,7 +118,10 @@ public class OcrDataFormDAO {
 
 			PreparedStatement ps = conn.prepareStatement(sql);
 			int i=1;
-			ps.setString(i++, type);
+			ps.setString(i++, type1);
+			ps.setString(i++, type2);
+			ps.setString(i++, type3);
+			ps.setString(i++, type4);
             ResultSet rs = ps.executeQuery();
             
             OcrDataFormBean dataform = new OcrDataFormBean();

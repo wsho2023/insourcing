@@ -11,6 +11,8 @@ import common.ocr.OcrDataFormBean;
 import common.ocr.OcrDataFormDAO;
 import common.ocr.OcrFormBean;
 import common.ocr.OcrFormDAO;
+import common.po.PoErrlBean;
+import common.po.PoErrlDAO;
 import common.utils.MyExcel;
 import common.utils.MyFiles;
 import common.utils.MyMail;
@@ -408,9 +410,15 @@ public class FaxScanFile {
 		}
 		//メール送信第2弾
 		//本文に ocrData.getChubanlist()
+        //------------------------------------------------------
+        //ERRL登録処理
+        //------------------------------------------------------
 		String chubanlist = ocrData.getChubanlist();
 		String chubanlistMsg = "注文番号(PO)\n" + chubanlist;
 		chubanlist = chubanlist.replace("\n", " ");
+    	PoErrlBean errl = new PoErrlBean();
+    	errl.setErrlData(ocrData.getUnitId(), null, ocrData.getDocSetName(), ocrData.getUnitName(), chubanlist);
+    	PoErrlDAO.getInstance(config).insertDB(errl);		
 		//sendScanMail(ocrData.getDocSetName());
 
 		MyUtils.SystemLogPrint("sendMailProcess: end");

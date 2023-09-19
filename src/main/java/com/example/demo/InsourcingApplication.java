@@ -29,8 +29,8 @@ public class InsourcingApplication implements CommandLineRunner {
     @Autowired
     private PoScanService poScanService2;
     private boolean ocrExlusiveFlag;
-
-	public static void main(String[] args) {
+    
+    public static void main(String[] args) {
 		SpringApplication.run(InsourcingApplication.class, args);
 	}
 	 

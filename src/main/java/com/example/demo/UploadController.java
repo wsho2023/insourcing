@@ -56,7 +56,7 @@ public class UploadController {
     }
     
     @GetMapping("/upload")
-    public String upload(Model model){
+    public String uploadGet(Model model){
 		String userId = securitySession.getUsername();
 		String userName = securitySession.getName();
 		String code = securitySession.getCode();
@@ -74,7 +74,7 @@ public class UploadController {
     
     @PostMapping("/select")
     @ResponseBody	//＠ResponseBody アノテーションを付けることで、戻り値を HTTP レスポンスのコンテンツとすることができます。
-    public ArrayList<PoFormBean> postSelect(@RequestParam("type") String type, @RequestParam("userId") String userId) {
+    public ArrayList<PoFormBean> selectPost(@RequestParam("type") String type, @RequestParam("userId") String userId) {
         System.out.println("type: " + type + "  userId: " + userId + "  userName: " + securitySession.getName());
         //ログインIDをもとに、帳票定義リストを取得する。
 		ArrayList<PoFormBean> select = PoFormDAO.getInstance(config).read(userId);
@@ -95,7 +95,7 @@ public class UploadController {
     
     @PostMapping("/rireki")	//アップロード履歴
     @ResponseBody	//＠ResponseBody アノテーションを付けることで、戻り値を HTTP レスポンスのコンテンツとすることができます。
-    public ArrayList<PoUploadBean> postRireki(@RequestParam("type") String type, @RequestParam("userId") String userId) {
+    public ArrayList<PoUploadBean> rirekiPost(@RequestParam("type") String type, @RequestParam("userId") String userId) {
         System.out.println("type: " + type + "  userId: " + userId);
 	    //履歴リスト
 		ArrayList<PoUploadBean> rireki = PoUploadDAO.getInstance(config).read(userId);
@@ -116,7 +116,7 @@ public class UploadController {
     
     @PostMapping("/upload")
     @ResponseBody	//＠ResponseBody アノテーションを付けることで、戻り値を HTTP レスポンスのコンテンツとすることができます。
-    public String postUpload(
+    public String uploadPost(
     	@RequestParam("type") String type,
     	@RequestParam("file") final MultipartFile uploadFile,
     	@RequestParam("userId") String userId, 
@@ -282,7 +282,7 @@ public class UploadController {
 		ocrData.setDocumentId(documentId);
 		ocrData.setDocumentName(ocrForm.getDocumentName());
 		//ocrData.setCreatedAt("");
-		int type = 3;	//2:本番	3:テスト環境
+		int type = 1;	//1: 2:本番
 		ocrData.setType(type);
 		OcrDataFormDAO.getInstance(config).insertReadingUnitDB(ocrData);
 	}

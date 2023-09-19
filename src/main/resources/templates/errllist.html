@@ -92,10 +92,9 @@
   	  	}
   	};
   </script>
-  <form th:action="${url}" method="post">
+  <form action=ocr/list method="post">
      帳票名: <input type="text" name="form">
      日付:  <input type="date" name="date_fr">～<input type="date" name="date_to">
-	 送信元なし: <input type="checkbox" name="soushimotonashi" value="true">
      <button type="submit">検索</button><br>
      <chuui>IEサポート終了に伴い...</chuui>
   </form>
@@ -115,24 +114,31 @@
   </div>
   <table id="table" class="tablesorter">	 <!--tablesorter-blue-->
   	<thead><tr align=center>
-   		<th style="font-size: 11pt;">No</th>
-  		<th style="font-size: 11pt;">FaxNo</th>
-  		<th style="font-size: 11pt;">日時</th>
-  		<th style="font-size: 11pt;">ファイル名</th>
-  		<th style="font-size: 11pt;">送信元</th>
-		<th style="font-size: 11pt;">ID</th>
+   		<th style="font-size: 11pt;">ID</th>
+  		<th style="font-size: 11pt;">作成日時</th>
+  		<th style="font-size: 11pt;">作成者</th>
+  		<th style="font-size: 11pt;">帳票名</th>
+  		<th style="font-size: 11pt;">POリスト</th>
+<!--  		<th style="font-size: 11pt;">送信</th>-->
+<!--  		<th style="font-size: 11pt;">送信日時</th>-->
+<!--  		<th style="font-size: 11pt;">送信者</th>-->
   	</tr></thead>
     <tbody><tr th:each="obj : ${list}">
-		<td th:text="${obj.no}"></td>
-		<td th:text="${obj.faxNo}"></td>
-		<td th:text="${obj.cDate + ' ' + obj.cTime}"></td>
-		<td><a th:href="${obj.fullPath}" target="_blank" th:text="${obj.fileName}"></a></td>
-<!--		<td th:text="${obj.soshinMoto}"></td>-->
-		<td><a th:href="${'/fax/' + url + '?form=' + obj.soshinMoto}" target="_blank" th:text="${obj.soshinMoto}"></a></td>
-		<td>-</td>
-	</tr></tbody>
+<!--		<td><a th:href="${'/ocr/result?unitId=' + obj.unitId + '&type=0'}" target="_blank" th:text="${obj.unitId}"></a></td>-->
+<!--		<td><a th:href="${'/ocr/result?unitId=' + obj.unitId + '&type=1'}" target="_blank" th:text="${obj.unitName}"></a></td>-->
+		<td th:text="${obj.errlId}"></td>
+		<td th:text="${obj.createdDate}"></td>
+		<td th:text="${obj.createdBy}"></td>
+		<td th:text="${obj.toriMei}"></td>
+		<td th:text="${obj.poList}"></td>
+<!--		<td>ボタン</td>-->
+<!--		<td th:text="${obj.saveDate}"></td>-->
+<!--		<td th:text="${obj.saveBy}"></td>-->
+<!--		<td><a th:href="${obj.uploadFilePath}" target="_blank" th:text="${obj.fileName}"></a></td>-->
+<!--		<td th:text="${obj.linkUrl != null}? 'OCR' : '-'"></td>-->
+  	</tr></tbody>
   </table>
-  <script th:inline="javascript">
+  <script type="text/javascript">
     $(document).ready(function() {
     	$("table").tablesorter({
 			theme: 'blue',
@@ -158,5 +164,5 @@
 		$(".datepicker").datepicker();
 	});
   </script>
-</body>
+</body>  
 </html>

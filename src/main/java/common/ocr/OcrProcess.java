@@ -100,11 +100,15 @@ public class OcrProcess {
 	//---------------------------------
 	public void pollingReadingUnit() {
 		//MyUtils.SystemLogPrint("■pollingReadingUnit: start");
-		String type = "0";
-		ArrayList<OcrDataFormBean> list = OcrDataFormDAO.getInstance(config).queryNotComplete(type);
+		String type1 = "0";
+		String type2 = "1";
+		String type3 = "%";	//2
+		String type4 = "%";	//3
+		ArrayList<OcrDataFormBean> list = OcrDataFormDAO.getInstance(config).queryNotComplete(type1,type2,type3,type4);
 		int count = list.size();
 		if (count != 0) {
-			MyUtils.SystemLogPrint("  find data(type " + type + "): " + count);
+			//MyUtils.SystemLogPrint("  find data(type " + type + "): " + count);
+			MyUtils.SystemLogPrint("  find data: " + count);
 		}
 		for (int o=0; o<count; o++) {
 			OcrDataFormBean ocrDataForm = (OcrDataFormBean)list.get(o);
@@ -119,12 +123,6 @@ public class OcrProcess {
 			} else if (ocrDataForm.status.equals("OCR") == true || ocrDataForm.status.equals("ENTRY") == true) {
 				MyUtils.SystemLogPrint("  " + o + " processReadingUnit");
 				processReadingUnit(ocrDataForm);
-			
-				//ocrDataForm.outFolderPath = getTgtFolderPath(ocrDataForm);
-				//debug_copyCsvFile(ocrDataForm.outFolderPath + "\\",  ocrDataForm.csvFileName);
-				//convertCSV(ocrDataForm);		//for debug
-				//postOcrProcess(ocrDataForm);	//for debug
-				//exportResultCSV(ocrDataForm);
 			} else if (ocrDataForm.status.equals("SORT") == true) {
 				MyUtils.SystemLogPrint("  " + o + " addSortingPage");
 				addSortingPage(ocrDataForm);	//ocrDataForm.documentName, ocrDataForm.documentId, ocrDataForm.uploadFilePath
@@ -136,7 +134,7 @@ public class OcrProcess {
 		}
 		//MyUtils.SystemLogPrint("■pollingReadingUnit: end");
 	}
-
+	
 	private void setTargetPath(OcrDataFormBean ocrDataForm) {
 		if (ocrDataForm.docsetName == null)	//暫定
 			ocrDataForm.targetPath = SCAN_TARGET_PATH2;
@@ -148,7 +146,7 @@ public class OcrProcess {
 			ocrDataForm.targetPath = SCAN_TARGET_PATH2;
 		}
 	}
-
+	
 	//---------------------------------------
 	//読取ページ追加（処理）
 	//---------------------------------------
