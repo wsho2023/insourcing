@@ -226,18 +226,18 @@ public class OcrDataFormDAO {
 					dataform.setName(rs.getString("NAME"));
 					dataform.setDocumentId(rs.getString("DOCUMENT_ID"));
 					dataform.setDocumentName(rs.getString("DOCUMENT_NAME"));
-					//dataform.setDocsetId(rs.getString("DOCSET_ID"));
 					dataform.setDocsetName(rs.getString("DOCSET_NAME"));
+					dataform.setImportPath(rs.getString("IMPORT_PATH"));
 					dataform.setRotateInfo(rs.getString("ROTATE_INFO"));
 					dataform.setHeaderNum(rs.getInt("COL_HEADER"));
 					dataform.setMeisaiNum(rs.getInt("COL_MEISAI"));
-					dataform.setColChuban(rs.getInt("COL_CHUBAN"));
 					dataform.setColHinmei(rs.getInt("COL_HINMEI"));
 					dataform.setColSuryo(rs.getInt("COL_SURYO"));
 					dataform.setColTanka(rs.getInt("COL_TANKA"));
 					dataform.setColKingaku(rs.getInt("COL_KINGAKU"));
 					dataform.setColOutput(rs.getString("COL_OUTPUT"));
-					dataform.setColToriCd(rs.getString("TORI_CD"));
+					dataform.setColChuban(rs.getInt("COL_CHUBAN"));
+					dataform.setColToriCd(rs.getString("TORIHIKISAKI_CD"));
 				} else {
 					dataform.setDocumentId(rs.getString("DOCUMENT_ID2"));
 					dataform.setDocumentName(rs.getString("DOCUMENT_NAME2"));

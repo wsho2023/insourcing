@@ -1,0 +1,53 @@
+html,body {
+    font-family:sans-serif;
+}
+button {
+	cursor: pointer;
+}
+header {
+	background: darkseagreen;
+	color: #000;
+	padding: .5rem;
+	font-size: 1.5rem;
+	font-weight: bolder;
+	text-align: left;
+}
+#aa {
+	color: #fff;
+	text-decoration: none;
+	white-space: nowrap;
+}
+li {
+	margin: 1rem 0;
+}
+/*ボタン*/
+.btn-menu {
+	border: 1px solid #999;
+	background: transparent;
+	color: #000;
+	font-weight: bolder;
+	padding: .5rem 1rem;
+	cursor: pointer;
+	line-height: 1;
+}
+/*メニュー*/
+nav {
+	background: #0bd;
+	position: absolute;
+	z-index: 1;
+	top: 3.7rem;	/*メニューの縦位置*/
+	left: 0;
+	overflow-x: hidden;
+	text-align: left;
+	width: 0;
+	transition: .1s;
+}
+/*メニューを開いたとき*/
+nav.open-menu {
+	width: 20%;
+}
+
+chuui {
+	font-weight: bold;	/* 太字 */
+	color: #FF0000; 	/* 赤字 */
+}

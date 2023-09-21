@@ -30,13 +30,13 @@ public class PoErrlDAO {
 	
 	public ArrayList<PoErrlBean> read(String toriMei, String date_fr, String date_to) {
 		String sql = "select ERRL_ID, CREATED_DATE, CREATED_BY, TORIHIKISAKI_MEI, PO_LIST from " +
-				 "(select ERRL_ID, CREATED_DATE, CREATED_BY, TORIHIKISAKI_MEI, PO_LIST from ERRLTABLE";
+				 "(select ERRL_ID, CREATED_DATE, CREATED_BY, TORIHIKISAKI_MEI, PO_LIST from ERRLTABLE where ERRL_ID like '%' ";
         if (date_fr != null && date_fr.equals("") != true) {
         	date_fr = date_fr.replace("-", "/");	//(yyyy-MM-dd) → (yyyy/MM/dd)
         	sql = sql + " and CREATED_DATE >= '" + date_fr + "'";
         }
         if (toriMei != null && toriMei.equals("") != true) {
-        	sql = sql + " and TORI_MEI like '%" + toriMei + "%'";
+        	sql = sql + " and TORIHIKISAKI_MEI like '%" + toriMei + "%'";
 		}
         sql = sql + " order by CREATED_DATE desc) where rownum <= 50";
         

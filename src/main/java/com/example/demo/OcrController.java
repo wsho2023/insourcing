@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,6 +31,7 @@ import common.ocr.OcrRirekiBean;
 import common.ocr.OcrRirekiDAO;
 import common.po.PoErrlBean;
 import common.po.PoErrlDAO;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 public class OcrController {
@@ -160,8 +159,21 @@ public class OcrController {
     }
     
     @GetMapping("/ocr/result")
+    public String ocrResultGet(Model model, 
+    		@RequestParam("type") int type, @RequestParam("unitId") String unitId) {
+        //レスポンス
+		System.out.println("  unitId: " + unitId + "  type: " + type);
+		// 次の画面に値を渡す
+		model.addAttribute("unitId", unitId);
+		model.addAttribute("type", type);
+		
+		// 次の画面に遷移
+    	return "result";
+    }
+    
+    @PostMapping("/ocr/result")
     @ResponseBody	//＠ResponseBody アノテーションを付けることで、戻り値を HTTP レスポンスのコンテンツとすることができます。
-    public Map<String, Object> ocrResultGet(
+    public Map<String, Object> ocrResultPost(
 			@RequestParam("type") int type, @RequestParam("unitId") String unitId) {
         //レスポンス
 		System.out.println("  unitId: " + unitId + "  type: " + type);
@@ -219,12 +231,18 @@ public class OcrController {
 				datalist = OcrRirekiDAO.getInstance(config).readDataUnit(fields, formName, 1);//unitName			 
 				title = "OCR変換結果: " + formName;
 			}
+			String colValue;
+			int len;
 			for (int i=0; i<datalist.size(); i++) {
 				OcrRirekiBean rireki = datalist.get(i);
 				for (int j=0; j<dataWidth; j++) {
-					int len = rireki.getCOL(j).getBytes("Shift_JIS").length;
-					if (col_width[j] < len) {
-						col_width[j] = len;
+					colValue = rireki.getCOL(j);
+					//System.out.println(j + ":" + rireki.getCOL(j));
+					if (colValue != null) {
+						len = colValue.getBytes("Shift_JIS").length;
+						if (col_width[j] < len) {
+							col_width[j] = len;
+						}
 					}
 				}
 			}
@@ -240,17 +258,17 @@ public class OcrController {
 				int colNo = i;
 				if ((colSuryo != 0) && (colNo == colSuryo)) {
 					width = Integer.valueOf(col_width[i]*11).toString();
-					cols = new OcrColmunsBean(header.getCOL(i), "COL"+i, width, "numeric", "#,##");
+					cols = new OcrColmunsBean(header.getCOL(i), "COL"+i, width, "numeric", "#,##", "right");
 				} else if ((colTanka != 0) && (colNo == colTanka)) {
 					width = Integer.valueOf(col_width[i]*11).toString();	
-					cols = new OcrColmunsBean(header.getCOL(i), "COL"+i, width, "numeric", "#,##.00");
+					cols = new OcrColmunsBean(header.getCOL(i), "COL"+i, width, "numeric", "#,##.00", "right");
 				} else if ((colKingaku != 0) && (colNo == colKingaku)) {
 					width = Integer.valueOf(col_width[i]*11).toString();
-					cols = new OcrColmunsBean(header.getCOL(i), "COL"+i, width, "numeric", "#,##");
+					cols = new OcrColmunsBean(header.getCOL(i), "COL"+i, width, "numeric", "#,##", "right");
 				} else {
 					//文字列
 					width = Integer.valueOf(col_width[i]*10).toString();
-					cols = new OcrColmunsBean(header.getCOL(i), "COL"+i, width, "text");
+					cols = new OcrColmunsBean(header.getCOL(i), "COL"+i, width, "text", "left");
 				}
 
 				columns.add(cols);

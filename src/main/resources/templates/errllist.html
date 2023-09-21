@@ -11,57 +11,7 @@
 <!--   <script type="text/javascript" src="js/jquery.ui.datepicker-ja.min.js"></script> -->
   <link rel="stylesheet" th:href="@{/css/theme.blue.css}">
   <link rel="stylesheet" th:href="@{/css/jquery-ui.css}">
-  <style>
-    html,body {
-        font-family:sans-serif;
-    }
-    header {
-    	background: darkseagreen;
-    	color: #000;
-    	padding: .5rem;
-		font-size: 1.5rem;
-		font-weight: bolder;
-		text-align: left;
-    }
-    #aa {
-    	color: #fff;
-		text-decoration: none;
-		white-space: nowrap;
-    }
-    li {
-		margin: 1rem 0;
-    }
-	/*ボタン*/
-    .btn-menu {
-    	border: 1px solid #999;
-		background: transparent;
-    	color: #000;
-		font-weight: bolder;
-    	padding: .5rem 1rem;
-		cursor: pointer;
-		line-height: 1;
-    }
-	/*メニュー*/
-	nav {
-		background: #0bd;
-		position: absolute;
-		z-index: 1;
-		top: 3.7rem;	/*メニューの縦位置*/
-		left: 0;
-		overflow-x: hidden;
-		text-align: left;
-		width: 0;
-		transition: .1s;
-	}
-	/*メニューを開いたとき*/
-	nav.open-menu {
-		width: 20%;
-	}
-	chuui {
-		font-weight: bold;	/* 太字 */
-		color: #FF0000; 	/* 赤字 */
-	}
-  </style>
+  <link rel="stylesheet" th:href="@{/css/common.css}">
 </head>
 <body>
   <header>
@@ -92,13 +42,13 @@
   	  	}
   	};
   </script>
-  <form action=ocr/list method="post">
+  <form th:action="${url}" method="post">
      帳票名: <input type="text" name="form">
      日付:  <input type="date" name="date_fr">～<input type="date" name="date_to">
      <button type="submit">検索</button><br>
      <chuui>IEサポート終了に伴い...</chuui>
   </form>
-  <div id="pager" class="pager">
+<!--  <div id="pager" class="pager">
     <button type="button" class="first"><<</button>
     <button type="button" class="prev"><</button>
     <span class="pagedisplay"></span>
@@ -111,8 +61,8 @@
         <option value="40">40</option>
     </select>
     <select class="gotoPage" title="Select page number"></select>
-  </div>
-  <table id="table" class="tablesorter">	 <!--tablesorter-blue-->
+  </div> -->
+  <table id="table" class="tablesorter">
   	<thead><tr align=center>
    		<th style="font-size: 11pt;">ID</th>
   		<th style="font-size: 11pt;">作成日時</th>
@@ -138,7 +88,7 @@
 <!--		<td th:text="${obj.linkUrl != null}? 'OCR' : '-'"></td>-->
   	</tr></tbody>
   </table>
-  <script type="text/javascript">
+  <script th:inline="javascript">
     $(document).ready(function() {
     	$("table").tablesorter({
 			theme: 'blue',
@@ -148,13 +98,13 @@
 			//filter:列にフィルタ機能を追加する
 			//resizable:列のリサイズをする
 			//stickyHeaders:スクロールの際にヘッダを固定する
-			//scroller:ヘッダを固定
+			//scroller:ヘッダを固定 --> これを指定すると、列幅のリサイズが効かなくなる	
 			//widgets: ['zebra', 'columns', 'resizable', 'pager', 'sticyHeaders', 'scroller'],
-			widgets: ['zebra', 'columns', 'resizable', 'pager', 'stickyHeaders', 'scroller'],
+			widgets: ['zebra', 'columns', 'resizable', 'sticyHeaders'],
 			//https://qiita.com/fj58p/items/2b47b84fd7223de8b9be
-	        widgetOptions: {
-	            scroller_height : 600	// テーブルの髙さの指定
-	        }
+	        //widgetOptions: {
+	        //    scroller_height : 1000	// テーブルの髙さの指定
+	        //}
 		});
 		//$("table").tablesorterPager({
 		//	container: $(".pager"),
@@ -164,5 +114,5 @@
 		$(".datepicker").datepicker();
 	});
   </script>
-</body>  
+</body>
 </html>

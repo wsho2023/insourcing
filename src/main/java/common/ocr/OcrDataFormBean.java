@@ -23,6 +23,7 @@ public class OcrDataFormBean implements Serializable {
     @JsonProperty("documentName") String documentName;
     @JsonProperty("docsetId") String docsetId;
     @JsonProperty("docsetName") String docsetName;
+    @JsonProperty("importPath") String importPath;
     
     @JsonProperty("rotateInfo") String rotateInfo;
     @JsonProperty("headerNum") int headerNum;
@@ -91,6 +92,7 @@ public class OcrDataFormBean implements Serializable {
 	public void setDocumentName(String documentName)  {this.documentName = documentName;}
 	public void setDocsetId(String docsetId) {this.docsetId = docsetId;}
 	public void setDocsetName(String docsetName)  {this.docsetName = docsetName; }
+	public void setImportPath(String importPath)  {this.importPath = importPath; }
 	public void setRotateInfo(String rotateInfo)  {this.rotateInfo = (rotateInfo == null? "" : rotateInfo);}
 	public void setHeaderNum(int headerNum)  {this.headerNum = headerNum; }
 	public void setMeisaiNum(int meisaiNum)  {this.meisaiNum = meisaiNum; }

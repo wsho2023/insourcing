@@ -61,15 +61,15 @@ public class FaxDataDAO {
 				//Beanクラスを初期化
 				fax = new FaxDataBean();
 				// ユーザIDと名前をBeanクラスへセット
-				fax.setNo(rs.getInt("NO"));
-				fax.setFaxNo(rs.getString("FAX_NO"));
-				fax.setCDate(rs.getString("CDATE"));
-				fax.setCTime(rs.getString("CTIME"));
-				fax.setJobNo(rs.getString("JOB_NO"));
-				fax.setFileName(rs.getString("FILE_NAME"));
-				fax.setSoshinMoto(rs.getString("SOUSHN_MOTO"));
-				fax.setFullPath(rs.getString("FULLPATH"));
-				fax.setKyoten(rs.getString("UNIT_ID"));
+				fax.setNo(rs.getInt(1));	//"NO"	
+				fax.setFaxNo(rs.getString(2));	//"FAX_NO"
+				fax.setCDate(rs.getString(3));	//"CDATE"
+				fax.setCTime(rs.getString(4));	//"CTIME"
+				fax.setJobNo(rs.getString(5));	//"JOB_NO"
+				fax.setFileName(rs.getString(6));	//"FILE_NAME"
+				fax.setSoshinMoto(rs.getString(7));	//"SOUSHN_MOTO"
+				fax.setFullPath(rs.getString(8));	//"FULLPATH"
+				fax.setUnitId(rs.getString(9));		//"UNIT_ID"
             	// リストにBeanクラスごと格納
 				fax_dao.add(fax);
 			}

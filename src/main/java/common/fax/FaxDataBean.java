@@ -15,6 +15,7 @@ public class FaxDataBean implements Serializable {
     @JsonProperty("soshinMoto") String soshinMoto;
     @JsonProperty("fullPath") String fullPath;
     @JsonProperty("kyoten") String kyoten;
+    @JsonProperty("unitId") String unitId;
 	
 	public FaxDataBean() {
     }
@@ -28,6 +29,7 @@ public class FaxDataBean implements Serializable {
     public void setSoshinMoto(String soshinMoto) {this.soshinMoto = soshinMoto;	}
     public void setFullPath(String fullPath) {this.fullPath = fullPath;	}
     public void setKyoten(String kyoten) {this.kyoten = kyoten;	}
+    public void setUnitId(String unitId) {this.unitId = unitId;	}
     public void setFaxData(String faxNo, String cDate, String cTtime, String jobNo, String fileName, String soshinMoto, String fullPath, String kyoten) {
         this.faxNo = faxNo; this.cDate = cDate; this.cTime = cTtime; this.jobNo = jobNo; this.fileName = fileName; this.soshinMoto = soshinMoto; 
         this.fullPath = fullPath; this.kyoten = kyoten; }
@@ -41,6 +43,7 @@ public class FaxDataBean implements Serializable {
     public String getSoshinMoto() { return this.soshinMoto; }
     public String getFullPath() { return this.fullPath; }
     public String getKyoten() { return this.kyoten; }
+    public String getUnitId() { return this.unitId; }
 
     public String getFaxDataText() {
 		String line  =

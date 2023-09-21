@@ -31,11 +31,11 @@ public class SecurityConfig {
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 //ログインなしでも閲覧可能URL
                 //.antMatchers("/").permitAll()
-                .antMatchers("/fax/*").permitAll()
-                .antMatchers("/ocr/*").permitAll()
-                .antMatchers("/errl/*").permitAll()
+                .requestMatchers("/fax/*").permitAll()
+                .requestMatchers("/ocr/*").permitAll()
+                .requestMatchers("/errl/*").permitAll()
                 //REST API
-                .antMatchers("/api/*").permitAll()
+                .requestMatchers("/api/*").permitAll()
                 //.antMatchers("/general").hasRole("GENERAL")
                 //.antMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated()	//他のURLはログイン後のみアクセス可能
