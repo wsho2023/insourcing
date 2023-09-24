@@ -1,20 +1,21 @@
 package com.example.demo;
 
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import common.ocr.OcrProcess;
 import common.utils.MyFiles;
 import common.utils.MyUtils;
 
 @SpringBootApplication
+@EnableScheduling
 @EnableAsync
 public class InsourcingApplication implements CommandLineRunner {
 
@@ -28,7 +29,10 @@ public class InsourcingApplication implements CommandLineRunner {
     private PoScanService poScanService1;
     @Autowired
     private PoScanService poScanService2;
-    private boolean ocrExlusiveFlag;
+    
+	OcrProcess process;
+    private boolean ocrExlusiveFlag = false;
+    private int count = 0;
     
     public static void main(String[] args) {
 		SpringApplication.run(InsourcingApplication.class, args);
@@ -43,32 +47,35 @@ public class InsourcingApplication implements CommandLineRunner {
 		poScanService1.run(config, config.getOcrUploadPath1());
 		Thread.sleep(1000);
 		poScanService2.run(config, config.getOcrUploadPath2());
-		OcrProcess process = new OcrProcess(config);
-        Timer timer = new Timer(); // 今回追加する処理
-        ocrExlusiveFlag = false;
-        TimerTask task = new TimerTask() {
-            int count = 0;
-            public void run() {
-            // 定期的に実行したい処理
-            count++;
-            //MyUtils.SystemLogPrint(count + "回目のタスクが実行されました。");
-            if (ocrExlusiveFlag == true ) {
-            	MyUtils.SystemLogPrint("wait...");
-            	return;
-            }
-            ocrExlusiveFlag = true;
-            process.pollingReadingUnit();
-            ocrExlusiveFlag = false;
-            //---------------------------------
-            //watchdog 書き込み処理
-    		try {
-    			String str = MyUtils.getDateStr()+"\n" + count+"\n";
-    			MyFiles.WriteString2File(str, ".\\data\\watchdog.dat");
-    		} catch (IOException e){
-    			MyUtils.SystemErrPrint(e.toString());
-    		}                
-            //---------------------------------
-    	}};
-        timer.schedule(task, 0, 30000); // 30000ms間隔
-   	}
+		ocrExlusiveFlag = false;
+		count = 0;
+		process = new OcrProcess(config);
+    }
+    
+	@Scheduled(fixedRate = 30000)	// 30000ms間隔
+	public void runOcrProcess() {
+		if (process == null) {
+			MyUtils.SystemErrPrint("wait... Ocr Initialization");
+			return;
+		}
+	    // 定期的に実行したい処理
+	    count++;
+	    //MyUtils.SystemLogPrint(count + "回目のタスクが実行されました。");
+	    if (ocrExlusiveFlag == true ) {
+	    	MyUtils.SystemErrPrint("wait... Ocr ExlusiveFlag");
+	    	return;
+	    }
+	    ocrExlusiveFlag = true;
+	    process.pollingReadingUnit();
+	    ocrExlusiveFlag = false;
+	    //---------------------------------
+	    //watchdog 書き込み処理
+		try {
+			String str = MyUtils.getDateStr()+"\n" + count+"\n";
+			MyFiles.WriteString2File(str, ".\\data\\watchdog.dat");
+		} catch (IOException e){
+			MyUtils.SystemErrPrint(e.toString());
+		}                
+	    //---------------------------------
+	}	 
 }

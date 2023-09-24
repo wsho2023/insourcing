@@ -11,86 +11,12 @@
 <!--   <script type="text/javascript" src="js/jquery.ui.datepicker-ja.min.js"></script> -->
   <link rel="stylesheet" th:href="@{/css/theme.blue.css}">
   <link rel="stylesheet" th:href="@{/css/jquery-ui.css}">
-  <style>
-    html,body {
-        font-family:sans-serif;
-    }
-    header {
-    	background: darkseagreen;
-    	color: #000;
-    	padding: .5rem;
-		font-size: 1.5rem;
-		font-weight: bolder;
-		text-align: left;
-    }
-    #aa {
-    	color: #fff;
-		text-decoration: none;
-		white-space: nowrap;
-    }
-    li {
-		margin: 1rem 0;
-    }
-	/*ボタン*/
-    .btn-menu {
-    	border: 1px solid #999;
-		background: transparent;
-    	color: #000;
-		font-weight: bolder;
-    	padding: .5rem 1rem;
-		cursor: pointer;
-		line-height: 1;
-    }
-	/*メニュー*/
-	nav {
-		background: #0bd;
-		position: absolute;
-		z-index: 1;
-		top: 3.7rem;	/*メニューの縦位置*/
-		left: 0;
-		overflow-x: hidden;
-		text-align: left;
-		width: 0;
-		transition: .1s;
-	}
-	/*メニューを開いたとき*/
-	nav.open-menu {
-		width: 20%;
-	}
-	chuui {
-		font-weight: bold;	/* 太字 */
-		color: #FF0000; 	/* 赤字 */
-	}
-  </style>
+  <link rel="stylesheet" th:href="@{/user/common.css}">
 </head>
 <body>
-  <header>
-  	<button class="btn-menu" id="btn-menu">メニュー</button>
-  	<nav>
-  		<ul>
-  			<li><a href="/daicho" id="aa">台帳システム</a>
-  			<li><a href="/upload" id="aa">アップロード</a>
-  			<li><a href="/fax/tokyo" id="aa">FAX管理表</a>
-  			<li><a href="/ocr/list" id="aa">OCRリスト</a>
-  			<li><a href="javascript:btnClick()" id="aa">閉じる</a>
-  		</ul>
-  	</nav>
-  	<label th:text="${title}"></label>
-  </header>
-  <script type="text/javascript">
-  	const btn = document.querySelector('.btn-menu');
-  	const nav = document.querySelector('nav');
-
-  	btn.addEventListener('click', btnClick, false);
-  	function btnClick() {
-  	  	nav.classList.toggle('open-menu');
-  	  	if (btn.innerHTML == 'メニュー') {
-  	  	  	btn.innerHTML = '閉じる　';
-  	  	} else {
-  	  	  	btn.innerHTML = 'メニュー';
-  	  	}
-  	};
-  </script>
+  <!--  header part-->
+  <div th:replace="common::header"></div>
+  <script th:inline="javascript" th:src="@{/user/menu.js}"></script>
   <form action=daicho method="post">
      取名: <input type="text" name="form">
      日付:  <input type="date" name="date_fr">～<input type="date" name="date_to">
