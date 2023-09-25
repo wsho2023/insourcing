@@ -2,13 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>ログインページ</title>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
+  <title th:text="${title}"></title>
+  <link rel="stylesheet" th:href="@{/css/common.css}">
 </head>
 <style>
-	h1 {
-	    background-color: darkseagreen;
-	}
 	#button {
 		font-size: 105%
 	}
@@ -17,15 +15,18 @@
 	}
 </style>
 <body>
-    <h1>ログインページ</h1>
-    <p th:if="${param.error}" class="error">
-        ユーザー名またはパスワードが違います。
-    </p>
-    <form method="post" action="upload.html" th:action="@{/login}">
-        ユーザー名: <input type="text" name="username"><br>
-        パスワード: <input type="password" name="password"><br>
-		<br>
-        <button type="submit" id="button">ログイン</button>
-    </form>
+  <!--  header part-->
+  <header>
+    <label th:text="${title}"></label>
+  </header>
+  <p th:if="${param.error}" class="error">
+  	ユーザー名またはパスワードが違います。
+  </p>
+  <form method="post" action="upload.html" th:action="@{/login}">
+  	ユーザー名: <input type="text" name="username"><br>
+    パスワード: <input type="password" name="password"><br>
+	<br>
+    <button type="submit" id="button">ログイン</button>
+  </form>
 </body>
 </html>

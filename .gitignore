@@ -36,8 +36,8 @@ out/
 ### VS Code ###
 .vscode/
 src/main/java/prop.properties
-src/main/resources/static/css/*
-src/main/resources/static/js/*
+src/main/resources/static/css/lib/*
+src/main/resources/static/js/lib/*
 data/*
 templete/*
 src/main/resources/application.yml

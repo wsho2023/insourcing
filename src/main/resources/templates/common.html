@@ -16,6 +16,20 @@
   	<label th:text="${title}"></label>
   </header>
   <chuui th:fragment="chuui">IEサポート終了に伴い...</chuui>
+  <div th:fragment=="pager" class="pager">
+    <button type="button" class="first"><<</button>
+    <button type="button" class="prev"><</button>
+    <span class="pagedisplay"></span>
+    <button type="button" class="next">></button>
+    <button type="button" class="last">>></button>
+    <select class="pagesize" title="Select page size">
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+        <option value="40">40</option>
+    </select>
+    <select class="gotoPage" title="Select page number"></select>
+  </div>
 <!--  <footer th:fragment="footer">
     <p style="background: yellow">フッターです</p>
   </footer>-->

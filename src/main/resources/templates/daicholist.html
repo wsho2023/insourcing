@@ -3,41 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <title th:text="${title}"></title>
-  <script type="text/javascript" th:src="@{/js/jquery-3.5.1.min.js}"></script>
-  <script type="text/javascript" th:src="@{/js/jquery-ui.min.js}"></script>
-  <script type="text/javascript" th:src="@{/js/jquery.tablesorter.combined.min.js}"></script>
-  <script type="text/javascript" th:src="@{/js/extras/jquery.tablesorter.pager.min.js}"></script>
-  <script type="text/javascript" th:src="@{/js/widgets/widget-scroller.min.js}"></script>
-<!--   <script type="text/javascript" src="js/jquery.ui.datepicker-ja.min.js"></script> -->
-  <link rel="stylesheet" th:href="@{/css/theme.blue.css}">
-  <link rel="stylesheet" th:href="@{/css/jquery-ui.css}">
-  <link rel="stylesheet" th:href="@{/user/common.css}">
+  <script type="text/javascript" th:src="@{/js/lib/jquery-3.5.1.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/jquery-ui.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/jquery.tablesorter.combined.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/extras/jquery.tablesorter.pager.min.js}"></script>
+  <script type="text/javascript" th:src="@{/js/lib/widgets/widget-scroller.min.js}"></script>
+<!--   <script type="text/javascript" src="js/lib/jquery.ui.datepicker-ja.min.js"></script> -->
+  <link rel="stylesheet" th:href="@{/css/lib/theme.blue.css}">
+  <link rel="stylesheet" th:href="@{/css/lib/jquery-ui.css}">
+  <link rel="stylesheet" th:href="@{/css/common.css}">
 </head>
 <body>
   <!--  header part-->
   <div th:replace="common::header"></div>
-  <script th:inline="javascript" th:src="@{/user/menu.js}"></script>
-  <form action=daicho method="post">
-     取名: <input type="text" name="form">
+  <script th:inline="javascript" th:src="@{/js/menu.js}"></script>
+  <form th:action="${url}" method="post">
+     取引先: <input type="text" name="form">
      日付:  <input type="date" name="date_fr">～<input type="date" name="date_to">
      <button type="submit">検索</button><br>
-     <chuui>IEサポート終了に伴い...</chuui>
+	 <div th:replace="common::chuui"></div>
   </form>
-<!--  <div id="pager" class="pager">
-    <button type="button" class="first"><<</button>
-    <button type="button" class="prev"><</button>
-    <span class="pagedisplay"></span>
-    <button type="button" class="next">></button>
-    <button type="button" class="last">>></button>
-    <select class="pagesize" title="Select page size">
-        <option value="10">10</option>
-        <option value="20">20</option>
-        <option value="30">30</option>
-        <option value="40">40</option>
-    </select>
-    <select class="gotoPage" title="Select page number"></select>
-  </div>-->
-  <table id="table" class="tablesorter">	 <!--tablesorter-blue-->
+  <!--  <div th:replace="common::pager"></div>-->
+  <table id="table" class="tablesorter">
   	<thead><tr align=center>
    		<th style="font-size: 11pt;">No</th>
   		<th style="font-size: 11pt;">日時</th>
@@ -52,7 +39,7 @@
   		<th style="font-size: 11pt;">単価</th>
   		<th style="font-size: 11pt;">金額</th>
   		<th style="font-size: 11pt;">納期</th>
-  	</tr></thead>
+	</tr></thead>
     <tbody><tr th:each="obj : ${list}">
 		<td th:text="${obj.objectId}"></td>
 		<td th:text="${obj.createdDate}"></td>
@@ -67,7 +54,7 @@
 		<td th:text="${obj.seizoTanka}"></td>
 		<td th:text="${obj.kingaku}"></td>
 		<td th:text="${obj.youkyuNouki}"></td>
-  	</tr></tbody>
+	</tr></tbody>
   </table>
   <script th:inline="javascript">
     $(document).ready(function() {
@@ -79,13 +66,13 @@
 			//filter:列にフィルタ機能を追加する
 			//resizable:列のリサイズをする
 			//stickyHeaders:スクロールの際にヘッダを固定する
-			//scroller:ヘッダを固定
+			//scroller:ヘッダを固定 --> これを指定すると、列幅のリサイズが効かなくなる	
 			//widgets: ['zebra', 'columns', 'resizable', 'pager', 'sticyHeaders', 'scroller'],
-			widgets: ['zebra', 'columns', 'resizable', 'pager', 'stickyHeaders', 'scroller'],
+			widgets: ['zebra', 'columns', 'resizable', 'sticyHeaders'],
 			//https://qiita.com/fj58p/items/2b47b84fd7223de8b9be
-	        widgetOptions: {
-	            scroller_height : 600	// テーブルの髙さの指定
-	        }
+	        //widgetOptions: {
+	        //    scroller_height : 1000	// テーブルの髙さの指定
+	        //}
 		});
 		//$("table").tablesorterPager({
 		//	container: $(".pager"),

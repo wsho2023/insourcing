@@ -39,7 +39,10 @@ public class UploadController {
     private SecuritySession securitySession;
     
     @GetMapping("/login")
-    public String login() {
+    public String login(Model model) {
+		String title = "ログインページ";
+		// 次の画面(jsp)に値を渡す
+		model.addAttribute("title", title);
         return "login";
     }
 
@@ -57,10 +60,10 @@ public class UploadController {
     
     @GetMapping("/upload")
     public String uploadGet(Model model){
+		String title = "アップロード";
 		String userId = securitySession.getUsername();
 		String userName = securitySession.getName();
 		String code = securitySession.getCode();
-		String title = "アップロード";
 
 		// 次の画面(jsp)に値を渡す
 		model.addAttribute("title", title);

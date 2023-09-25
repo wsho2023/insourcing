@@ -12,12 +12,16 @@ header {
 	font-weight: bolder;
 	text-align: left;
 }
+#table-header {
+	font-size: 105%
+}
 #aa {
 	color: #fff;
 	text-decoration: none;
 	white-space: nowrap;
 }
 li {
+	font-size: 1rem;	/*メニューの文字サイズ*/
 	margin: 1rem 0;
 }
 /*ボタン*/
