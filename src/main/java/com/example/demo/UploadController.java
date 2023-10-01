@@ -5,8 +5,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +41,15 @@ public class UploadController {
     @Autowired
     private SecuritySession securitySession;
     
+    private ArrayList<String[]> menuList;
+    //https://qiita.com/rubytomato@github/items/d86039eca031ac1ed511
+    @Value("${spring.menu.project}")
+    private String menuProject;
+    @Value("${spring.menu.href}")
+    private Set<String> menuHref;
+    @Value("${spring.menu.title}") 
+    private Set<String> menuName;
+    
     @GetMapping("/login")
     public String login(Model model) {
 		String title = "ログインページ";
@@ -47,16 +59,16 @@ public class UploadController {
     }
 
     @GetMapping("/")
-    public String getDefault(Model model){
-    	//トップページアクセス時のリダイレクト先
-    	return "redirect:/upload";
-    }
-    
-    //ログイン成功しているのに、/error?continueにリダイレクトされる対処
-    @GetMapping("/error")
-    public String getError() {
-        return "redirect:/upload";
-    }
+	public String getDefault(Model model){
+		//トップページアクセス時のリダイレクト先
+		return "redirect:/upload";
+	}
+	
+	//ログイン成功しているのに、/error?continueにリダイレクトされる対処
+	@GetMapping("/error")
+	public String getError() {
+	    return "redirect:/upload";
+	}
     
     @GetMapping("/upload")
     public String uploadGet(Model model){
@@ -64,15 +76,49 @@ public class UploadController {
 		String userId = securitySession.getUsername();
 		String userName = securitySession.getName();
 		String code = securitySession.getCode();
+		String logout;
+		if (menuProject.equals("") == true) 
+			logout = "/logout";
+		else
+			logout = "/" + menuProject + "/logout";
 
 		// 次の画面(jsp)に値を渡す
+		model.addAttribute("menu", getMenuList());
 		model.addAttribute("title", title);
 		model.addAttribute("userId", userId);
 		model.addAttribute("userName", userName);
 		model.addAttribute("code", code);
+		model.addAttribute("logout", logout);
 
 		// 次の画面に遷移
 		return "upload";
+    }
+    
+    private  ArrayList<String[]> getMenuList() {
+		if (menuList == null) {
+			menuList = new ArrayList<String[]>();
+			String[] init = null;
+			Iterator<String> itr1 = menuHref.iterator();
+			Iterator<String> itr2 = menuName.iterator();
+			System.out.println("MenuList");
+			while (itr1.hasNext()) {
+				init = new String[2];
+				if (menuProject.equals("") == true) 
+					init[0] = itr1.next();	//href
+				else
+					init[0] = "/" + menuProject + itr1.next();	//href
+				init[1] = itr2.next();	//title
+				System.out.println(init[0] + ":" + init[1]);
+				menuList.add(init);
+			}
+			//最後
+			init = new String[2];
+			init[0] = "javascript:btnClick()";
+			init[1] = "閉じる";
+			System.out.println(init[0] + ":" + init[1]);
+			menuList.add(init);
+		}
+		return menuList;
     }
     
     @PostMapping("/select")

@@ -5,9 +5,12 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +41,15 @@ public class OcrController {
     @Autowired
     private SpringConfig config;
     
+    private ArrayList<String[]> menuList;
+    //https://qiita.com/rubytomato@github/items/d86039eca031ac1ed511
+    @Value("${spring.menu.project}")
+    private String menuProject;
+    @Value("${spring.menu.href}")
+    private Set<String> menuHref;
+    @Value("${spring.menu.title}") 
+    private Set<String> menuName;
+    
     @GetMapping("/fax/{url}")
     public String faxGet(Model model, @PathVariable("url") String url, 
     		@RequestParam(name="form", required = false) String form, 
@@ -58,12 +70,40 @@ public class OcrController {
 		ArrayList<FaxDataBean> list;
         list = FaxDataDAO.getInstance(config).read(form, date_fr, date_to, soushimotonashi, kyoten);
 		// 次の画面に値を渡す
+		model.addAttribute("menu", getMenuList());
 		model.addAttribute("url", url);
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
 		
 		// 次の画面に遷移
 		return "faxlist";
+    }
+    
+    private  ArrayList<String[]> getMenuList() {
+		if (menuList == null) {
+			menuList = new ArrayList<String[]>();
+			String[] init = null;
+			Iterator<String> itr1 = menuHref.iterator();
+			Iterator<String> itr2 = menuName.iterator();
+			System.out.println("MenuList");
+			while (itr1.hasNext()) {
+				init = new String[2];
+				if (menuProject.equals("") == true) 
+					init[0] = itr1.next();	//href
+				else
+					init[0] = "/" + menuProject + itr1.next();	//href
+				init[1] = itr2.next();	//title
+				System.out.println(init[0] + ":" + init[1]);
+				menuList.add(init);
+			}
+			//最後
+			init = new String[2];
+			init[0] = "javascript:btnClick()";
+			init[1] = "閉じる";
+			System.out.println(init[0] + ":" + init[1]);
+			menuList.add(init);
+		}
+		return menuList;
     }
     
     @PostMapping("/fax/{url}")
@@ -87,6 +127,7 @@ public class OcrController {
 		ArrayList<FaxDataBean> list;
         list = FaxDataDAO.getInstance(config).read(form, date_fr, date_to, soushimotonashi, kyoten);
 		// 次の画面に値を渡す
+		model.addAttribute("menu", getMenuList());
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
 		
@@ -101,6 +142,7 @@ public class OcrController {
 		ArrayList<OcrDataFormBean> list = null;
         list = OcrDataFormDAO.getInstance(config).read(null, null, null);
 		// 次の画面に値を渡す
+		model.addAttribute("menu", getMenuList());
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
 		
@@ -119,6 +161,7 @@ public class OcrController {
 		ArrayList<OcrDataFormBean> list = null;
         list = OcrDataFormDAO.getInstance(config).read(form, date_fr, date_to);
 		// 次の画面に値を渡す
+		model.addAttribute("menu", getMenuList());
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
 		
@@ -133,6 +176,7 @@ public class OcrController {
 		ArrayList<PoErrlBean> list = null;
         list = PoErrlDAO.getInstance(config).read(null, null, null);
 		// 次の画面に値を渡す
+		model.addAttribute("menu", getMenuList());
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
 		
@@ -151,6 +195,7 @@ public class OcrController {
 		ArrayList<PoErrlBean> list = null;
         list = PoErrlDAO.getInstance(config).read(form, date_fr, date_to);
 		// 次の画面に値を渡す
+		model.addAttribute("menu", getMenuList());
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
 		
@@ -306,6 +351,7 @@ public class OcrController {
         list = OcrDaichoDAO.getInstance(config).read(null, null, null);
         
 		// 次の画面に値を渡す
+		model.addAttribute("menu", getMenuList());
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
 		

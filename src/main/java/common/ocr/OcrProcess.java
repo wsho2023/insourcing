@@ -36,7 +36,7 @@ public class OcrProcess {
 	static String OCR_API_KEY_VALUE;
 	static String OCR_USER_ID;
 	static String OCR_OUTPUT_PATH;
-	static String OCR_UPLOAD_PATH1;
+	String OCR_UPLOAD_PATH1;
 	String OCR_UPLOAD_PATH2;
 	static String OCR_ADD_PAGE;
 	static String OCR_ADD_SORT;
@@ -406,8 +406,8 @@ public class OcrProcess {
 				return -1;
 			} 
 			String unitId = api.getResponseJson().get("readingUnits").get(0).get("id").asText();
-			String unitName = api.getResponseJson().get("readingUnits").get(0).get("name").asText();
-			String unitStatus = api.getResponseJson().get("readingUnits").get(0).get("status").asText();
+			//String unitName = api.getResponseJson().get("readingUnits").get(0).get("name").asText();
+			//String unitStatus = api.getResponseJson().get("readingUnits").get(0).get("status").asText();
 			String docsetId = api.getResponseJson().get("readingUnits").get(0).get("docsetId").asText();
 			String csvFileName = api.getResponseJson().get("readingUnits").get(0).get("csvFileName").asText();
 			String documentId = api.getResponseJson().get("readingUnits").get(0).get("documentId").asText();
@@ -480,9 +480,9 @@ public class OcrProcess {
 			
 			String status = api.getResponseJson().get("status").asText();
 			int statusCode = api.getResponseJson().get("statusCode").asInt();
-			int errorCode = api.getResponseJson().get("errorCode").asInt();
+			//int errorCode = api.getResponseJson().get("errorCode").asInt();
 			String message = api.getResponseJson().get("message").asText();
-			String pageCountAll = api.getResponseJson().get("pageCountAll").asText();
+			//String pageCountAll = api.getResponseJson().get("pageCountAll").asText();
 			MyUtils.SystemLogPrint("  status: " + status + "  " + message);
 			
 			//unitId指定なので1件しかないはず
@@ -583,8 +583,8 @@ public class OcrProcess {
 				return -1;
 			}
 			//unitiId指定なので、1個しかないはず！
-			String unitId = api.getResponseJson().get("readingUnits").get(0).get("id").asText();
-			String unitName = api.getResponseJson().get("readingUnits").get(0).get("name").asText();
+			//String unitId = api.getResponseJson().get("readingUnits").get(0).get("id").asText();
+			//String unitName = api.getResponseJson().get("readingUnits").get(0).get("name").asText();
 			String unitStatus = api.getResponseJson().get("readingUnits").get(0).get("status").asText();
 			String docsetId = api.getResponseJson().get("readingUnits").get(0).get("docsetId").asText();
 			String csvFileName = api.getResponseJson().get("readingUnits").get(0).get("csvFileName").asText();

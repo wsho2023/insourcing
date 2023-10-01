@@ -40,10 +40,10 @@
 		<td th:text="${obj.cDate + ' ' + obj.cTime}"></td>
 		<td><a th:href="${obj.fullPath}" target="_blank" th:text="${obj.fileName}"></a></td>
 		<td><a th:href="${'/fax/' + url + '?form=' + obj.soshinMoto}" th:text="${obj.soshinMoto}"></a></td>
-	  <th:block th:if="${obj.unitId!=null && obj.soshinMoto.equals('00送信元なし')!=true}">
+	  <th:block th:if="${obj.unitId!=null && #strings.equals(obj.soshinMoto, '00送信元なし')!=true}">
 		<td><a th:href="${'/ocr/result?unitId=' + obj.unitId + '&type=0'}" target="_blank" th:text="${obj.unitId}"></a></td>
 	  </th:block>
-	  <th:block th:unless="${obj.unitId!=null && obj.soshinMoto.equals('00送信元なし')!=true}">
+	  <th:block th:unless="${obj.unitId!=null && #strings.equals(obj.soshinMoto, '00送信元なし')!=true}">
 		<td>-</td>
 	  </th:block>
 	</tr></tbody>

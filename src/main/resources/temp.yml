@@ -56,6 +56,9 @@ spring:
     #templete_path: .\templete\
     templete_path: .\output\
     output_path: .\output\
+  menu: 
+    href: /daicho, /upload, /fax/tokyo, /ocr/list, /errl/list
+    title: 台帳管理, アップロード, FAX管理表, OCRリスト, ERRLリスト
 
 # SQLログ出力
 logging:
