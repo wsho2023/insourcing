@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +40,6 @@ public class UploadController {
     @Autowired
     private SecuritySession securitySession;
     
-    private ArrayList<String[]> menuList;
     //https://qiita.com/rubytomato@github/items/d86039eca031ac1ed511
     @Value("${spring.menu.project}")
     private String menuProject;
@@ -58,7 +56,7 @@ public class UploadController {
         return "login";
     }
 
-    @GetMapping("/")
+	@GetMapping("/")
 	public String getDefault(Model model){
 		//トップページアクセス時のリダイレクト先
 		return "redirect:/upload";
@@ -76,50 +74,46 @@ public class UploadController {
 		String userId = securitySession.getUsername();
 		String userName = securitySession.getName();
 		String code = securitySession.getCode();
-		String logout;
-		if (menuProject.equals("") == true) 
-			logout = "/logout";
-		else
-			logout = "/" + menuProject + "/logout";
 
-		// 次の画面(jsp)に値を渡す
-		model.addAttribute("menu", getMenuList());
+		// 次の画面に値を渡す
+		model.addAttribute("menu", MenuList.getItems(menuProject, menuHref, menuName));
 		model.addAttribute("title", title);
 		model.addAttribute("userId", userId);
 		model.addAttribute("userName", userName);
 		model.addAttribute("code", code);
-		model.addAttribute("logout", logout);
 
 		// 次の画面に遷移
 		return "upload";
     }
     
-    private  ArrayList<String[]> getMenuList() {
-		if (menuList == null) {
-			menuList = new ArrayList<String[]>();
-			String[] init = null;
-			Iterator<String> itr1 = menuHref.iterator();
-			Iterator<String> itr2 = menuName.iterator();
-			System.out.println("MenuList");
-			while (itr1.hasNext()) {
-				init = new String[2];
-				if (menuProject.equals("") == true) 
-					init[0] = itr1.next();	//href
-				else
-					init[0] = "/" + menuProject + itr1.next();	//href
-				init[1] = itr2.next();	//title
-				System.out.println(init[0] + ":" + init[1]);
-				menuList.add(init);
+	/*private  ArrayList<String[]> getMenuList() {
+			if (menuList == null) {
+				menuList = new ArrayList<String[]>();
+				String[] init = null;
+				Iterator<String> itr1 = menuHref.iterator();
+				Iterator<String> itr2 = menuName.iterator();
+				System.out.println("MenuList");
+				String preUrl = (menuProject.equals("") == true)? "":"/" + menuProject;
+				while (itr1.hasNext()) {
+					init = new String[2];
+					init[0] = preUrl + itr1.next();	//href
+					init[1] = itr2.next();	//title
+					System.out.println(init[0] + ":" + init[1]);
+					menuList.add(init);
+				}
+				//最後
+				String[][] constMenu = {
+					{"/logout","ログアウト"},
+					{"javascript:btnClick()","閉じる"}
+				};
+				constMenu[0][0] = preUrl + constMenu[0][0];
+				System.out.println(constMenu[0][0] + ":" + constMenu[0][1]);
+				menuList.add(constMenu[0]);
+				System.out.println(constMenu[0][0] + ":" + constMenu[0][1]);
+				menuList.add(constMenu[0]);
 			}
-			//最後
-			init = new String[2];
-			init[0] = "javascript:btnClick()";
-			init[1] = "閉じる";
-			System.out.println(init[0] + ":" + init[1]);
-			menuList.add(init);
-		}
-		return menuList;
-    }
+			return menuList;
+	}*/
     
     @PostMapping("/select")
     @ResponseBody	//＠ResponseBody アノテーションを付けることで、戻り値を HTTP レスポンスのコンテンツとすることができます。

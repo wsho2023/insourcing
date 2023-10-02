@@ -824,7 +824,7 @@ public class OcrProcess {
         			list.get(r).set((headerNum-1), po.toUpperCase());
         		}
         		int r2;
-				int c2;
+        		int c2;
 				boolean addOkFlag = false;
         		for (int p=0; p<repeatNum; p++) {
         			r2 = (r-1)*repeatNum + 1 + p - r2offset;
