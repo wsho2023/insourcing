@@ -5,10 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,14 +37,8 @@ public class UploadController {
     private SpringConfig config;
     @Autowired
     private SecuritySession securitySession;
-    
-    //https://qiita.com/rubytomato@github/items/d86039eca031ac1ed511
-    @Value("${spring.menu.project}")
-    private String menuProject;
-    @Value("${spring.menu.href}")
-    private Set<String> menuHref;
-    @Value("${spring.menu.title}") 
-    private Set<String> menuName;
+    @Autowired
+    private MenuService menuService;
     
     @GetMapping("/login")
     public String login(Model model) {
@@ -76,7 +68,7 @@ public class UploadController {
 		String code = securitySession.getCode();
 
 		// 次の画面に値を渡す
-		model.addAttribute("menu", MenuList.getItems(menuProject, menuHref, menuName));
+        model.addAttribute("menu", menuService.getItems());
 		model.addAttribute("title", title);
 		model.addAttribute("userId", userId);
 		model.addAttribute("userName", userName);

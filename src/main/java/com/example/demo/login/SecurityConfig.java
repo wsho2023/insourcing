@@ -30,10 +30,11 @@ public class SecurityConfig {
         ).authorizeHttpRequests(authz -> authz
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 //ログインなしでも閲覧可能URL
+                .requestMatchers("/fax/delete").permitAll()
                 //.antMatchers("/").permitAll()
-                .requestMatchers("/fax/*").permitAll()
-                .requestMatchers("/ocr/*").permitAll()
-                .requestMatchers("/errl/*").permitAll()
+                //.requestMatchers("/fax/*").permitAll()
+                //.requestMatchers("/ocr/*").permitAll()
+                //.requestMatchers("/errl/*").permitAll()
                 //REST API
                 .requestMatchers("/api/*").permitAll()
                 //.antMatchers("/general").hasRole("GENERAL")

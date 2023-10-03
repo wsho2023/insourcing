@@ -6,12 +6,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,20 +31,15 @@ import common.ocr.OcrRirekiBean;
 import common.ocr.OcrRirekiDAO;
 import common.po.PoErrlBean;
 import common.po.PoErrlDAO;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 public class OcrController {
     @Autowired
     private SpringConfig config;
-    
-    //https://qiita.com/rubytomato@github/items/d86039eca031ac1ed511
-    @Value("${spring.menu.project}")
-    private String menuProject;
-    @Value("${spring.menu.href}")
-    private Set<String> menuHref;
-    @Value("${spring.menu.title}") 
-    private Set<String> menuName;
-    
+    @Autowired
+    private MenuService menuService;
+	    
     @GetMapping("/fax/{url}")
     public String faxGet(Model model, @PathVariable("url") String url, 
     		@RequestParam(name="form", required = false) String form, 
@@ -68,8 +59,9 @@ public class OcrController {
 		
 		ArrayList<FaxDataBean> list;
         list = FaxDataDAO.getInstance(config).read(form, date_fr, date_to, soushimotonashi, kyoten);
+        
 		// 次の画面に値を渡す
-		model.addAttribute("menu", MenuList.getItems(menuProject, menuHref, menuName));
+        model.addAttribute("menu", menuService.getItems());
 		model.addAttribute("url", url);
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
@@ -98,8 +90,9 @@ public class OcrController {
 		
 		ArrayList<FaxDataBean> list;
         list = FaxDataDAO.getInstance(config).read(form, date_fr, date_to, soushimotonashi, kyoten);
+        
 		// 次の画面に値を渡す
-		model.addAttribute("menu", MenuList.getItems(menuProject, menuHref, menuName));
+        model.addAttribute("menu", menuService.getItems());
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
 		
@@ -110,11 +103,11 @@ public class OcrController {
     @GetMapping("/ocr/list")
     public String ocr(Model model){
 		String title = "OCR結果一覧表";
-		
 		ArrayList<OcrDataFormBean> list = null;
         list = OcrDataFormDAO.getInstance(config).read(null, null, null);
+        
 		// 次の画面に値を渡す
-		model.addAttribute("menu", MenuList.getItems(menuProject, menuHref, menuName));
+		model.addAttribute("menu", menuService.getItems());
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
 		
@@ -132,8 +125,9 @@ public class OcrController {
 		String title = "OCR結果一覧表";
 		ArrayList<OcrDataFormBean> list = null;
         list = OcrDataFormDAO.getInstance(config).read(form, date_fr, date_to);
+        
 		// 次の画面に値を渡す
-		model.addAttribute("menu", MenuList.getItems(menuProject, menuHref, menuName));
+		model.addAttribute("menu", menuService.getItems());
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
 		
@@ -144,11 +138,11 @@ public class OcrController {
     @GetMapping("/errl/list")
     public String errlGet(Model model){
 		String title = "ERRL結果一覧表";
-		
 		ArrayList<PoErrlBean> list = null;
         list = PoErrlDAO.getInstance(config).read(null, null, null);
+        
 		// 次の画面に値を渡す
-		model.addAttribute("menu", MenuList.getItems(menuProject, menuHref, menuName));
+		model.addAttribute("menu", menuService.getItems());
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
 		
@@ -166,8 +160,9 @@ public class OcrController {
 		String title = "ERRL結果一覧表";
 		ArrayList<PoErrlBean> list = null;
         list = PoErrlDAO.getInstance(config).read(form, date_fr, date_to);
+        
 		// 次の画面に値を渡す
-		model.addAttribute("menu", MenuList.getItems(menuProject, menuHref, menuName));
+		model.addAttribute("menu", menuService.getItems());
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
 		
@@ -323,7 +318,7 @@ public class OcrController {
         list = OcrDaichoDAO.getInstance(config).read(null, null, null);
         
 		// 次の画面に値を渡す
-		model.addAttribute("menu", MenuList.getItems(menuProject, menuHref, menuName));
+		model.addAttribute("menu", menuService.getItems());
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
 		
@@ -331,7 +326,7 @@ public class OcrController {
 		return "daicholist";
     }
 	
-    @PostMapping("/daicho")
+    @PostMapping("/daicho/list")
     public String postDaicho(Model model, @RequestParam("form") String form, 
    			@RequestParam("date_fr") String date_fr, @RequestParam("date_to") String date_to) {
         System.out.println("form: " + form);
@@ -341,7 +336,9 @@ public class OcrController {
 		String title = "台帳データリスト";
 		ArrayList<OcrDaichoBean> list;
         list = OcrDaichoDAO.getInstance(config).read(form, date_fr, date_to);
+        
 		// 次の画面に値を渡す
+		model.addAttribute("menu", menuService.getItems());
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
 		

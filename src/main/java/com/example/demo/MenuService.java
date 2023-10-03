@@ -1,19 +1,37 @@
 package com.example.demo;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
-public class MenuList {
-	public static ArrayList<String[]> items;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+//https://hosochin.com/2020/04/08/post-261/
+@Service
+public class MenuService {
+
+	//https://qiita.com/rubytomato@github/items/d86039eca031ac1ed511
+	@Value("${spring.menu.project}")
+	private String project;
+	@Value("${spring.menu.href}")
+	private Set<String> href;
+	@Value("${spring.menu.title}") 
+	private Set<String> name;
+	
+	//public MenuService(String menuProject, Set<String> menuHref, Set<String> menuName) {
+	//	this.menuProject = menuProject;
+	//	this.menuHref = menuHref;
+	//	this.menuName = menuName;
+	//}
+	
+    private ArrayList<String[]> items;
 	//最後(固定メニュー)
-	static String[][] constItem = {
+	String[][] constItem = {
 		{"/logout","ログアウト"},
 		{"javascript:btnClick()","閉じる"}
 	};
-    
-	public static ArrayList<String[]> getItems(
-		String project, Set<String> href, Set<String> name) {
+	
+	public ArrayList<String[]> getItems() {
 		if (items == null) {
 			items = new ArrayList<String[]>();
 			String[] item = null;
