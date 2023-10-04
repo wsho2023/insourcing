@@ -42,8 +42,8 @@ public class SpringConfig {
     public String getMailPort(){	return mail.get("port");    }
     public String getMailUsername(){	return mail.get("username");    }
     public String getMailPassword(){	return mail.get("password");    }
-    public String getMailSmtpAuth(){	return mail.get("properties.mail.smtp.auth");    }
-    public String getMailSmtpStarttlsEnable(){	return mail.get("properties.mail.smtp.starttls.enable");	}
+    public String getMailSmtpAuth(){	return mail.get("smtp_auth");    }
+    public String getMailSmtpStarttlsEnable(){	return mail.get("smtp_starttls_enable");	}
     public String getMailFrom(){	return mail.get("from");	}
     
     public String getProxyHost(){	return proxy.get("host");	}

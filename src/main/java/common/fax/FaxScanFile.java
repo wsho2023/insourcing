@@ -183,7 +183,7 @@ public class FaxScanFile {
         //------------------------------------------------------
 		int type = -1;
 		if (this.kyoten.equals(this.SCAN_CLASS1) == true) {
-			type = 2;
+			type = 0;
 		} else if (this.kyoten.equals(this.SCAN_CLASS2) == true) {
 			type = 0;
 			if (syubetsu.equals(FORM_TYPE1) == true) {

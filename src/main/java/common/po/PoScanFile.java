@@ -44,7 +44,7 @@ public class PoScanFile {
 	
 	public void scanProcess(String uploadFilePath) {
 		MyUtils.SystemLogPrint("■scanProcess: start... 取込開始");
-		importData(uploadFilePath);
+		//importData(uploadFilePath);
 		if (uploadFilePath.equals(config.getOcrUploadPath1())==true) {
 		    //------------------------------------------------------
 		    //取り込み実行
@@ -123,6 +123,6 @@ public class PoScanFile {
 		String code = upload.getCode();
 		String inputPath = upload.getInputPath();
 		//⇒引数として渡す
-		MyUtils.SystemLogPrint("  userId: " + userId); 
+		MyUtils.SystemLogPrint("  userId: " + userId + "  datetime: " + datetime + "  triCd: " + triCd + "  code: " + code + "  inputPath: " + inputPath); 
 	}
 }

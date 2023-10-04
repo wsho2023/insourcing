@@ -216,6 +216,8 @@ public class OcrController {
 			fields = fields.substring(0, fields.length() - 1);	//末尾 , 削除
 		}
 		int col_width[] = new int[dataWidth];
+		String[] strColNo = fields.replace("COL", "").split(",");
+		int orgColNo[] = new int[dataWidth];
 
 		ArrayList<OcrColmunsBean> columns = new ArrayList<OcrColmunsBean>();
         try {
@@ -225,6 +227,7 @@ public class OcrController {
 				if (col_width[j] < len) {
 					col_width[j] = len;
 				}
+				orgColNo[j] = Integer.parseInt(strColNo[j])-3;	//COL-3
 			}
 
 			//System.out.println("header width");
@@ -268,13 +271,13 @@ public class OcrController {
 			OcrColmunsBean cols;
 			for (int i=0; i<dataWidth; i++) {
 				int colNo = i;
-				if ((colSuryo != 0) && (colNo == colSuryo)) {
+				if ((colSuryo != 0) && (orgColNo[colNo] == colSuryo)) {
 					width = Integer.valueOf(col_width[i]*11).toString();
 					cols = new OcrColmunsBean(header.getCOL(i), "COL"+i, width, "numeric", "#,##", "right");
-				} else if ((colTanka != 0) && (colNo == colTanka)) {
+				} else if ((colTanka != 0) && (orgColNo[colNo] == colTanka)) {
 					width = Integer.valueOf(col_width[i]*11).toString();	
 					cols = new OcrColmunsBean(header.getCOL(i), "COL"+i, width, "numeric", "#,##.00", "right");
-				} else if ((colKingaku != 0) && (colNo == colKingaku)) {
+				} else if ((colKingaku != 0) && (orgColNo[colNo] == colKingaku)) {
 					width = Integer.valueOf(col_width[i]*11).toString();
 					cols = new OcrColmunsBean(header.getCOL(i), "COL"+i, width, "numeric", "#,##", "right");
 				} else {

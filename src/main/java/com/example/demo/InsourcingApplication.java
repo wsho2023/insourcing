@@ -18,7 +18,8 @@ import common.utils.MyUtils;
 @EnableScheduling
 @EnableAsync
 public class InsourcingApplication implements CommandLineRunner {
-
+	final boolean webOnly = false;
+	
     @Autowired
     private SpringConfig config;
     @Autowired
@@ -40,22 +41,24 @@ public class InsourcingApplication implements CommandLineRunner {
 	 
     @Override
     public void run(String... strings) throws Exception {
-    	faxScanService1.run(config, config.getScanDefTgt1());
-		Thread.sleep(1000);
-		faxScanService2.run(config, config.getScanDefTgt2());
-		Thread.sleep(1000);
-		poScanService1.run(config, config.getOcrUploadPath1());
-		Thread.sleep(1000);
-		poScanService2.run(config, config.getOcrUploadPath2());
-		ocrExlusiveFlag = false;
-		count = 0;
-		process = new OcrProcess(config);
+    	if (webOnly == false) {
+	    	faxScanService1.run(config, config.getScanDefTgt1());
+			Thread.sleep(1000);
+			faxScanService2.run(config, config.getScanDefTgt2());
+			Thread.sleep(1000);
+			poScanService1.run(config, config.getOcrUploadPath1());
+			Thread.sleep(1000);
+			poScanService2.run(config, config.getOcrUploadPath2());
+			ocrExlusiveFlag = false;
+			count = 0;
+			process = new OcrProcess(config);
+    	}
     }
     
 	@Scheduled(fixedRate = 30000)	// 30000ms間隔
 	public void runOcrProcess() {
 		if (process == null) {
-			MyUtils.SystemErrPrint("wait... Ocr Initialization");
+			//MyUtils.SystemErrPrint("wait... Ocr Initialization");
 			return;
 		}
 	    // 定期的に実行したい処理

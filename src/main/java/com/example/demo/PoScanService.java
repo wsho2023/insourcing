@@ -22,11 +22,9 @@ public class PoScanService {
 
 	@Async
 	public void run(SpringConfig config, String targetPath) {
-		//String targetPath;	//削除予定
 		PoScanFile scan;
 		
 		scan = new PoScanFile(config, targetPath);
-		//targetPath = scan.scanGetTargetPath();	//削除予定
 		scan.scanRemainedFile();	//すでにフォルダにあるpdfをScan
 		//指定ディレクトリ配下のファイルのみ(またはディレクトリ)を取得
 		// https://qiita.com/fumikomatsu/items/67f012b364dda4b03bf1

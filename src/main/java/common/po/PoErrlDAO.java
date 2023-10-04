@@ -87,7 +87,7 @@ public class PoErrlDAO {
 	}
 	
     public void insertDB(PoErrlBean errl) {
-		String sql = "insert into OcrErrlTable(ERRL_ID,CREATED_DATE,CREATED_BY,TORIHIKISAKI_MEI,PO_LIST) " 
+		String sql = "insert into PoErrlTable(ERRL_ID,CREATED_DATE,CREATED_BY,TORIHIKISAKI_MEI,PO_LIST) " 
 				   + "values(?,sysdate,?,?,?)";
     	
 		//接続処理

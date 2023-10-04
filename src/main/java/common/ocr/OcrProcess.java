@@ -100,9 +100,9 @@ public class OcrProcess {
 	//---------------------------------
 	public void pollingReadingUnit() {
 		//MyUtils.SystemLogPrint("■pollingReadingUnit: start");
-		String type1 = "0";
-		String type2 = "1";
-		String type3 = "%";	//2
+		String type1 = "0";	//0
+		String type2 = "%";	//1
+		String type3 = "2";	//2
 		String type4 = "%";	//3
 		ArrayList<OcrDataFormBean> list = OcrDataFormDAO.getInstance(config).queryNotComplete(type1,type2,type3,type4);
 		int count = list.size();
@@ -151,7 +151,7 @@ public class OcrProcess {
 	//読取ページ追加（処理）
 	//---------------------------------------
 	private int addReadingPage(OcrDataFormBean ocrData) {
-		MyUtils.SystemLogPrint("■addReadingPage: start: " + ocrData.uploadFilePath);
+		MyUtils.SystemLogPrint("■addReadingPage: start... " + ocrData.uploadFilePath);
 		//---------------------------------------
 		//HTTP request parametes
 		//---------------------------------------
@@ -480,10 +480,10 @@ public class OcrProcess {
 			
 			String status = api.getResponseJson().get("status").asText();
 			int statusCode = api.getResponseJson().get("statusCode").asInt();
-			//int errorCode = api.getResponseJson().get("errorCode").asInt();
+			int errorCode = api.getResponseJson().get("errorCode").asInt();
 			String message = api.getResponseJson().get("message").asText();
-			//String pageCountAll = api.getResponseJson().get("pageCountAll").asText();
-			MyUtils.SystemLogPrint("  status: " + status + "  " + message);
+			String pageCountAll = api.getResponseJson().get("pageCountAll").asText();
+			MyUtils.SystemLogPrint("  status: " + status + "  errorCode: " + errorCode + "  message: " + message + "  pageCountAll:" + pageCountAll);
 			
 			//unitId指定なので1件しかないはず
 			String readingUnitId = "0";
@@ -797,6 +797,10 @@ public class OcrProcess {
             	maxCol = list.get(r).size();	//行ごとに列数が異なる（現状、ヘッダを全カラム設定しないため）
         }
         int repeatNum = (maxCol-ocrData.headerNum)/ocrData.meisaiNum;
+        int jouyo = (maxCol-ocrData.headerNum) % ocrData.meisaiNum;
+        if (jouyo > 0) {
+        	repeatNum = repeatNum + 1;	//
+        }
         int cnvRowWidth = repeatNum * (maxRow-1) + 1;
         int cnvColWidth = ocrData.headerNum + ocrData.meisaiNum;
         ArrayList<ArrayList<String>> cnvList = new ArrayList<ArrayList<String>>();
@@ -888,18 +892,20 @@ public class OcrProcess {
 						if (xlsx.getRow(rowIdx) == false)
 							continue;
 						for (int colIdx=0; colIdx<repColWidth; colIdx++) {
-							//読み込みCellがあるかCheck
-							if (xlsx.getCell(colIdx) == false)
-								continue;
-							ctype = xlsx.getCellType(colIdx);
-							str = "";
-							if (ctype == CellType.STRING) {
-								str = xlsx.getStringCellValue();
-								if (str.equals("") == true) 
-									break;	//カラムは、ブランクで終了
-							} else if (ctype == CellType.NUMERIC) {
-								int val = (int)xlsx.getNumericCellValue();
-								str = Integer.valueOf(val).toString();
+							//読み込みCellがあるかCheck(空白の場合、falseを返す。罫線があればブランクで認識する)
+							if (xlsx.getCell(colIdx) == true) {
+								ctype = xlsx.getCellType(colIdx);
+								str = "";
+								if (ctype == CellType.STRING) {
+									str = xlsx.getStringCellValue();
+									if (str.equals("") == true) 
+										break;	//カラムは、ブランクで終了
+								} else if (ctype == CellType.NUMERIC) {
+									int val = (int)xlsx.getNumericCellValue();
+									str = Integer.valueOf(val).toString();
+								}
+							} else {
+								str = "";
 							}
 							arrList.add(str);	//col追加
 						}
@@ -908,17 +914,17 @@ public class OcrProcess {
 						res = 0;	//置換情報の読込完了
 					}
 				} else {
-					MyUtils.SystemErrPrint("  置換マスタに定義が存在しませんでした");
+					MyUtils.SystemErrPrint("  置換マスタ：定義が存在しませんでした");
 				}
 				xlsx.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
     	} else {
-    		MyUtils.SystemErrPrint("  置換マスタファイルが見つかりませんでした");
+    		MyUtils.SystemErrPrint("  置換マスタ：ファイルが見つかりませんでした");
     	}
 		if (res == 0) {
-			MyUtils.SystemLogPrint("検出行: " + repList.size());
+			MyUtils.SystemLogPrint("置換マスタ 検出行: " + repList.size());
 			//置換処理
 			int col2;
 			String before = "";
@@ -932,19 +938,20 @@ public class OcrProcess {
 						before = repList.get(row2).get(col2);
 						after = repList.get(row2).get(col2+1);
 						int colIdx;
-						for (int rowIdx=2; rowIdx < cnvRowWidth; rowIdx++) {	//2行目から開始
+						for (int rowIdx=1; rowIdx < cnvRowWidth; rowIdx++) {	//cnvListは、ヘッダ除く1始まり
 							colIdx = col2/2;
 							org = cnvList.get(rowIdx).get(colIdx);
 							if (org.equals("") != true) {
 								str = org.replace(before, after);
 								if (org.equals(str) != true)
-									MyUtils.SystemLogPrint("  replace: " + org + "→" + str);
+									MyUtils.SystemLogPrint("  " + repList.get(0).get(col2) + "replace: " + org + "→" + str);
 								cnvList.get(rowIdx).set(colIdx, str);
 							}
 						}
 					}
 				}
 			}
+			MyUtils.SystemLogPrint("  置換処理完了");
 		}
 		//---------------------------------------
 		//数値系の固定のデータ加工設定
@@ -1387,13 +1394,13 @@ public class OcrProcess {
         String copyToFile = outputFolderPath + "\\" + fileName;
         //pdf回転変換
 		String[] copyCmd = new String[6];
-		copyCmd[0] = "pdftk";	//"C:\\Program Files (x86)\\PDFtk Server\\bin\\pdftk";
+		copyCmd[0] = "pdftk";			//"C:\\Program Files (x86)\\PDFtk Server\\bin\\pdftk";
 		copyCmd[1] = uploadFilePath;	//uploadFilePath.replace("\\", "\\\\");
 		copyCmd[2] = "cat";
-		copyCmd[3] = ocrData.rotateInfo;	//回転あり
+		copyCmd[3] = ocrData.rotateInfo;//回転あり
 		copyCmd[4] = "output";
 		copyCmd[5] = copyToFile;		//copyToFile.replace("\\\\", "\\");	//この変換の必要性については要確認！
-		System.out.print("  ");
+		System.out.print(" CMD :");
 		for (String cmd : copyCmd)
 			System.out.print(cmd + " ");
 		System.out.print("\n");

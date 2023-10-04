@@ -41,6 +41,22 @@ public class SecuritySession {
         return null;
     }
 
+    public String getPassword() {
+        // SecurityContextHolderから
+        // org.springframework.security.core.Authenticationオブジェクトを取得
+        Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+        if (authentication != null) {
+            // AuthenticationオブジェクトからUserDetailsオブジェクトを取得
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof UserDetails) {
+                // UserDetailsオブジェクトから、ユーザ名を取得
+                return ( (LoginUserDetails) principal ).getPassword();
+            }
+        }
+        return null;
+    }
+
     public String getCode() {
         // SecurityContextHolderから
         // org.springframework.security.core.Authenticationオブジェクトを取得
