@@ -408,8 +408,7 @@ public class FaxScanFile {
 		} else {
 			return;
 		}
-		//メール送信第2弾
-		//本文に ocrData.getChubanlist()
+		
         //------------------------------------------------------
         //ERRL登録処理
         //------------------------------------------------------
@@ -419,6 +418,9 @@ public class FaxScanFile {
     	PoErrlBean errl = new PoErrlBean();
     	errl.setErrlData(ocrData.getUnitId(), null, ocrData.getDocSetName(), ocrData.getUnitName(), chubanlist);
     	PoErrlDAO.getInstance(config).insertDB(errl);		
+		
+		//メール送信第2弾
+		//本文に ocrData.getChubanlist()
 		//sendScanMail(ocrData.getDocSetName());
 
 		MyUtils.SystemLogPrint("sendMailProcess: end");

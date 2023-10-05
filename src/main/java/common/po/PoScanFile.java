@@ -6,17 +6,29 @@ import java.nio.file.NoSuchFileException;
 
 import com.example.demo.SpringConfig;
 
+import common.ocr.OcrDataFormBean;
 import common.utils.MyFiles;
+import common.utils.MyMail;
 import common.utils.MyUtils;
 
 public class PoScanFile {
 	SpringConfig config;
 	String targetPath;
+	MyMail mailConf;
 
 	public PoScanFile(SpringConfig argConfig, String argTargetPath) {
 		MyUtils.SystemLogPrint("■PoScanFileコンストラクタ");
 		config = argConfig;
-		this.targetPath = argTargetPath;
+		targetPath = argTargetPath;
+		
+		mailConf = new MyMail();
+		mailConf.host = config.getMailHost();
+		mailConf.port = config.getMailPort();
+		mailConf.username = config.getMailUsername();
+		mailConf.password = config.getMailPassword();
+		mailConf.smtpAuth = config.getMailSmtpAuth();
+		mailConf.starttlsEnable = config.getMailSmtpStarttlsEnable();
+		mailConf.fmAddr = config.getMailFrom();	//固定
 	}
 	
 	public String scanGetTargetPath() {
@@ -96,8 +108,56 @@ public class PoScanFile {
 		}
     	MyUtils.SystemLogPrint("■scanProcess: end... ファイル移動: " + dstPath);
 	}
+	
+	public void sendMailProcess(OcrDataFormBean ocrData, String pdfPath) throws Throwable {
+		PoUploadBean upload = importData(ocrData.getUploadFilePath());
+		if (upload == null)
+			return;
+		String unitName = ocrData.getUnitName();
+		//String soshinMoto = "";
+		String mailBody1="";
+		String mailBody2="";
 
-	void importData(String uploadFilePath) {
+		MyUtils.SystemLogPrint("sendMailProcess: start");
+		//フルパスからファイル名取得
+		File file = new File(pdfPath);
+		String fileName  = file.getName() ;		
+		//配信メール情報:From
+		mailConf.fmAddr = upload.getUserId();
+		//配信メール情報:Bcc
+		mailConf.bccAddr = "";
+		mailConf.toAddr = upload.getUserId();
+
+		//パターン①: 注文書のケース
+		mailConf.subject = ocrData.getDocSetName() + "受信連絡" + "(" + ocrData.getCreatedAt() + " " + ocrData.getUnitName() + ")";
+		mailConf.attach = pdfPath;
+		if (ocrData.getRenkeiResult().equals("") != true) {
+			mailConf.body = mailBody1 + "\n<OCR読取り結果>\n" + ocrData.getRenkeiResult() + "\n" + mailBody2 + "\n" + fileName + "\n"; 
+		} else if (ocrData.getCheckResult().equals("") != true) {
+			mailConf.body = mailBody1 + "\n<OCR読取り結果>\n" + ocrData.getCheckResult() + "\n" + mailBody2 + "\n" + fileName + "\n"; 
+		} else {
+			mailConf.body = mailBody1 + "\n<OCR読取り結果>\n正常終了\n\n" + mailBody2 + "\n" + fileName + "\n"; 
+		}
+		sendAttachMail();
+		
+        //------------------------------------------------------
+        //ERRL登録処理
+        //------------------------------------------------------
+		String chubanlist = ocrData.getChubanlist();
+		String chubanlistMsg = "注文番号(PO)\n" + chubanlist;
+		chubanlist = chubanlist.replace("\n", " ");
+    	PoErrlBean errl = new PoErrlBean();
+    	errl.setErrlData(ocrData.getUnitId(), null, ocrData.getDocSetName(), ocrData.getUnitName(), chubanlist);
+    	PoErrlDAO.getInstance(config).insertDB(errl);		
+		
+		//メール送信第2弾
+		//本文に ocrData.getChubanlist()
+		//sendScanMail(ocrData.getDocSetName());
+
+		MyUtils.SystemLogPrint("sendMailProcess: end");
+	}
+
+	private PoUploadBean importData(String uploadFilePath) {
 		PoUploadBean upload = null;
 		int retryCnt = 0;
 		for (;;) {
@@ -113,7 +173,7 @@ public class PoScanFile {
 			retryCnt++;
 			if (retryCnt > 10) {
 				MyUtils.SystemErrPrint("アップロード情報を取得できませんでした。処理を中止します。");
-				return;
+				return null;
 			}
 		} 
 		
@@ -123,6 +183,28 @@ public class PoScanFile {
 		String code = upload.getCode();
 		String inputPath = upload.getInputPath();
 		//⇒引数として渡す
-		MyUtils.SystemLogPrint("  userId: " + userId + "  datetime: " + datetime + "  triCd: " + triCd + "  code: " + code + "  inputPath: " + inputPath); 
+		MyUtils.SystemLogPrint("  userId: " + userId + "  datetime: " + datetime + "  triCd: " + triCd + "  code: " + code + "  inputPath: " + inputPath);
+		
+		return upload;
+	}
+	
+	//------------------------------------------------------
+	//ファイル添付メール送信
+	//------------------------------------------------------
+	private int sendAttachMail() {
+		MyUtils.SystemLogPrint("  メール送信...");
+		MyUtils.SystemLogPrint("  MAIL FmAddr: " + mailConf.fmAddr);
+		MyUtils.SystemLogPrint("  MAIL ToAddr: " + mailConf.toAddr);
+		MyUtils.SystemLogPrint("  MAIL CcAddr: " + mailConf.ccAddr);
+		MyUtils.SystemLogPrint("  MAIL BcAddr: " + mailConf.bccAddr);
+		MyUtils.SystemLogPrint("  MAIL Subject: " + mailConf.subject);
+		MyUtils.SystemLogPrint("  MAIL Body: \n" + mailConf.body);
+		MyUtils.SystemLogPrint("  MAIL Attach: " + mailConf.attach);
+		mailConf.toAddr = mailConf.fmAddr;	//for debug
+		mailConf.ccAddr = "";				//for debug
+		mailConf.bccAddr = mailConf.fmAddr;	//for debug
+		mailConf.sendRawMail();
+		
+		return 0;
 	}
 }

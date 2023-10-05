@@ -30,7 +30,7 @@ public class OcrDaichoDAO {
     
 	public ArrayList<OcrDaichoBean> getDaicho() {
 		String sql = "select OBJECT_ID, CREATED_DATE, OCR_ID, MEISAI_NO, TORI_MEI, CHUMON_BI, SOFU_MEI, CHUMON_BANGO, HINMEI, SURYO, SEIZO_TANKA, KINGAKU, YOUKYU_NOUKI, BIKO from " +
-					 "(select OBJECT_ID, CREATED_DATE, OCR_ID, MEISAI_NO, TORI_MEI, CHUMON_BI, SOFU_MEI, CHUMON_BANGO, HINMEI, SURYO, SEIZO_TANKA, KINGAKU, YOUKYU_NOUKI, BIKO " + 
+					 "(select OBJECT_ID, TO_CHAR(CREATED_DATE, 'YYYY/MM/DD HH24:MI:SS') CREATED_DATE, OCR_ID, MEISAI_NO, TORI_MEI, CHUMON_BI, SOFU_MEI, CHUMON_BANGO, HINMEI, SURYO, SEIZO_TANKA, KINGAKU, YOUKYU_NOUKI, BIKO " + 
 					 "from DAICHO_TABLE order by CREATED_DATE desc, MEISAI_NO) where rownum <= 50";
 		
 		//接続処理
@@ -95,10 +95,10 @@ public class OcrDaichoDAO {
 	// 検索処理
 	// 戻り値		：ArrayList<Beanクラス>
 	public ArrayList<OcrDaichoBean> read(String toriMei, String date_fr, String date_to) {
-		String sql = "select OBJECT_ID, CREATED_DATE, OCR_ID, MEISAI_NO, TORI_MEI, CHUMON_BI, SOFU_MEI, CHUMON_BANGO, HINMEI, SURYO, SEIZO_TANKA, KINGAKU, YOUKYU_NOUKI, BIKO from " +
-				 "(select OBJECT_ID, CREATED_DATE, OCR_ID, MEISAI_NO, TORI_MEI, CHUMON_BI, SOFU_MEI, CHUMON_BANGO, HINMEI, SURYO, SEIZO_TANKA, KINGAKU, YOUKYU_NOUKI, BIKO " +
-				 "from DAICHO_TABLE ";
-				 //"from DAICHO_TABLE order by CREATED_DATE desc, MEISAI_NO) where rownum <= 50";
+		String sql = "select OBJECT_ID, CREATED_DATE, OCR_ID, MEISAI_NO, TORI_MEI, CHUMON_BI, SOFU_MEI, CHUMON_BANGO, HINMEI, SURYO, SEIZO_TANKA, KINGAKU, YOUKYU_NOUKI, BIKO from "
+				   + "(select OBJECT_ID, TO_CHAR(CREATED_DATE, 'YYYY/MM/DD HH24:MI:SS') CREATED_DATE, OCR_ID, MEISAI_NO, TORI_MEI, CHUMON_BI, SOFU_MEI, CHUMON_BANGO, HINMEI, SURYO, SEIZO_TANKA, KINGAKU, YOUKYU_NOUKI, BIKO "
+				   + "from DAICHO_TABLE ";
+		//"from DAICHO_TABLE order by CREATED_DATE desc, MEISAI_NO) where rownum <= 50";
         if (date_fr != null && date_fr.equals("") != true) {
         	date_fr = date_fr.replace("-", "/");	//(yyyy-MM-dd) → (yyyy/MM/dd)
         	sql = sql + " and CREATED_DATE >= '" + date_fr + "'";

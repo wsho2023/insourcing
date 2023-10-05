@@ -30,7 +30,7 @@ public class PoErrlDAO {
 	
 	public ArrayList<PoErrlBean> read(String toriMei, String date_fr, String date_to) {
 		String sql = "select ERRL_ID, CREATED_DATE, CREATED_BY, TORIHIKISAKI_MEI, PO_LIST from " +
-				 "(select ERRL_ID, CREATED_DATE, CREATED_BY, TORIHIKISAKI_MEI, PO_LIST from ERRLTABLE where ERRL_ID like '%' ";
+				 "(select ERRL_ID, TO_CHAR(CREATED_DATE, 'YYYY/MM/DD HH24:MI:SS') CREATED_DATE, CREATED_BY, TORIHIKISAKI_MEI, PO_LIST from POERRLTABLE where ERRL_ID like '%' ";
         if (date_fr != null && date_fr.equals("") != true) {
         	date_fr = date_fr.replace("-", "/");	//(yyyy-MM-dd) → (yyyy/MM/dd)
         	sql = sql + " and CREATED_DATE >= '" + date_fr + "'";

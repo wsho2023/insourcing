@@ -77,36 +77,7 @@ public class UploadController {
 		// 次の画面に遷移
 		return "upload";
     }
-    
-	/*private  ArrayList<String[]> getMenuList() {
-			if (menuList == null) {
-				menuList = new ArrayList<String[]>();
-				String[] init = null;
-				Iterator<String> itr1 = menuHref.iterator();
-				Iterator<String> itr2 = menuName.iterator();
-				System.out.println("MenuList");
-				String preUrl = (menuProject.equals("") == true)? "":"/" + menuProject;
-				while (itr1.hasNext()) {
-					init = new String[2];
-					init[0] = preUrl + itr1.next();	//href
-					init[1] = itr2.next();	//title
-					System.out.println(init[0] + ":" + init[1]);
-					menuList.add(init);
-				}
-				//最後
-				String[][] constMenu = {
-					{"/logout","ログアウト"},
-					{"javascript:btnClick()","閉じる"}
-				};
-				constMenu[0][0] = preUrl + constMenu[0][0];
-				System.out.println(constMenu[0][0] + ":" + constMenu[0][1]);
-				menuList.add(constMenu[0]);
-				System.out.println(constMenu[0][0] + ":" + constMenu[0][1]);
-				menuList.add(constMenu[0]);
-			}
-			return menuList;
-	}*/
-    
+     
     @PostMapping("/select")
     @ResponseBody	//＠ResponseBody アノテーションを付けることで、戻り値を HTTP レスポンスのコンテンツとすることができます。
     public ArrayList<PoFormBean> selectPost(@RequestParam("type") String type, @RequestParam("userId") String userId) {

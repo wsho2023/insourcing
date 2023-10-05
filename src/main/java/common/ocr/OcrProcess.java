@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import common.fax.FaxDataDAO;
 import common.fax.FaxScanFile;
+import common.po.PoScanFile;
 import common.utils.MyExcel;
 import common.utils.MyFiles;
 import common.utils.MyUtils;
@@ -27,6 +28,7 @@ import common.utils.WebApi;
 public class OcrProcess {
 	static SpringConfig config;
 	static FaxScanFile scan2;
+	PoScanFile poUpload;
 	static String PROXY_HOST;
 	static String PROXY_PORT;
 	static String PROXY_USER;
@@ -61,6 +63,7 @@ public class OcrProcess {
     	MyUtils.SystemLogPrint("■OcrProcessコンストラクタ");
 		config = arg_config;
     	scan2 = new FaxScanFile(config, config.getScanDefTgt2()); 
+    	poUpload = new PoScanFile(config, config.getScanDefTgt2()); 
 		PROXY_HOST = config.getProxyHost();
 		PROXY_PORT = config.getProxyPort();
 		PROXY_USER = config.getProxyUsername();
@@ -1436,17 +1439,8 @@ public class OcrProcess {
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
-		} else if (ocrData.type == 1) {
-			String chumonSrc = outputFolderPath + "\\" + ocrData.csvFileName.replace("csv", ".xlsx");
-			String chumonDst = OCR_UPLOAD_PATH2 + ocrData.csvFileName.replace("csv", ".xlsx");
-			try {
-				MyFiles.copyOW(chumonSrc, chumonDst);	//上書きコピー
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			MyUtils.SystemLogPrint("  OCR変換結果を注文書取込へ連携2");
 		//zip圧縮前のExcelファイルを **** フォルダへコピー ⇒ ただ、この時点で、マクロ実行すればよい
-		} else if (ocrData.type == 2 || (ocrData.type == 0 && ocrData.docsetName.equals(SCAN_CLASS1) == true)) {
+		} else if (ocrData.type == 2) {
 			String chumonSrc = outputFolderPath + "\\" + ocrData.csvFileName.replace("csv", ".xlsx");
 			String chumonDst = OCR_UPLOAD_PATH1 + ocrData.csvFileName.replace("csv", ".xlsx");
 			try {
@@ -1455,6 +1449,14 @@ public class OcrProcess {
 				e.printStackTrace();
 			}
 			MyUtils.SystemLogPrint("  OCR変換結果を注文書取込へ連携");
+		} else if (ocrData.type == 3) {
+			String fileName2 = MyFiles.getFileName(uploadFilePath);	//フルパスからファイル名取得
+			String pdfPath = outputFolderPath + "\\" + fileName2;
+			try {
+				poUpload.sendMailProcess(ocrData, pdfPath);
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
 		}
 
 		//完了ステータス更新
