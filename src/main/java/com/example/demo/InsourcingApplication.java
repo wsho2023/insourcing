@@ -27,9 +27,7 @@ public class InsourcingApplication implements CommandLineRunner {
     @Autowired
     private FaxScanService faxScanService2;
     @Autowired
-    private PoScanService poScanService1;
-    @Autowired
-    private PoScanService poScanService2;
+    private PoScanService poScanService;
     
 	OcrProcess process;
     private boolean ocrExlusiveFlag = false;
@@ -46,12 +44,11 @@ public class InsourcingApplication implements CommandLineRunner {
 			Thread.sleep(1000);
 			faxScanService2.run(config, config.getScanDefTgt2());
 			Thread.sleep(1000);
-			poScanService1.run(config, config.getOcrUploadPath1());
-			Thread.sleep(1000);
-			poScanService2.run(config, config.getOcrUploadPath2());
+			//poScanService.run(config, config.getOcrUploadPath1());
 			ocrExlusiveFlag = false;
 			count = 0;
 			process = new OcrProcess(config);
+			runOcrProcess();
     	}
     }
     

@@ -30,8 +30,8 @@ public class PoUploadDAO {
 	}
 	
 	public ArrayList<PoUploadBean> read(String userId) {
-		String sql = "select USER_NAME,REGISTEREDDT,ORG_FILE_NAME,FORM_NAME from " 
-				   + " (select u.USER_NAME,u.REGISTEREDDT,u.ORG_FILE_NAME,f.FORM_NAME from POUPLOADTABLE u left outer join POFORMTABLE f on u.TORIHIKISAKI_CD=f.CODE " 
+		String sql = "select USER_NAME,REGISTEREDDT,ORG_FILE_NAME,NAME from " 
+				   + " (select u.USER_NAME,u.REGISTEREDDT,u.ORG_FILE_NAME,f.NAME from POUPLOADTABLE u left outer join POFORMTABLE f on u.TORIHIKISAKI_CD=f.CODE " 
 				   + " where LOGIN_ID like '%" + userId + "%' order by u.REGISTEREDDT DESC) where rownum <= 10 ";
 		
 		//接続処理

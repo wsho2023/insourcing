@@ -54,6 +54,7 @@ public class OcrController {
     	else
     		kyoten = config.getScanDefTgt2();
 		String title = kyoten + "管理表";
+        System.out.println("prj: " + menuService.getProject());
         System.out.println("url: " + url);
         System.out.println("kyoten: " + kyoten);
 		
@@ -61,6 +62,7 @@ public class OcrController {
         list = FaxDataDAO.getInstance(config).read(form, date_fr, date_to, soushimotonashi, kyoten);
         
 		// 次の画面に値を渡す
+		model.addAttribute("prj",  menuService.getProject());
         model.addAttribute("menu", menuService.getItems());
 		model.addAttribute("url", url);
 		model.addAttribute("title", title);
@@ -71,8 +73,11 @@ public class OcrController {
     }
     
     @PostMapping("/fax/{url}")
-    public String faxPost(Model model, @PathVariable("url") String url, @RequestParam("form") String form, 
-   			@RequestParam("date_fr") String date_fr, @RequestParam("date_to") String date_to, String soushimotonashi) {
+    public String faxPost(Model model, @PathVariable("url") String url, 
+    		@RequestParam(name="form", required = false) String form, 
+   			@RequestParam(name="date_fr", required = false) String date_fr, 
+   			@RequestParam(name="date_to", required = false) String date_to, 
+   			@RequestParam(name="soushimotonashi", required = false) String soushimotonashi) {
     	String kyoten;
     	if (url.equals(config.getScanDefUrl1())==true)
     		kyoten = config.getScanDefTgt1();
@@ -92,6 +97,7 @@ public class OcrController {
         list = FaxDataDAO.getInstance(config).read(form, date_fr, date_to, soushimotonashi, kyoten);
         
 		// 次の画面に値を渡す
+		model.addAttribute("prj",  menuService.getProject());
         model.addAttribute("menu", menuService.getItems());
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
@@ -107,6 +113,7 @@ public class OcrController {
         list = OcrDataFormDAO.getInstance(config).read(null, null, null);
         
 		// 次の画面に値を渡す
+		model.addAttribute("prj",  menuService.getProject());
 		model.addAttribute("menu", menuService.getItems());
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
@@ -127,6 +134,7 @@ public class OcrController {
         list = OcrDataFormDAO.getInstance(config).read(form, date_fr, date_to);
         
 		// 次の画面に値を渡す
+		model.addAttribute("prj",  menuService.getProject());
 		model.addAttribute("menu", menuService.getItems());
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
@@ -176,6 +184,7 @@ public class OcrController {
         //レスポンス
 		System.out.println("  unitId: " + unitId + "  type: " + type);
 		// 次の画面に値を渡す
+		model.addAttribute("prj",  menuService.getProject());
 		model.addAttribute("unitId", unitId);
 		model.addAttribute("type", type);
 		
@@ -183,12 +192,15 @@ public class OcrController {
     	return "result";
     }
     
-    @PostMapping("/ocr/result")
+    @PostMapping("/result")
+    //@PostMapping("/result")
     @ResponseBody	//＠ResponseBody アノテーションを付けることで、戻り値を HTTP レスポンスのコンテンツとすることができます。
     public Map<String, Object> ocrResultPost(
 			@RequestParam("type") int type, @RequestParam("unitId") String unitId) {
         //レスポンス
-		System.out.println("  unitId: " + unitId + "  type: " + type);
+		//System.out.println("  unitId: " + unitId + "  type: " + type);
+    	if (unitId == null || unitId.equals("null") == true )
+    		return null;	//イレギュラーケース
 		
 		ArrayList<OcrDataFormBean> dao = null;
         dao = OcrDataFormDAO.getInstance(config).queryWithUnitId(unitId);
@@ -223,9 +235,11 @@ public class OcrController {
         try {
 			OcrRirekiBean header = OcrRirekiDAO.getInstance(config).readHeader(fields, documentId);
 			for (int j=0; j<dataWidth; j++) {
-				int len = header.getCOL(j).getBytes("Shift_JIS").length;	//S-JIS文字長
-				if (col_width[j] < len) {
-					col_width[j] = len;
+				if (header.getCOL(j) == null) {
+					int len = header.getCOL(j).getBytes("Shift_JIS").length;	//S-JIS文字長
+					if (col_width[j] < len) {
+						col_width[j] = len;
+					}
 				}
 				orgColNo[j] = Integer.parseInt(strColNo[j])-3;	//COL-3
 			}

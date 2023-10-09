@@ -34,8 +34,8 @@
   		<th id="table-header">OCR</th>
 	</tr></thead>
     <tbody><tr th:each="obj : ${list}">
-		<td><a th:href="${'/ocr/result?unitId=' + obj.unitId + '&type=0'}" target="_blank" th:text="${obj.unitId}"></a></td>
-		<td><a th:href="${'/ocr/result?unitId=' + obj.unitId + '&type=1'}" target="_blank" th:text="${obj.unitName}"></a></td>
+		<td><a th:href="${prj+'/ocr/result?unitId=' + obj.unitId + '&type=0'}" target="_blank" th:text="${obj.unitId}"></a></td>
+		<td><a th:href="${prj+'/ocr/result?unitId=' + obj.unitId + '&type=1'}" target="_blank" th:text="${obj.unitName}"></a></td>
 		<td th:text="${obj.status}"></td>
 		<td th:text="${obj.createdAt}"></td>
 		<td><a th:href="${obj.uploadFilePath}" target="_blank" th:text="${obj.fileName}"></a></td>

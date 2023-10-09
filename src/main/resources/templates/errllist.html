@@ -31,7 +31,7 @@
   		<th style="font-size: 11pt;">作成者</th>
   		<th style="font-size: 11pt;">帳票名</th>
   		<th style="font-size: 11pt;">POリスト</th>
-<!--  		<th style="font-size: 11pt;">送信</th>-->
+  		<th style="font-size: 11pt;">送信</th>
 <!--  		<th style="font-size: 11pt;">送信日時</th>-->
 <!--  		<th style="font-size: 11pt;">送信者</th>-->
 	</tr></thead>
@@ -43,7 +43,11 @@
 		<td th:text="${obj.createdBy}"></td>
 		<td th:text="${obj.toriMei}"></td>
 		<td th:text="${obj.poList}"></td>
-<!--		<td>ボタン</td>-->
+		<td>
+			<input type="button" value="メール" th:value2="${obj.poList}" onclick="sendMail(this)">
+			<input type='hidden' id='body' th:value="${obj.poList}">
+			<input type='hidden' id='subject' th:value="${obj.poList}">
+		</td>
 <!--		<td th:text="${obj.saveDate}"></td>-->
 <!--		<td th:text="${obj.saveBy}"></td>-->
 <!--		<td><a th:href="${obj.uploadFilePath}" target="_blank" th:text="${obj.fileName}"></a></td>-->
@@ -58,7 +62,7 @@
 			//zebra:1行ごとに色を変える
 			//columns:選択した列の色を変える
 			//filter:列にフィルタ機能を追加する
-			//resizable:列のリサイズをする
+			//resi	zable:列のリサイズをする
 			//stickyHeaders:スクロールの際にヘッダを固定する
 			//scroller:ヘッダを固定 --> これを指定すると、列幅のリサイズが効かなくなる	
 			//widgets: ['zebra', 'columns', 'resizable', 'pager', 'sticyHeaders', 'scroller'],
@@ -75,6 +79,17 @@
   	$(function() {
 		$(".datepicker").datepicker();
 	});
+    //https://rukiadia.hatenablog.jp/entry/2014/02/19/132445
+	function sendMail(obj) {
+		console.log("value:" + obj.value);
+        // メールに記載したい情報をhiddenタグから取得
+		console.log("next.value:" + obj.nextElementSibling.value);
+        address = '~@co.jp';
+        subject = '件名';
+        body = '注文番号(PO)' + '%0D%0A' + obj.nextElementSibling.value;
+
+        location.href = 'mailto:' + address + '?subject=' + subject + '&body=' + body;	
+	}
   </script>
 </body>
 </html>

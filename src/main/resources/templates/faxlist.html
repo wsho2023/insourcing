@@ -39,9 +39,15 @@
 		<td th:text="${obj.faxNo}"></td>
 		<td th:text="${obj.cDate + ' ' + obj.cTime}"></td>
 		<td><a th:href="${obj.fullPath}" target="_blank" th:text="${obj.fileName}"></a></td>
-		<td><a th:href="${'/fax/' + url + '?form=' + obj.soshinMoto}" th:text="${obj.soshinMoto}"></a></td>
+		<td>
+			<a th:href="${prj + '/fax/' + url + '?form=' + obj.soshinMoto}" th:text="${obj.soshinMoto}"></a>
+			<!-- <form th:action="${url}" method="post" th:name="${'FORM_FORM'+obj.no}" >
+			<input type="hidden" name="form" th:value=${obj.soshinMoto}>
+			<a th:href="${'javascript:FORM_FORM'+obj.no+'.submit()'}" th:text="${obj.soshinMoto}"></a>
+			</form> -->
+		</td>
 	  <th:block th:if="${obj.unitId!=null && #strings.equals(obj.soshinMoto, '00送信元なし')!=true}">
-		<td><a th:href="${'/ocr/result?unitId=' + obj.unitId + '&type=0'}" target="_blank" th:text="${obj.unitId}"></a></td>
+		<td><a th:href="${prj+'/ocr/result?unitId=' + obj.unitId + '&type=0'}" target="_blank" th:text="${obj.unitId}"></a></td>
 	  </th:block>
 	  <th:block th:unless="${obj.unitId!=null && #strings.equals(obj.soshinMoto, '00送信元なし')!=true}">
 		<td>-</td>

@@ -3,6 +3,8 @@ package common.po;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import com.example.demo.SpringConfig;
 
@@ -37,8 +39,7 @@ public class PoScanFile {
 	
 	public void scanRemainedFile() {
 		//指定ディレクトリ配下のファイルのみ(またはディレクトリのみ)を取得
-        File file = new File(this.targetPath);
-        File fileArray[] = file.listFiles();
+		File fileArray[] = sortedFiles(this.targetPath);
 		//MyUtils.SystemLogPrint("■scanRemainedFile: start..." + this.targetPath);
 		try {
 			for (File f: fileArray){
@@ -54,32 +55,40 @@ public class PoScanFile {
 		//MyUtils.SystemLogPrint("■scanRemainedFile: end");
 	}
 	
+	//ファイル日時時系列でソートしてリストアップ		//https://teratail.com/questions/107345
+    private File[] sortedFiles(String path) {
+        File dir = new File(path);
+        File fileArray[] = dir.listFiles();
+        Arrays.sort(fileArray, new Comparator<File>() {
+            public int compare(File file1, File file2) {
+                return file1.lastModified() >= file2.lastModified() ? 1 : -1;
+            }
+        });
+        return fileArray;
+    }
+    
 	public void scanProcess(String uploadFilePath) {
 		MyUtils.SystemLogPrint("■scanProcess: start... 取込開始");
 		//importData(uploadFilePath);
-		if (uploadFilePath.equals(config.getOcrUploadPath1())==true) {
-		    //------------------------------------------------------
-		    //取り込み実行
-		    //------------------------------------------------------
-			//https://blog.goo.ne.jp/xmldtp/e/beb03fb01fb1d1a2c37db8d69b43dcdd
-			//コマンドラインから****.vbsを呼び出せる。
-			String[] cmdList = new String[5];
-			cmdList[0]	=	"cscript";
-			cmdList[1]	=	"impChu.vbs";		//VBSファイル指定
-			cmdList[2]	=	"/file:impChu.xlsm";
-			cmdList[3]	=	"/method:run";
-			cmdList[4]	=	"/importFilePath:" + uploadFilePath;
-			try {
-			    MyUtils.exeCmd(cmdList);
-			} catch (IOException e) {
-				e.printStackTrace();
-				return;
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				return;
-			}
-		} else if (uploadFilePath.equals(config.getOcrUploadPath2())==true) {
-			
+	    //------------------------------------------------------
+	    //取り込み実行
+	    //------------------------------------------------------
+		//https://blog.goo.ne.jp/xmldtp/e/beb03fb01fb1d1a2c37db8d69b43dcdd
+		//コマンドラインから****.vbsを呼び出せる。
+		String[] cmdList = new String[5];
+		cmdList[0]	=	"cscript";
+		cmdList[1]	=	"impChu.vbs";		//VBSファイル指定
+		cmdList[2]	=	"/file:impChu.xlsm";
+		cmdList[3]	=	"/method:run";
+		cmdList[4]	=	"/importFilePath:" + uploadFilePath;
+		try {
+		    MyUtils.exeCmd(cmdList);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			return;
 		}
 		
 		//------------------------------------------------------

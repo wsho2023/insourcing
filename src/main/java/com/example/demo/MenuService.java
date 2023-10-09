@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class MenuService {
 
 	//https://qiita.com/rubytomato@github/items/d86039eca031ac1ed511
-	@Value("${spring.menu.project}")
+	@Value("${spring.common.project}")
 	private String project;
 	@Value("${spring.menu.href}")
 	private Set<String> href;
@@ -30,6 +30,10 @@ public class MenuService {
 		{"/logout","ログアウト"},
 		{"javascript:btnClick()","閉じる"}
 	};
+	
+	public String getProject() {
+		return (project.equals("") == true)? "":"/" + project;
+	}
 	
 	public ArrayList<String[]> getItems() {
 		if (items == null) {

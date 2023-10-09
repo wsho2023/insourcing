@@ -53,7 +53,6 @@ public class FaxDeleteFile {
 		//書き込み
 		try {
 			MyFiles.WriteJson2File(info, ".\\data\\deleteinfo.json");
-			//MyFiles.WriteString2File(jsonStr, ".\\data\\deleteinfo.json");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

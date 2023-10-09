@@ -3,6 +3,8 @@ package common.fax;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import com.example.demo.SpringConfig;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -19,7 +21,7 @@ import common.utils.MyMail;
 import common.utils.MyUtils;
 
 public class FaxScanFile {
-	static SpringConfig config;
+	SpringConfig config;
 	String kyoten;
 	String targetPath;
 	String TEST_FLAG;
@@ -28,7 +30,7 @@ public class FaxScanFile {
 	String FORM_TYPE1;
 	String FORM_TYPE2;
 	String OCR_INPUT_PATH;
-	static MyMail mailConf;
+	MyMail mailConf;
 
 	public FaxScanFile(SpringConfig argConfig, String argKyoten) {
 		MyUtils.SystemLogPrint("■FaxScanFileコンストラクタ: " + argKyoten);
@@ -65,20 +67,24 @@ public class FaxScanFile {
 	
 	public void scanRemainedFile() {
 		//指定ディレクトリ配下のファイルのみ(またはディレクトリのみ)を取得
-        File file = new File(this.targetPath);
-        File fileArray[] = file.listFiles();
+		File fileArray[] = sortedFiles(this.targetPath);
 		//MyUtils.SystemLogPrint("■scanRemainedFile: start..." + this.targetPath);
 		try {
 			for (File f: fileArray){
 				if (f.isFile()) {
 					String fileName = MyFiles.getFileName(f.toString());	//フルパスからファイル名取得
+					
 					String extension = fileName.substring(fileName.length()-3);	//拡張子：後ろから3文字
 					if (extension.equals("pdf") == true) {
 						//String extension = fileName.substring(fileName.lastIndexOf("."));	//
 						MyUtils.SystemLogPrint("  ファイル検出: " + fileName);
 						scanProcess(fileName);
+						Thread.sleep(2000);
+					//} else {
+					//	System.out.println(fileName +":" + f.lastModified());						
+					//	Thread.sleep(2000);
 					}
-                }
+				}
 			}
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -86,6 +92,18 @@ public class FaxScanFile {
 		//MyUtils.SystemLogPrint("■scanRemainedFile: end");
 	}
 	
+	//ファイル日時時系列でソートしてリストアップ		//https://teratail.com/questions/107345
+    private File[] sortedFiles(String path) {
+        File dir = new File(path);
+        File fileArray[] = dir.listFiles();
+        Arrays.sort(fileArray, new Comparator<File>() {
+            public int compare(File file1, File file2) {
+                return file1.lastModified() >= file2.lastModified() ? 1 : -1;
+            }
+        });
+        return fileArray;
+    }
+    
 	public void scanProcess(String fileName) throws Throwable {
 		String faxNo = "";
 		String createdAt = "";
@@ -408,7 +426,8 @@ public class FaxScanFile {
 		} else {
 			return;
 		}
-		
+		//メール送信第2弾
+		//本文に ocrData.getChubanlist()
         //------------------------------------------------------
         //ERRL登録処理
         //------------------------------------------------------
