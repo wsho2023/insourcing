@@ -96,6 +96,7 @@ public class MyExcel {
 		setCellStyle();
 	}
 
+	//既存ファイルの読み込み
 	public void open(String xlsPath, String sheetName, boolean readOnly) throws IOException {
 		//拡張子は、xlsxのみ
 		//Workbook book = WorkbookFactory.create(new File(xlsPath));	//使えない？
@@ -108,6 +109,7 @@ public class MyExcel {
 		} catch (InvalidFormatException e) {
 			e.printStackTrace();
 		}
+		//シート名設定
 		if (sheetName == null)
 			sheet = (XSSFSheet)book.getSheetAt(0);
 		else

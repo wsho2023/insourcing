@@ -235,7 +235,7 @@ public class OcrController {
         try {
 			OcrRirekiBean header = OcrRirekiDAO.getInstance(config).readHeader(fields, documentId);
 			for (int j=0; j<dataWidth; j++) {
-				if (header.getCOL(j) == null) {
+				if (header.getCOL(j) != null) {
 					int len = header.getCOL(j).getBytes("Shift_JIS").length;	//S-JIS文字長
 					if (col_width[j] < len) {
 						col_width[j] = len;
