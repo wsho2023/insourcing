@@ -431,13 +431,14 @@ public class FaxScanFile {
         //------------------------------------------------------
         //ERRL登録処理
         //------------------------------------------------------
+		String subject = ocrData.getDocSetName() + "注文書" + "(" + ocrData.getCreatedAt() + " " + ocrData.getUnitName() + ")";
 		String chubanlist = ocrData.getChubanlist();
 		String chubanlistMsg = "注文番号(PO)\n" + chubanlist;
 		chubanlist = chubanlist.replace("\n", " ");
     	PoErrlBean errl = new PoErrlBean();
-    	errl.setErrlData(ocrData.getUnitId(), null, ocrData.getDocSetName(), ocrData.getUnitName(), chubanlist);
+    	errl.setErrlData("OCR"+ocrData.getUnitId(), ocrData.getDocSetName(), ocrData.getUnitName(), chubanlist, subject, 0, pdfPath);
     	PoErrlDAO.getInstance(config).insertDB(errl);		
-		
+    	
 		//メール送信第2弾
 		//本文に ocrData.getChubanlist()
 		//sendScanMail(ocrData.getDocSetName());

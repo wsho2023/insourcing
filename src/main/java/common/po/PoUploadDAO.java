@@ -194,7 +194,7 @@ public class PoUploadDAO {
 	}
 
 	private void insert(PoUploadBean poUpload) {
-		String sql = "INSERT INTO POUPLOADTABLE VALUES(?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO POUPLOADTABLE VALUES(?,?,?,?,?,?,?,?,SEQ_UPL_NO.NEXTVAL)";
 		
 		//接続処理
 		Connection conn = null;

@@ -4,11 +4,11 @@
   <header th:fragment="header">
   	<button class="btn-menu" id="btn-menu">メニュー</button>
   	<nav>
-		<ul>
-			<li th:each="obj: ${menu}">
-				<a th:href="${obj[0]}" th:text="${obj[1]}" id="aa"></a>
-			</li>
-		</ul>
+	  <ul>
+		<li th:each="obj: ${menu}">
+		  <a th:href="${obj[0]}" th:text="${obj[1]}" id="aa"></a>
+		</li>
+	  </ul>
   	</nav>
   	<label th:text="${title}"></label>
   </header>

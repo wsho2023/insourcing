@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 import com.example.demo.SpringConfig;
 
+import common.utils.MyFiles;
+
 public class PoErrlDAO {
 	String DB_URL;
 	String DB_USER;
@@ -29,8 +31,9 @@ public class PoErrlDAO {
 	}
 	
 	public ArrayList<PoErrlBean> read(String toriMei, String date_fr, String date_to) {
-		String sql = "select ERRL_ID, CREATED_DATE, CREATED_BY, TORIHIKISAKI_MEI, PO_LIST from " +
-				 "(select ERRL_ID, TO_CHAR(CREATED_DATE, 'YYYY/MM/DD HH24:MI:SS') CREATED_DATE, CREATED_BY, TORIHIKISAKI_MEI, PO_LIST from POERRLTABLE where ERRL_ID like '%' ";
+		String sql = "select ERRL_ID, CREATED_DATE, CREATED_BY, TORIHIKISAKI_MEI, PO_LIST, SUBJECT, TYPE, UPLOAD_PATH from "
+				   + "(select e.ERRL_ID, TO_CHAR(e.CREATED_DATE, 'YYYY/MM/DD HH24:MI:SS') CREATED_DATE, e.CREATED_BY, e.TORIHIKISAKI_MEI, e.PO_LIST, e.SUBJECT, e.TYPE, d.UPLOAD_PATH "
+				   + " from POERRLTABLE e,OCRDATATABLE d where REPLACE(e.ERRL_ID, 'OCR', '')=d.UNIT_ID and ERRL_ID like '%' ";
         if (date_fr != null && date_fr.equals("") != true) {
         	date_fr = date_fr.replace("-", "/");	//(yyyy-MM-dd) → (yyyy/MM/dd)
         	sql = sql + " and CREATED_DATE >= '" + date_fr + "'";
@@ -53,12 +56,16 @@ public class PoErrlDAO {
 
             PoErrlBean errl = new PoErrlBean();
     		while(rs.next()) {
-    			// ユーザIDと名前をBeanクラスへセット
+    			// Beanクラスへセット
     			errl.errlId = rs.getString(1);
     			errl.createdDate = rs.getString(2);
     			errl.createdBy = rs.getString(3);
     			errl.toriMei = rs.getString(4);
     			errl.poList = rs.getString(5);
+    			errl.subject = rs.getString(6);
+    			errl.type = rs.getInt(7);
+    			errl.uploadPath = rs.getString(8);
+    			errl.fileName = MyFiles.getFileName(errl.uploadPath);
             	// リストにBeanクラスごと格納
     			list.add(errl);
     			//Beanクラスを初期化
@@ -87,8 +94,8 @@ public class PoErrlDAO {
 	}
 	
     public void insertDB(PoErrlBean errl) {
-		String sql = "insert into PoErrlTable(ERRL_ID,CREATED_DATE,CREATED_BY,TORIHIKISAKI_MEI,PO_LIST) " 
-				   + "values(?,sysdate,?,?,?)";
+		String sql = "insert into PoErrlTable(ERRL_ID,CREATED_DATE,CREATED_BY,TORIHIKISAKI_MEI,PO_LIST,SUBJECT,TYPE) " 
+				   + "values(?,sysdate,?,?,?,?,?)";
     	
 		//接続処理
 		Connection conn = null;

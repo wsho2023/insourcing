@@ -18,7 +18,7 @@ import common.utils.MyUtils;
 @EnableScheduling
 @EnableAsync
 public class InsourcingApplication implements CommandLineRunner {
-	final boolean webOnly = false;
+	final boolean webOnly = true;
 	
     @Autowired
     private SpringConfig config;
