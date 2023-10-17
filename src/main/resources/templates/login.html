@@ -4,11 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <title th:text="${title}"></title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <link rel="stylesheet" th:href="@{/css/common.css}">
 </head>
 <style>
 	#button {
-		font-size: 105%
+		font-size: 100%
 	}
 	.error {
 	    color: red;
@@ -25,7 +27,6 @@
   <form method="post" action="upload.html" th:action="@{/login}">
   	ユーザー名: <input type="text" name="username"><br>
     パスワード: <input type="password" name="password"><br>
-	<br>
     <button type="submit" id="button">ログイン</button>
   </form>
 </body>

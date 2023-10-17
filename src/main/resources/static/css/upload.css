@@ -75,11 +75,12 @@
 	border: 1px solid blue;
 	padding: 0px 5px;
 }
-#text_user {
-	font-size: 105%
+#text_userName {
+	font-size: 100%;
+	line-height: 10px
 }
 #select-1 {
-	font-size: 105%
+	font-size: 100%;
 }
 #uploadButton {
 	font-size: 105%

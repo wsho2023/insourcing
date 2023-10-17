@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <title th:text="${title}"></title>
   <script type="text/javascript" th:src="@{/js/lib/jquery-3.5.1.min.js}"></script>
+  <!-- Bootstrap CSS -->
+  <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">-->
   <link rel="stylesheet" th:href="@{/css/common.css}">
   <link rel="stylesheet" th:href="@{/css/upload.css}">
 </head>
@@ -14,7 +16,7 @@
   <table id="control">
   	<tr>
   		<th>ユーザー</th>
-  		<td><label th:text="${userName}"></label></td>
+  		<td><label  id="text_userName" th:text="${userName}"></label></td>
   		<input type="hidden" id="text_id" size="30" th:value="${userId}">
   		<input type="hidden" id="text_user" size="30" th:value="${userName}">
   		<input type="hidden" id="text_code" size="30" th:value="${code}">
@@ -36,7 +38,8 @@
   <input type="button" id="uploadButton" value="アップロード">
   <!-- <span>　　　　　　　　　　　　　　　　　　　　 　　　　　　　　　　　　　　　　</span> -->
   <!-- <a th:href="${logout}"><button type="button" id="logoutButton">ログアウト</button></a> -->
-  <h3>登録履歴</h3>
+  <br><br>
+  <h4>登録履歴</h4>
   <div id='listtable'></div>
   <script th:inline="javascript">
   	$(function() {
@@ -154,9 +157,9 @@
 				ext = file.name.split('.').pop(); //MIME typeが種痘できない場合、拡張子を入れる。
 				file_type = ext;
 			} else {
-				file_type =file.type;
+				file_type = file.type;
 			}
-			console.log('file_type: '+file_type);
+			console.log('file_type: ' + file_type);
 			var pdfType= 'pdf';
 			if (!(file_type.match('pdf')||file_type.match('tsv')||file_type.match(
 					'application/vnd.ms-excel')||file_type.match('text/plain')||file_type.match('text/csv')

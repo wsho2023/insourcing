@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title th:text="${title}"></title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!--  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">-->
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <script type="text/javascript" th:src="@{/js/lib/jquery-3.5.1.min.js}"></script>
@@ -14,7 +14,7 @@
   <!--<script type="text/javascript" src="js/lib/jquery.ui.datepicker-ja.min.js"></script>-->
   <link rel="stylesheet" th:href="@{/css/lib/theme.blue.css}">
   <link rel="stylesheet" th:href="@{/css/lib/jquery-ui.css}">
-  <link rel="stylesheet" th:href="@{/css/common2.css}">
+  <link rel="stylesheet" th:href="@{/css/common-bts.css}">
 </head>
 <body>
   <!--  header part-->
@@ -49,7 +49,7 @@
           <div class="modal-body">
             <div class="form-group">
                 <label for="cusno">宛先</label>
-				<select  name="toaddr" id="toaddr" required>
+				<select name="toaddr" id="toaddr" required>
 					<option value="">選択してください</option>
 					<option value="宛先1">宛先1</option>
 					<option value="宛先2">宛先2</option>
@@ -137,19 +137,25 @@
 	});
     //https://rukiadia.hatenablog.jp/entry/2014/02/19/132445
 	//「メール」ボタンをクリックしたとき
+	var toaddr;
+	var ccaddr;
+	var type;
+	var subject;
+	var attach;
+	var body;
 	function sendMail(obj) {
 		console.log("button:" + obj.value);
         // メールに記載したい情報をhiddenタグから取得
-        var type = obj.nextElementSibling.value
+        type = obj.nextElementSibling.value
 		console.log("type:" + type);
 		document.getElementById("type").innerText = type;
-        var subject = obj.nextElementSibling.nextElementSibling.value;
+        subject = obj.nextElementSibling.nextElementSibling.value;
 		console.log("subject:" + subject);
 		document.getElementById("subject").innerText = subject;
-        var attach = obj.nextElementSibling.nextElementSibling.nextElementSibling.value;
+        attach = obj.nextElementSibling.nextElementSibling.nextElementSibling.value;
 		console.log("attach:" + attach);
 		document.getElementById("attach").innerText = attach;
-        var body = obj.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.value;
+        body = obj.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.value;
         body = body.replaceAll(" ", "\n");
         body = "注文番号(PO)\n" + body;
 		console.log("body:" + body);
@@ -164,16 +170,20 @@
 	//「送信」ボタンをクリックしたとき
 	$('#chgDateSub').on('click', function() {
 		console.log('click');
-		var toaddr = $('#toaddr').val();
-		var ccaddr = $('#ccaddr').val();
-		var subject = $('#subject').val();
-		var attach = $('#attach').val();
-		var body = $('#body').val();
+		toaddr = $('#toaddr option:selected').text();
+		ccaddr = $('#ccaddr').text();
+		ccaddr = document.getElementById("ccaddr").innerText
+		//subject = $('#subject').text();
+		subject = document.getElementById("subject").innerText
+		//attach = $('#attach').text();
+		attach = document.getElementById("attach").innerText
+		//body = $('#body').text();
+		//body = document.getElementById("body").innerText
 		console.log("toaddr:" + toaddr);
-		console.log("ccaddr:" + toaddr);
-		console.log("subject:" + toaddr);
+		console.log("ccaddr:" + ccaddr);
+		console.log("subject:" + subject);
 		console.log("attach:" + attach);
-		console.log("body:" + toaddr);
+		console.log("body:" + body);
 		$("#modalForm").modal('hide'); 
 	});	
   </script>
