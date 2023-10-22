@@ -51,8 +51,8 @@
                 <label for="cusno">宛先</label>
 				<select name="toaddr" id="toaddr" required>
 					<option value="">選択してください</option>
-					<option value="宛先1">宛先1</option>
-					<option value="宛先2">宛先2</option>
+					<option value="1">宛先1<test1@gmail.com></option>
+					<option value="2">宛先2<test2@gmail.com></option>
 				</select>
                 <br>
                 <label for="cusno">ＣＣ</label>
@@ -82,32 +82,29 @@
   <!--  <div th:replace="common::pager"></div>-->
   <table id="table" class="tablesorter">
   	<thead><tr align=center>
-   		<th style="font-size: 11pt;">ID</th>
   		<th style="font-size: 11pt;">作成日時</th>
   		<th style="font-size: 11pt;">作成者</th>
   		<th style="font-size: 11pt;">帳票名</th>
+   		<th style="font-size: 11pt;">ファイル名</th>
   		<th style="font-size: 11pt;">POリスト</th>
   		<th style="font-size: 11pt;">送信</th>
 		<!--<th style="font-size: 11pt;">送信日時</th>-->
 		<!--<th style="font-size: 11pt;">送信者</th>-->
 	</tr></thead>
     <tbody><tr th:each="obj : ${list}">
-		<td th:text="${obj.errlId}"></td>
 		<td th:text="${obj.createdDate}"></td>
 		<td th:text="${obj.createdBy}"></td>
 		<td th:text="${obj.toriMei}"></td>
-<!--		<td th:text="${obj.poList}"></td>-->
+		<td><a th:href="${obj.uploadPath}" class="link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" target="_blank" th:text="${obj.fileName}"></a></td>
 		<td><div th:title="${obj.poList}">POリスト</DIV></td>
-		
 		<td><input type="button" value="メール" onclick="sendMail(this)">
 			<input type='hidden' id='type' th:value="${obj.type}">
 			<input type='hidden' id='subject' th:value="${obj.subject}">
 			<input type='hidden' id='attach' th:value="${obj.fileName}">
-			<input type='hidden' id='body' th:value="${obj.poList}"></td>
+			<input type='hidden' id='body' th:value="${obj.poList}">
+			<input type='hidden' id='errlId' th:value="${obj.errlId}"></td>
 		<!--<td th:text="${obj.saveDate}"></td>-->
 		<!--<td th:text="${obj.saveBy}"></td>-->
-		<!--<td><a th:href="${obj.uploadFilePath}" target="_blank" th:text="${obj.fileName}"></a></td>-->
-		<!--<td th:text="${obj.linkUrl != null}? 'OCR' : '-'"></td>-->
 	</tr></tbody>
   </table>
   <script th:inline="javascript">
@@ -137,12 +134,14 @@
 	});
     //https://rukiadia.hatenablog.jp/entry/2014/02/19/132445
 	//「メール」ボタンをクリックしたとき
+	var toId;
 	var toaddr;
 	var ccaddr;
 	var type;
 	var subject;
 	var attach;
 	var body;
+	var errlId;
 	function sendMail(obj) {
 		console.log("button:" + obj.value);
         // メールに記載したい情報をhiddenタグから取得
@@ -161,30 +160,52 @@
 		console.log("body:" + body);
 		let textarea = document.getElementById('body');
 		textarea.value = body;		
-		//document.getElementById("body").innerText = body;
-		
+        errlId = obj.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.value;
+        
 		$("#modalForm").modal('show'); 
-        //location.href = 'mailto:' + address + '?subject=' + subject + '&body=' + body;	
 	}
 	
 	//「送信」ボタンをクリックしたとき
 	$('#chgDateSub').on('click', function() {
 		console.log('click');
+		toId = $('#toaddr option:selected').val();
 		toaddr = $('#toaddr option:selected').text();
-		ccaddr = $('#ccaddr').text();
+		//ccaddr = $('#ccaddr').text();
 		ccaddr = document.getElementById("ccaddr").innerText
-		//subject = $('#subject').text();
 		subject = document.getElementById("subject").innerText
-		//attach = $('#attach').text();
 		attach = document.getElementById("attach").innerText
-		//body = $('#body').text();
-		//body = document.getElementById("body").innerText
 		console.log("toaddr:" + toaddr);
 		console.log("ccaddr:" + ccaddr);
 		console.log("subject:" + subject);
 		console.log("attach:" + attach);
 		console.log("body:" + body);
-		$("#modalForm").modal('hide'); 
+		console.log("errlId:" + errlId);
+		
+		var result = window.confirm("SPへ添付メール送信しますか？\n");
+		if (result != true) {
+			//キャンセル
+			return;
+		}
+		//登録処理開始
+		const formData = new FormData();
+		formData.append('type', "sendmail");
+		formData.append('toaddr', toaddr);
+		formData.append('ccaddr', ccaddr);
+		formData.append('subject', subject);
+		formData.append('attach', attach);
+		formData.append('body', body);
+		formData.append('errlId', errlId);
+		console.log(formData);
+   	    $.post('sendmail', 'type=sendmail&toaddr='+toaddr+'toaddr='+ccaddr+'ccaddr='+subject+'subject='+attach+'attach='+attach+'body='+body+'errlId='+errlId)
+        .done(function (data) {
+            // 通信成功時のコールバック
+            console.log(data);
+			alert("送信完了しました。\n 宛先: " + toaddr);
+		}).fail(function(err) {
+			console.log(err);
+		});
+		
+		$("#modalForm").modal('hide');
 	});	
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>

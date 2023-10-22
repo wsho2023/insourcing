@@ -250,7 +250,6 @@ public class MyExcel {
 		} else {
 			return false;
 		}
-
 	}
 
 	public Object getCellValue(Cell cell) {
@@ -378,10 +377,12 @@ public class MyExcel {
 			System.err.println("書き込みデータ無し");
 			return -1;
 		}
-        final var tableSheet = (XSSFSheet) book.getSheet(sheetName);
+		XSSFSheet tableSheet = (XSSFSheet) book.getSheet(sheetName);
 		if (tableSheet == null) {
-			System.err.println("sheetName: " + sheetName + " error!");
-			return -1;
+			//System.err.println("sheetName: " + sheetName + " error!");
+			//return -1;
+			//シート作成
+			tableSheet = (XSSFSheet) book.createSheet(sheetName);
 		}
 		
 		int maxCol = list.get(0).size();
@@ -421,7 +422,7 @@ public class MyExcel {
 									cell.setCellStyle(suryoStyle);
 									cell.setCellValue(tmpVal);
 								} catch(NumberFormatException e) {
-									System.err.println(rowIdx + "SURYO変換NG: " + strValue);
+									System.err.println(rowIdx + " SURYO変換NG: " + strValue);
 									cell.setCellValue(strValue);
 								}
 								//System.out.println(calFmt[1] + ":" + strValue);
@@ -433,7 +434,7 @@ public class MyExcel {
 									cell.setCellStyle(tankaStyle);
 									cell.setCellValue(tmpVal);
 								} catch(NumberFormatException e) {
-									System.err.println(rowIdx + "TANKA変換NG: " + strValue);
+									System.err.println(rowIdx + " TANKA変換NG: " + strValue);
 									cell.setCellValue(strValue);
 								}
 								//System.out.println(calFmt[1] + ":" + strValue);
@@ -445,7 +446,7 @@ public class MyExcel {
 									cell.setCellStyle(kingakuStyle);
 									cell.setCellValue(tmpVal);
 								} catch(NumberFormatException e) {
-									System.err.println(rowIdx + "KINGAKU変換NG: " + strValue);
+									System.err.println(rowIdx + " KINGAKU変換NG: " + strValue);
 									cell.setCellValue(strValue);
 								}
 								//System.out.println(calFmt[1] + ":" + strValue);
@@ -458,7 +459,7 @@ public class MyExcel {
 									cell.setCellStyle(dateStyle);
 									cell.setCellValue(tmpVal);
 								} catch (ParseException e) {
-									System.err.println(rowIdx + "DATE変換NG: " + strValue);
+									System.err.println(rowIdx + " DATE変換NG: " + strValue);
 									cell.setCellValue(strValue);
 								}								
 								//System.out.println(calFmt[1] + ":" + strValue);
@@ -471,7 +472,7 @@ public class MyExcel {
 									cell.setCellStyle(dtimeStyle);
 									cell.setCellValue(tmpVal);
 								} catch (ParseException e) {
-									System.err.println(rowIdx + "DATETIME変換NG: " + strValue);
+									System.err.println(rowIdx + " DATETIME変換NG: " + strValue);
 									cell.setCellValue(strValue);
 								}								
 								//System.out.println(calFmt[1] + ":" + strValue);

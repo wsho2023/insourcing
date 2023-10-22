@@ -37,6 +37,10 @@ public class FaxDataDAO {
         	date_fr = date_fr.replace("-", "/");	//(yyyy-MM-dd) → (yyyy/MM/dd)
         	sql = sql + " and f.CDATE >= '" + date_fr + "'";
         }
+        if (date_to != null && date_to.equals("") != true) {
+        	date_to = date_to.replace("-", "/");	//(yyyy-MM-dd) → (yyyy/MM/dd)
+        	sql = sql + " and f.CDATE <= '" + date_to + "'";
+        }
         if (soushinMotoNashi == null) soushinMotoNashi = "false"; 
         if (formName != null && formName.equals("") != true && soushinMotoNashi.equals("true") == false) {
         	sql = sql + " and f.SOUSHN_MOTO like '%" + formName + "%'";

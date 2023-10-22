@@ -31,6 +31,8 @@ import common.ocr.OcrRirekiBean;
 import common.ocr.OcrRirekiDAO;
 import common.po.PoErrlBean;
 import common.po.PoErrlDAO;
+import common.utils.MyMail;
+import common.utils.MyUtils;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
@@ -176,6 +178,69 @@ public class OcrController {
 		
 		// 次の画面に遷移
 		return "errllist";
+    }
+    
+    @PostMapping("/sendmail")
+    @ResponseBody	//＠ResponseBody アノテーションを付けることで、戻り値を HTTP レスポンスのコンテンツとすることができます。
+    public String uploadPost(
+    	@RequestParam("type") String type,
+    	@RequestParam("toaddr") String toaddr, 
+    	@RequestParam("ccaddr") String ccaddr,
+    	@RequestParam("subject") String subject,
+    	@RequestParam("attach") String attach,
+    	@RequestParam("body") String body,
+    	@RequestParam("errlId") String errlId
+    ) {
+    	MyUtils.SystemLogPrint("■post:/sendmail start");
+        System.out.println("toaddr: " + toaddr);      
+        System.out.println("ccaddr" + ccaddr);
+        System.out.println("subject: " + subject);
+        System.out.println("attach: " + attach);
+        System.out.println("body: " + body);
+        System.out.println("errlId: " + errlId);
+		
+		//ユーザーがアップロードしたことを通知するメール送信(別スレッドで非同期)
+		SendMail sendMail = new SendMail(config, toaddr, ccaddr, subject, attach, body);
+		new Thread(sendMail).start();        
+        //レスポンス
+		return "{\"result\":\"ok\"}";
+    }
+    
+    public class SendMail implements Runnable {
+		MyMail mailConf;
+    	
+    	public SendMail(SpringConfig config, String toaddr, String ccaddr, String subject, String attach, String body) {
+			mailConf = new MyMail();
+			mailConf.host = config.getMailHost();
+			mailConf.port = config.getMailPort();
+			mailConf.username = config.getMailUsername();
+			mailConf.password = config.getMailPassword();
+			mailConf.smtpAuth = config.getMailSmtpAuth();
+			mailConf.starttlsEnable = config.getMailSmtpStarttlsEnable();
+			
+			mailConf.fmAddr = config.getMailFrom();
+			mailConf.toAddr = toaddr;
+			mailConf.ccAddr = ccaddr;
+			mailConf.bccAddr = "";
+			
+			mailConf.subject = subject;
+			mailConf.body = body;
+			mailConf.attach = attach;
+    	}
+    	
+    	@Override
+		public void run() {
+			MyUtils.SystemLogPrint("  メール送信...");
+			MyUtils.SystemLogPrint("  MAIL FmAddr: " + mailConf.fmAddr);
+			MyUtils.SystemLogPrint("  MAIL ToAddr: " + mailConf.toAddr);
+			MyUtils.SystemLogPrint("  MAIL CcAddr: " + mailConf.ccAddr);
+			MyUtils.SystemLogPrint("  MAIL BcAddr: " + mailConf.bccAddr);
+			MyUtils.SystemLogPrint("  MAIL Subject: " + mailConf.subject);
+			MyUtils.SystemLogPrint("  MAIL Body: \n" + mailConf.body);
+			MyUtils.SystemLogPrint("  MAIL Attach: " + mailConf.attach);
+			mailConf.sendRawMail();
+            System.out.println("メール送信完了");
+		}
     }
     
     @GetMapping("/ocr/result")
@@ -374,6 +439,7 @@ public class OcrController {
     	return "post_ok";
     }
     
+    //curl -X GET http://localhost:8080/api/daicho -O daicho.tsv
     @GetMapping("/api/daicho")
     public void getApiDaicho(HttpServletResponse response){
 		ArrayList<OcrDaichoBean> list;

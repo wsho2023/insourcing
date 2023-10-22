@@ -38,6 +38,10 @@ public class PoErrlDAO {
         	date_fr = date_fr.replace("-", "/");	//(yyyy-MM-dd) → (yyyy/MM/dd)
         	sql = sql + " and CREATED_DATE >= '" + date_fr + "'";
         }
+        if (date_to != null && date_to.equals("") != true) {
+        	date_to = date_to.replace("-", "/");	//(yyyy-MM-dd) → (yyyy/MM/dd)
+        	sql = sql + " and CREATED_DATE <= '" + date_to + "'";
+        }
         if (toriMei != null && toriMei.equals("") != true) {
         	sql = sql + " and TORIHIKISAKI_MEI like '%" + toriMei + "%'";
 		}

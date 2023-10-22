@@ -40,6 +40,10 @@ public class OcrDataFormDAO {
         	date_fr = date_fr.replace("-", "/");	//(yyyy-MM-dd) → (yyyy/MM/dd)
         	sql = sql + " and CREATEDAT >= '" + date_fr + " 00:00:00'";
         }
+        if (date_to != null && date_to.equals("") != true) {
+        	date_to = date_to.replace("-", "/");	//(yyyy-MM-dd) → (yyyy/MM/dd)
+        	sql = sql + " and CREATEDAT <= '" + date_to + "'";
+        }
         if (formName != null && formName.equals("") != true) {
         	sql = sql + " and UNIT_NAME like '%" + formName + "%'";
 		}
