@@ -180,27 +180,27 @@ public class OcrController {
 		return "errllist";
     }
     
-    @PostMapping("/sendmail")
+    @PostMapping("/errl/sendmail")
     @ResponseBody	//＠ResponseBody アノテーションを付けることで、戻り値を HTTP レスポンスのコンテンツとすることができます。
-    public String uploadPost(
+    public String sendMailPost(
     	@RequestParam("type") String type,
     	@RequestParam("toaddr") String toaddr, 
-    	@RequestParam("ccaddr") String ccaddr,
-    	@RequestParam("subject") String subject,
-    	@RequestParam("attach") String attach,
-    	@RequestParam("body") String body,
-    	@RequestParam("errlId") String errlId
+		@RequestParam(name="ccaddr", required = false) String ccaddr, 
+		@RequestParam(name="subject", required = false) String subject, 
+		@RequestParam(name="attach", required = false) String attach, 
+		@RequestParam(name="body", required = false) String body, 
+		@RequestParam(name="uploadPath", required = false) String uploadPath
     ) {
     	MyUtils.SystemLogPrint("■post:/sendmail start");
         System.out.println("toaddr: " + toaddr);      
         System.out.println("ccaddr" + ccaddr);
         System.out.println("subject: " + subject);
         System.out.println("attach: " + attach);
+        System.out.println("uploadPath: " + uploadPath);
         System.out.println("body: " + body);
-        System.out.println("errlId: " + errlId);
 		
 		//ユーザーがアップロードしたことを通知するメール送信(別スレッドで非同期)
-		SendMail sendMail = new SendMail(config, toaddr, ccaddr, subject, attach, body);
+		SendMail sendMail = new SendMail(config, toaddr, ccaddr, subject, uploadPath, body);
 		new Thread(sendMail).start();        
         //レスポンス
 		return "{\"result\":\"ok\"}";

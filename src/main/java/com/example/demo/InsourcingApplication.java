@@ -14,6 +14,8 @@ public class InsourcingApplication implements CommandLineRunner {
     @Autowired
     private SpringConfig config;
     @Autowired
+    private MenuService menuService;
+    @Autowired
     private FaxScanService faxScanService1;
     @Autowired
     private FaxScanService faxScanService2;
@@ -28,7 +30,7 @@ public class InsourcingApplication implements CommandLineRunner {
 	 
     @Override
     public void run(String... strings) throws Exception {
-    	if (webOnly == false) {
+    	if (menuService.getWebOnly() == false) {
 	    	faxScanService1.run(config, config.getScanDefTgt1());
 			Thread.sleep(1000);
 			faxScanService2.run(config, config.getScanDefTgt2());

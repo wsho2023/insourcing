@@ -13,6 +13,8 @@ public class MenuService {
 	//https://qiita.com/rubytomato@github/items/d86039eca031ac1ed511
 	@Value("${spring.common.project}")
 	private String project;
+	@Value("${spring.common.webonly}")
+	private String webonly;
 	@Value("${spring.menu.href}")
 	private Set<String> href;
 	@Value("${spring.menu.title}") 
@@ -33,6 +35,10 @@ public class MenuService {
 	
 	public String getProject() {
 		return (project.equals("") == true)? "":"/" + project;
+	}
+	
+	public boolean getWebOnly() {
+		return (webonly.equals("true") == true);
 	}
 	
 	public ArrayList<String[]> getItems() {

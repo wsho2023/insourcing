@@ -27,57 +27,7 @@
 	 <div th:replace="common::chuui"></div>
   </form>
   
-  <!--ボタンの設定
-  <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalForm">
-    モーダル展開ボタン
-  </button> -->
-  
-  <!-- https://masalib.hatenablog.com/entry/2020/11/14/000000 -->
-  <!-- Modal の中身 -->
-  <div class="modal fade" id="modalForm" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <!-- Modal ヘッダー -->
-        <div class="modal-header">
-            <h5 class="modal-title" id="Modal">メール送信フォーム</h5>
-            <button type="button" class="close" data-dismiss="modal">
-            <span aria-hidden="true">×</span><span class="sr-only">Close</span>
-            </button>
-        </div>
-        <form role="form" id="form1">
-          <!-- Modal ボディー -->
-          <div class="modal-body">
-            <div class="form-group">
-                <label for="cusno">宛先</label>
-				<select name="toaddr" id="toaddr" required>
-					<option value="">選択してください</option>
-					<option value="1">宛先1<test1@gmail.com></option>
-					<option value="2">宛先2<test2@gmail.com></option>
-				</select>
-                <br>
-                <label for="cusno">ＣＣ</label>
-                <input type="text" name="ccaddr" id="ccaddr">　　
-                <br>
-                <label for="cusno">件名</label>
-				<label name="subject" id="subject">件名</label>
-                <br>
-                <label for="cusno">添付</label>
-				<label name="attach" id="attach">添付ファイル</label>
-                <br>
-                <label for="cusno">本文</label>
-				<textarea name="body" id="body" cols="22" rows="5" style="vertical-align:top;" value="本文"></textarea>
-            </div>
-          </div>
-          <!-- Modal フッター -->
-          <div class="modal-footer">
-          <button type="button" class="btn btn-default pull-left" data-dismiss="modal">キャンセル</button>
-          <button type="button" class="btn btn-primary" id="chgDateSub">送信</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  <!-- ------------------------------------------------------ -->
+  <div th:replace="common::maildialog"></div>
 	  
   <!--  <div th:replace="common::pager"></div>-->
   <table id="table" class="tablesorter">
@@ -92,17 +42,17 @@
 		<!--<th style="font-size: 11pt;">送信者</th>-->
 	</tr></thead>
     <tbody><tr th:each="obj : ${list}">
-		<td th:text="${obj.createdDate}"></td>
-		<td th:text="${obj.createdBy}"></td>
-		<td th:text="${obj.toriMei}"></td>
-		<td><a th:href="${obj.uploadPath}" class="link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" target="_blank" th:text="${obj.fileName}"></a></td>
-		<td><div th:title="${obj.poList}">POリスト</DIV></td>
-		<td><input type="button" value="メール" onclick="sendMail(this)">
+		<td width="200" th:text="${obj.createdDate}"></td>
+		<td width="100" th:text="${obj.createdBy}"></td>
+		<td width="100" th:text="${obj.toriMei}"></td>
+		<td width="400" ><a th:href="${obj.uploadPath}" class="link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" target="_blank" th:text="${obj.fileName}"></a></td>
+		<td width="100" ><div th:title="${obj.poList}">POリスト</DIV></td>
+		<td width="100" ><input type="button" value="メール" onclick="sendMail(this)">
 			<input type='hidden' id='type' th:value="${obj.type}">
 			<input type='hidden' id='subject' th:value="${obj.subject}">
 			<input type='hidden' id='attach' th:value="${obj.fileName}">
 			<input type='hidden' id='body' th:value="${obj.poList}">
-			<input type='hidden' id='errlId' th:value="${obj.errlId}"></td>
+			<input type='hidden' id='uploadPath' th:value="${obj.uploadPath}"></td>
 		<!--<td th:text="${obj.saveDate}"></td>-->
 		<!--<td th:text="${obj.saveBy}"></td>-->
 	</tr></tbody>
@@ -141,7 +91,7 @@
 	var subject;
 	var attach;
 	var body;
-	var errlId;
+	var uploadPath;
 	function sendMail(obj) {
 		console.log("button:" + obj.value);
         // メールに記載したい情報をhiddenタグから取得
@@ -160,47 +110,51 @@
 		console.log("body:" + body);
 		let textarea = document.getElementById('body');
 		textarea.value = body;		
-        errlId = obj.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.value;
+        uploadPath = obj.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.value;
         
 		$("#modalForm").modal('show'); 
 	}
 	
 	//「送信」ボタンをクリックしたとき
 	$('#chgDateSub').on('click', function() {
-		console.log('click');
+		console.log('送信処理');
 		toId = $('#toaddr option:selected').val();
-		toaddr = $('#toaddr option:selected').text();
-		//ccaddr = $('#ccaddr').text();
+		//toaddr = $('#toaddr option:selected').text();
 		ccaddr = document.getElementById("ccaddr").innerText
 		subject = document.getElementById("subject").innerText
 		attach = document.getElementById("attach").innerText
-		console.log("toaddr:" + toaddr);
+		console.log("toId:" + toId);
+		//console.log("toaddr:" + toaddr);
 		console.log("ccaddr:" + ccaddr);
 		console.log("subject:" + subject);
-		console.log("attach:" + attach);
-		console.log("body:" + body);
-		console.log("errlId:" + errlId);
-		
-		var result = window.confirm("SPへ添付メール送信しますか？\n");
+		console.log("attach:" + uploadPath);
+		console.log("uploadPath:" + uploadPath);
+		console.log("body:\n" + body);
+		if (toId == "") {
+			alert('宛先を選択してください');
+			return;
+		}
+		if (ccaddr == null) {
+			ccaddr == ""
+		}
+		var result = window.confirm("SPへ添付メール送信しますか？\n"
+								  + "---------------------------------------------\n"
+								  + "宛先: " + toId + "\n"
+								  + "ＣＣ: " + ccaddr + "\n"
+								  + "件名: " + subject + "\n"
+								  + "添付: " + attach + "\n"
+								  + "本文: \n" + body + "\n"
+								  + "---------------------------------------------\n");
 		if (result != true) {
 			//キャンセル
 			return;
 		}
 		//登録処理開始
-		const formData = new FormData();
-		formData.append('type', "sendmail");
-		formData.append('toaddr', toaddr);
-		formData.append('ccaddr', ccaddr);
-		formData.append('subject', subject);
-		formData.append('attach', attach);
-		formData.append('body', body);
-		formData.append('errlId', errlId);
-		console.log(formData);
-   	    $.post('sendmail', 'type=sendmail&toaddr='+toaddr+'toaddr='+ccaddr+'ccaddr='+subject+'subject='+attach+'attach='+attach+'body='+body+'errlId='+errlId)
+   	    $.post('sendmail', 'type=sendmail&toaddr='+toId+'&ccaddr='+ccaddr+'&subject='+subject+'&attach='+attach+'&body='+body+'&uploadPath='+uploadPath)
         .done(function (data) {
             // 通信成功時のコールバック
             console.log(data);
-			alert("送信完了しました。\n 宛先: " + toaddr);
+			alert("送信完了しました。\n 宛先: " + toId);
 		}).fail(function(err) {
 			console.log(err);
 		});

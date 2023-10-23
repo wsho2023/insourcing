@@ -13,7 +13,7 @@
   	<label th:text="${title}"></label>
   </header>
   <chuui th:fragment="chuui">IEサポート終了に伴い...</chuui>
-  <div th:fragment=="pager" class="pager">
+  <div th:fragment="pager" class="pager">
     <button type="button" class="first"><<</button>
     <button type="button" class="prev"><</button>
     <span class="pagedisplay"></span>
@@ -30,4 +30,50 @@
 <!--  <footer th:fragment="footer">
     <p style="background: yellow">フッターです</p>
   </footer>-->
+  <!-- https://masalib.hatenablog.com/entry/2020/11/14/000000 -->
+  <!-- Modal の中身 -->
+  <div th:fragment="maildialog" class="modal fade" id="modalForm" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <!-- Modal ヘッダー -->
+        <div class="modal-header">
+            <h5 class="modal-title" id="Modal">メール送信フォーム</h5>
+            <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">×</span><span class="sr-only">Close</span>
+            </button>
+        </div>
+        <form role="form" id="form1">
+          <!-- Modal ボディー -->
+          <div class="modal-body">
+            <div class="form-group">
+                <label for="cusno">宛先</label>
+				<select name="toaddr" id="toaddr" required>
+					<option value="">選択してください</option>
+					<option value="test1@gmail.com">宛先1:test1@gmail.com</option>
+					<option value="test2@gmail.com">宛先2:test2@gmail.com</option>
+				</select>
+                <br>
+                <label for="cusno">ＣＣ</label>
+                <input type="text" name="ccaddr" id="ccaddr">　　
+                <br>
+                <label for="cusno">件名</label>
+				<label name="subject" id="subject">件名</label>
+                <br>
+                <label for="cusno">添付</label>
+				<label name="attach" id="attach">添付ファイル</label>
+                <br>
+                <label for="cusno">本文</label>
+				<textarea name="body" id="body" cols="22" rows="5" style="vertical-align:top;" value="本文"></textarea>
+            </div>
+          </div>
+          <!-- Modal フッター -->
+          <div class="modal-footer">
+          <button type="button" class="btn btn-default pull-left" data-dismiss="modal">キャンセル</button>
+          <button type="button" class="btn btn-primary" id="chgDateSub">送信</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- ------------------------------------------------------ -->
 </html>

@@ -27,7 +27,7 @@ public class OcrProcService {
 	@Scheduled(fixedRate = 30000)	// 30000ms間隔
 	public void runOcrProcess() {
 		if (process == null) {
-			MyUtils.SystemErrPrint("wait... Ocr Initialization");
+			//MyUtils.SystemErrPrint("wait... Ocr Initialization");
 			return;
 		}
 	    // 定期的に実行したい処理
