@@ -17,10 +17,12 @@ public class OcrProcService {
 	OcrProcess process;
     boolean ocrExlusiveFlag;
     int count;
+    String watchdogPath;
     
 	public void run(SpringConfig config) {
 		ocrExlusiveFlag = false;
 		count = 0;
+		watchdogPath = config.getScanPath2() + "data\\watchdog.dat";
 		process = new OcrProcess(config);
 	}
 	
@@ -44,7 +46,7 @@ public class OcrProcService {
 	    //watchdog 書き込み処理
 		try {
 			String str = MyUtils.getDate()+"\n" + count+"\n";
-			MyFiles.writeString2File(str, ".\\data\\watchdog.dat");
+			MyFiles.writeString2File(str, watchdogPath);
 		} catch (IOException e){
 			MyUtils.SystemErrPrint(e.toString());
 		}                

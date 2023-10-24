@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.demo.login.SecuritySession;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -39,6 +40,8 @@ import jakarta.servlet.http.HttpServletResponse;
 public class OcrController {
     @Autowired
     private SpringConfig config;
+    @Autowired
+    private SecuritySession securitySession;
     @Autowired
     private MenuService menuService;
 	    
@@ -150,10 +153,14 @@ public class OcrController {
 		String title = "ERRL結果一覧表";
 		ArrayList<PoErrlBean> list = null;
         list = PoErrlDAO.getInstance(config).read(null, null, null);
+		String userId = securitySession.getUsername();
+		String userName = securitySession.getName();
         
 		// 次の画面に値を渡す
 		model.addAttribute("menu", menuService.getItems());
 		model.addAttribute("title", title);
+		model.addAttribute("userId", userId);
+		model.addAttribute("userName", userName);
 		model.addAttribute("list", list);
 		
 		// 次の画面に遷移

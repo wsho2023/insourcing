@@ -92,9 +92,17 @@
 	var attach;
 	var body;
 	var uploadPath;
+  	var userId = /*[[${userId}]]*/ null;
+  	var userName = /*[[${userName}]]*/ null;
 	function sendMail(obj) {
 		console.log("button:" + obj.value);
         // メールに記載したい情報をhiddenタグから取得
+	  	console.log('userId='+userId);
+	  	console.log('userName='+userName);
+	  	ccaddr = userId;
+		console.log("ccaddr:" + ccaddr);
+		let text = document.getElementById('ccaddr');
+		text.value = ccaddr;		
         type = obj.nextElementSibling.value
 		console.log("type:" + type);
 		document.getElementById("type").innerText = type;

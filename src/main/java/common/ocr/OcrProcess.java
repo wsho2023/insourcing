@@ -881,7 +881,8 @@ public class OcrProcess {
 		//---------------------------------------
 		//置換マスタオープン、データ取得処理
 		//---------------------------------------
-		String repXlsPath = CURRENT_PATH + "\\replace.xlsx";	//カレントフォルダのファイル
+		//String repXlsPath = CURRENT_PATH + "\\replace.xlsx";	//カレントフォルダのファイル
+		String repXlsPath = config.getScanPath2() + "data\\replace.xlsx";	//dataフォルダのファイル
 		//Excelシートは、documentNameと同名
 		int repRowWidth = 256;				//暫定
 		int repColWidth = cnvColWidth*2;	//暫定(カラム数x2列)

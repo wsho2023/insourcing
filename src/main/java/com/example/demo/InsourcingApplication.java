@@ -40,5 +40,4 @@ public class InsourcingApplication implements CommandLineRunner {
 			ocrProcService.run(config);
     	}
     }
-    
 }
