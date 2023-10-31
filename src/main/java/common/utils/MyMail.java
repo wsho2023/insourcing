@@ -14,6 +14,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import com.example.demo.SpringConfig;
+
 public class MyMail {
     public String host;
     public String port;
@@ -36,6 +38,28 @@ public class MyMail {
     }
     static MailAuth auth = new MyMail.MailAuth();
 
+    public MyMail() {
+    	
+    }
+    
+	public MyMail(SpringConfig config, String toaddr, String ccaddr, String subject, String attach, String body) {
+		this.host = config.getMailHost();
+		this.port = config.getMailPort();
+		this.username = config.getMailUsername();
+		this.password = config.getMailPassword();
+		this.smtpAuth = config.getMailSmtpAuth();
+		this.starttlsEnable = config.getMailSmtpStarttlsEnable();
+		
+		this.fmAddr = config.getMailFrom();
+		this.toAddr = toaddr;
+		this.ccAddr = ccaddr;
+		this.bccAddr = "";
+		
+		this.subject = subject;
+		this.body = body;
+		this.attach = attach;
+	}
+	
     public void sendRawMail() 
 	{
         // メール送信のプロパティ設定
@@ -115,4 +139,26 @@ public class MyMail {
         attach = "";
     
     }
+    
+	public void sendMailThread() {
+		//ユーザーがアップロードしたことを通知するメール送信(別スレッドで非同期)
+		SendMail sendMail = new SendMail();
+		new Thread(sendMail).start();        
+	}
+	
+    public class SendMail implements Runnable {
+    	@Override
+		public void run() {
+			MyUtils.SystemLogPrint("  メール送信...");
+			MyUtils.SystemLogPrint("  MAIL FmAddr: " + fmAddr);
+			MyUtils.SystemLogPrint("  MAIL ToAddr: " + toAddr);
+			MyUtils.SystemLogPrint("  MAIL CcAddr: " + ccAddr);
+			MyUtils.SystemLogPrint("  MAIL BcAddr: " + bccAddr);
+			MyUtils.SystemLogPrint("  MAIL Subject: " + subject);
+			MyUtils.SystemLogPrint("  MAIL Body: \n" + body);
+			MyUtils.SystemLogPrint("  MAIL Attach: " + attach);
+			sendRawMail();
+            System.out.println("メール送信完了");
+		}
+    }    
 }

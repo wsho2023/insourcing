@@ -66,4 +66,14 @@ public class MenuService {
 		}
 		return items;
     }
+	
+	public String getTitle(String href) {
+		ArrayList<String[]> items = getItems();
+		for (String[] item : items) {
+			if (item[0].contains(href)) {
+				return item[1];
+			}
+		}
+		return null;
+	}
 }

@@ -8,9 +8,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableAsync
-public class InsourcingApplication implements CommandLineRunner {
-	final boolean webOnly = false;
-	
+public class InsourcingApplication  implements CommandLineRunner {
     @Autowired
     private SpringConfig config;
     @Autowired
@@ -29,7 +27,7 @@ public class InsourcingApplication implements CommandLineRunner {
 	}
 	 
     @Override
-    public void run(String... strings) throws Exception {
+    public void run(String... args) throws Exception {
     	if (menuService.getWebOnly() == false) {
 	    	faxScanService1.run(config, config.getScanDefTgt1());
 			Thread.sleep(1000);

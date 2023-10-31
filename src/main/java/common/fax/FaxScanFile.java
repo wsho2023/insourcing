@@ -272,7 +272,7 @@ public class FaxScanFile {
 	}
 
 	private int registOcrProcess(String uploadFilePath, int type) {
-		MyUtils.SystemLogPrint("registOcrProcess: start..." + uploadFilePath.toString());
+		MyUtils.SystemLogPrint("■registOcrProcess: start..." + uploadFilePath.toString());
 		if (uploadFilePath.equals("") == true) {
 			return -1;
 		}

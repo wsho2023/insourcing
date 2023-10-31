@@ -224,9 +224,9 @@ public class MyFiles {
     
 	//List<String>を新規作成したTSVファイルに書き込む。
     public static int writeList2File(ArrayList<ArrayList<String>> list, String writePath, String charSet) throws IOException {
-    	if (charSet.equals("UTF-8") == true) {
-    		return writeList2File(list, writePath);
-    	} else {
+    	//if (charSet.equals("UTF-8") == true) {
+    	//	return writeList2File(list, writePath);
+    	//} else {
     		//文字コードを指定して書き込む
 			File file = new File(writePath);
 	        OutputStreamWriter osw  = new OutputStreamWriter(new FileOutputStream(file), charSet);
@@ -246,7 +246,7 @@ public class MyFiles {
 		        bw.newLine();
 			}
 	        bw.close();
-    	}
+	    //}
     	return 0;
     }
     

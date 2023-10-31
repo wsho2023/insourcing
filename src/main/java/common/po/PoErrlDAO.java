@@ -107,7 +107,8 @@ public class PoErrlDAO {
 			Class.forName(DB_DRIVER);
 			conn = DriverManager.getConnection(this.DB_URL, this.DB_USER, this.DB_PASS);
 			System.out.println("  errlId: " + errl.errlId + "  createdBy: " + errl.createdBy
-					         + "  toriCode: " + errl.toriMei + "  poList: " + errl.poList);
+					         + "  toriCode: " + errl.toriMei + "  poList: " + errl.poList
+					         + "  subject: " + errl.subject + "  type: " + errl.type);
 			System.out.println("  sql: " + sql);
 			conn.setAutoCommit(false);
 	       
@@ -117,6 +118,8 @@ public class PoErrlDAO {
 			ps.setString(i++, errl.createdBy);
 			ps.setString(i++, errl.toriMei);
 			ps.setString(i++, errl.poList);
+			ps.setString(i++, errl.subject);
+			ps.setInt(i++, errl.type);
 			ps.executeUpdate();
 			conn.commit();
 			

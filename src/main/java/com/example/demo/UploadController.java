@@ -32,7 +32,6 @@ import common.utils.MyUtils;
 
 @Controller
 public class UploadController {
-	
     @Autowired
     private SpringConfig config;
     @Autowired
@@ -62,7 +61,7 @@ public class UploadController {
     
     @GetMapping("/upload")
     public String uploadGet(Model model){
-		String title = "アップロード";
+		String title = menuService.getTitle("/upload");
 		String userId = securitySession.getUsername();
 		String userName = securitySession.getName();
 		String code = securitySession.getCode();
@@ -217,50 +216,17 @@ public class UploadController {
 		}
 		
 		//ユーザーがアップロードしたことを通知するメール送信(別スレッドで非同期)
-		SendMail sendMail = new SendMail(config, userId, dt, toriCd, fileName);
-		new Thread(sendMail).start();        
+		//SendMail sendMail = new SendMail(config, userId, dt, toriCd, fileName);
+		//new Thread(sendMail).start();        
+		String subject = "アップロードされました。";
+		String body = "ID: " + userId + "\n"
+					+ "dt: " + dt  + "\n"
+				   	+ "toriCd: " + toriCd + "\n"
+				   	+ "file: " + fileName + "\n";
+		MyMail mailConf = new MyMail(config, userId, "", subject, null, body);
+        mailConf.sendMailThread();		
         //レスポンス
 		return "{\"result\":\"ok\"}";
-    }
-    
-    public class SendMail implements Runnable {
-		MyMail mailConf;
-    	
-    	public SendMail(SpringConfig config, String userId, String dt, String toriCd, String fileName) {
-			mailConf = new MyMail();
-			mailConf.host = config.getMailHost();
-			mailConf.port = config.getMailPort();
-			mailConf.username = config.getMailUsername();
-			mailConf.password = config.getMailPassword();
-			mailConf.smtpAuth = config.getMailSmtpAuth();
-			mailConf.starttlsEnable = config.getMailSmtpStarttlsEnable();
-			
-			mailConf.fmAddr = config.getMailFrom();
-			mailConf.toAddr = config.getMailFrom();	//userId;
-			mailConf.ccAddr = "";
-			mailConf.bccAddr = "";
-			
-			mailConf.subject = "アップロードされました。";
-			mailConf.body = "ID: " + userId + "\n"
-						  + "dt: " + dt  + "\n"
-					   	  + "toriCd: " + toriCd + "\n"
-					   	  + "file: " + fileName + "\n";
-			mailConf.attach = null;
-    	}
-    	
-    	@Override
-		public void run() {
-			MyUtils.SystemLogPrint("  メール送信...");
-			MyUtils.SystemLogPrint("  MAIL FmAddr: " + mailConf.fmAddr);
-			MyUtils.SystemLogPrint("  MAIL ToAddr: " + mailConf.toAddr);
-			MyUtils.SystemLogPrint("  MAIL CcAddr: " + mailConf.ccAddr);
-			MyUtils.SystemLogPrint("  MAIL BcAddr: " + mailConf.bccAddr);
-			MyUtils.SystemLogPrint("  MAIL Subject: " + mailConf.subject);
-			MyUtils.SystemLogPrint("  MAIL Body: \n" + mailConf.body);
-			MyUtils.SystemLogPrint("  MAIL Attach: " + mailConf.attach);
-			mailConf.sendRawMail();
-            System.out.println("メール送信完了");
-		}
     }
     
 	//OCR登録処理

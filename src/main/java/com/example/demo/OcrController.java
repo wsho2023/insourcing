@@ -58,8 +58,7 @@ public class OcrController {
     		kyoten = config.getScanDefTgt2();
     	else
     		kyoten = config.getScanDefTgt2();
-		String title = kyoten + "管理表";
-        System.out.println("prj: " + menuService.getProject());
+		String title = menuService.getTitle("/fax/"+url);
         System.out.println("url: " + url);
         System.out.println("kyoten: " + kyoten);
 		
@@ -67,9 +66,9 @@ public class OcrController {
         list = FaxDataDAO.getInstance(config).read(form, date_fr, date_to, soushimotonashi, kyoten);
         
 		// 次の画面に値を渡す
+		model.addAttribute("url", url);
 		model.addAttribute("prj",  menuService.getProject());
         model.addAttribute("menu", menuService.getItems());
-		model.addAttribute("url", url);
 		model.addAttribute("title", title);
 		model.addAttribute("list", list);
 		
@@ -90,7 +89,7 @@ public class OcrController {
     		kyoten = config.getScanDefTgt2();
     	else
     		kyoten = config.getScanDefTgt2();
-		String title = kyoten + "管理表";
+		String title = menuService.getTitle("/fax/"+url);
         System.out.println("url: " + url);
         System.out.println("kyoten: " + kyoten);
         System.out.println("form: " + form);
@@ -112,8 +111,8 @@ public class OcrController {
     }
     
     @GetMapping("/ocr/list")
-    public String ocr(Model model){
-		String title = "OCR結果一覧表";
+    public String ocrGet(Model model){
+		String title = menuService.getTitle("/ocr/list");
 		ArrayList<OcrDataFormBean> list = null;
         list = OcrDataFormDAO.getInstance(config).read(null, null, null);
         
@@ -133,8 +132,8 @@ public class OcrController {
         System.out.println("form: " + form);
         System.out.println("date_fr: " + date_fr);
         System.out.println("date_to: " + date_to);
-
-		String title = "OCR結果一覧表";
+        
+		String title = menuService.getTitle("/ocr/list");
 		ArrayList<OcrDataFormBean> list = null;
         list = OcrDataFormDAO.getInstance(config).read(form, date_fr, date_to);
         
@@ -150,7 +149,7 @@ public class OcrController {
     
     @GetMapping("/errl/list")
     public String errlGet(Model model){
-		String title = "ERRL結果一覧表";
+		String title = menuService.getTitle("/errl/list");
 		ArrayList<PoErrlBean> list = null;
         list = PoErrlDAO.getInstance(config).read(null, null, null);
 		String userId = securitySession.getUsername();
@@ -174,7 +173,7 @@ public class OcrController {
         System.out.println("date_fr: " + date_fr);
         System.out.println("date_to: " + date_to);
 
-		String title = "ERRL結果一覧表";
+		String title = menuService.getTitle("/errl/list");
 		ArrayList<PoErrlBean> list = null;
         list = PoErrlDAO.getInstance(config).read(form, date_fr, date_to);
         
@@ -207,47 +206,12 @@ public class OcrController {
         System.out.println("body: " + body);
 		
 		//ユーザーがアップロードしたことを通知するメール送信(別スレッドで非同期)
-		SendMail sendMail = new SendMail(config, toaddr, ccaddr, subject, uploadPath, body);
-		new Thread(sendMail).start();        
+        //SendMail sendMail = new SendMail(config, toaddr, ccaddr, subject, uploadPath, body);
+        //new Thread(sendMail).start();        
+		MyMail mailConf = new MyMail(config, toaddr, ccaddr, subject, attach, body);
+        mailConf.sendMailThread();
         //レスポンス
 		return "{\"result\":\"ok\"}";
-    }
-    
-    public class SendMail implements Runnable {
-		MyMail mailConf;
-    	
-    	public SendMail(SpringConfig config, String toaddr, String ccaddr, String subject, String attach, String body) {
-			mailConf = new MyMail();
-			mailConf.host = config.getMailHost();
-			mailConf.port = config.getMailPort();
-			mailConf.username = config.getMailUsername();
-			mailConf.password = config.getMailPassword();
-			mailConf.smtpAuth = config.getMailSmtpAuth();
-			mailConf.starttlsEnable = config.getMailSmtpStarttlsEnable();
-			
-			mailConf.fmAddr = config.getMailFrom();
-			mailConf.toAddr = toaddr;
-			mailConf.ccAddr = ccaddr;
-			mailConf.bccAddr = "";
-			
-			mailConf.subject = subject;
-			mailConf.body = body;
-			mailConf.attach = attach;
-    	}
-    	
-    	@Override
-		public void run() {
-			MyUtils.SystemLogPrint("  メール送信...");
-			MyUtils.SystemLogPrint("  MAIL FmAddr: " + mailConf.fmAddr);
-			MyUtils.SystemLogPrint("  MAIL ToAddr: " + mailConf.toAddr);
-			MyUtils.SystemLogPrint("  MAIL CcAddr: " + mailConf.ccAddr);
-			MyUtils.SystemLogPrint("  MAIL BcAddr: " + mailConf.bccAddr);
-			MyUtils.SystemLogPrint("  MAIL Subject: " + mailConf.subject);
-			MyUtils.SystemLogPrint("  MAIL Body: \n" + mailConf.body);
-			MyUtils.SystemLogPrint("  MAIL Attach: " + mailConf.attach);
-			mailConf.sendRawMail();
-            System.out.println("メール送信完了");
-		}
     }
     
     @GetMapping("/ocr/result")
@@ -401,8 +365,7 @@ public class OcrController {
 	
     @GetMapping("/daicho/list")
     public String getDaicho(Model model){
-		String title = "台帳データリスト";
-		
+		String title = menuService.getTitle("/daicho/list");
 		ArrayList<OcrDaichoBean> list;
         list = OcrDaichoDAO.getInstance(config).read(null, null, null);
         
@@ -422,7 +385,7 @@ public class OcrController {
         System.out.println("date_fr: " + date_fr);
         System.out.println("date_to: " + date_to);
 
-		String title = "台帳データリスト";
+		String title = menuService.getTitle("/daicho/list");
 		ArrayList<OcrDaichoBean> list;
         list = OcrDaichoDAO.getInstance(config).read(form, date_fr, date_to);
         
