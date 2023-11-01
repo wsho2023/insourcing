@@ -24,6 +24,7 @@ public class OcrProcService {
 		count = 0;
 		watchdogPath = config.getScanPath2() + "data\\watchdog.dat";
 		process = new OcrProcess(config);
+		runOcrProcess();
 	}
 	
 	@Scheduled(fixedRate = 30000)	// 30000ms間隔

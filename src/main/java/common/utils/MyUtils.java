@@ -3,6 +3,7 @@ package common.utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -27,6 +28,15 @@ public class MyUtils {
 	public static String getToday() {
 		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy/MM/dd");
 		return sdf2.format(new Date());
+	}
+
+	public static Date parseDate(String dateStr) {
+		try {
+			return MyUtils.sdf.parse(dateStr);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public static String getToday(int day) {

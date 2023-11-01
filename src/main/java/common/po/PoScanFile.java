@@ -122,39 +122,34 @@ public class PoScanFile {
 		PoUploadBean upload = importData(ocrData.getUploadFilePath());
 		if (upload == null)
 			return;
-		String unitName = ocrData.getUnitName();
-		//String soshinMoto = "";
-		String mailBody1="";
-		String mailBody2="";
-
 		MyUtils.SystemLogPrint("sendMailProcess: start");
 		//フルパスからファイル名取得
 		File file = new File(pdfPath);
 		String fileName  = file.getName() ;		
 		//配信メール情報:From
-		mailConf.fmAddr = upload.getUserId();
+		mailConf.fmAddr = config.getMailFrom();
 		//配信メール情報:Bcc
 		mailConf.bccAddr = "";
 		mailConf.toAddr = upload.getUserId();
 
 		//パターン①: 注文書のケース
-		mailConf.subject = ocrData.getDocSetName() + "受信連絡" + "(" + ocrData.getCreatedAt() + " " + ocrData.getUnitName() + ")";
+		String subject = ocrData.getDocSetName() + "ｱｯﾌﾟﾛｰﾄﾞ注文書" + "(" + ocrData.getCreatedAt() + " " + ocrData.getUnitName() + ")";
+		mailConf.subject = subject;
 		mailConf.attach = pdfPath;
 		if (ocrData.getRenkeiResult().equals("") != true) {
-			mailConf.body = mailBody1 + "\n<OCR読取り結果>\n" + ocrData.getRenkeiResult() + "\n" + mailBody2 + "\n" + fileName + "\n"; 
+			mailConf.body = "<OCR読取り結果>\n" + ocrData.getRenkeiResult(); 
 		} else if (ocrData.getCheckResult().equals("") != true) {
-			mailConf.body = mailBody1 + "\n<OCR読取り結果>\n" + ocrData.getCheckResult() + "\n" + mailBody2 + "\n" + fileName + "\n"; 
+			mailConf.body = "<OCR読取り結果>\n" + ocrData.getCheckResult(); 
 		} else {
-			mailConf.body = mailBody1 + "\n<OCR読取り結果>\n正常終了\n\n" + mailBody2 + "\n" + fileName + "\n"; 
+			mailConf.body = "<OCR読取り結果>\n正常終了"; 
 		}
 		sendAttachMail();
 		
         //------------------------------------------------------
         //ERRL登録処理
         //------------------------------------------------------
-		String subject = ocrData.getDocSetName() + "注文書" + "(" + ocrData.getCreatedAt() + " " + ocrData.getUnitName() + ")";
 		String chubanlist = ocrData.getChubanlist();
-		String chubanlistMsg = "注文番号(PO)\n" + chubanlist;
+		//String chubanlistMsg = "注文番号(PO)\n" + chubanlist;
 		chubanlist = chubanlist.replace("\n", " ");
     	PoErrlBean errl = new PoErrlBean();
     	errl.setErrlData("OCR"+ocrData.getUnitId(), ocrData.getDocSetName(), ocrData.getUnitName(), chubanlist, subject, 0, pdfPath);
@@ -171,7 +166,7 @@ public class PoScanFile {
 		PoUploadBean upload = null;
 		int retryCnt = 0;
 		for (;;) {
-			upload = PoUploadDAO.getInstance(config).quertyWithUploadPath(uploadFilePath);
+			upload = PoUploadDAO.getInstance(config).quertyWithInputPath(uploadFilePath);
 			if (upload != null)
 				break;
 			try {

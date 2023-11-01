@@ -194,6 +194,12 @@ public class MyFiles {
 		return text;
 	}
 	
+	public static ArrayList<String> readText2List(String sqlPath) throws IOException {
+		Path path = Paths.get(sqlPath);
+		ArrayList<String> lines = (ArrayList<String>)Files.readAllLines(path);
+		return lines;
+	}
+	
 	public static byte[] readAllBytes(String sqlPath) throws IOException {
 		Path path = Paths.get(sqlPath);
 		

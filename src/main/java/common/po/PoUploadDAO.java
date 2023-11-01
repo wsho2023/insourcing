@@ -132,6 +132,59 @@ public class PoUploadDAO {
 		return null;
 	}
 
+	public PoUploadBean quertyWithInputPath(String inputPath) {
+		String sql = "select * from POUPLOADTABLE where INPUT_PATH = ?";
+		
+		//接続処理
+		Connection conn = null;
+		//ArrayList<PoUploadBean> list = new ArrayList<PoUploadBean>();
+		try {
+			Class.forName(DB_DRIVER);
+			conn = DriverManager.getConnection(DB_URL,DB_USER,DB_PASS);
+			System.out.println("  inputPath: " + inputPath);
+			System.out.println("  sql: " + sql);
+
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, inputPath);
+            ResultSet rs = ps.executeQuery();
+            
+            PoUploadBean upload = null;
+			while (rs.next()) {
+				upload = new PoUploadBean();
+    			//Beanクラスへセット(getString:1始まり)
+				upload.setUserId(rs.getString(1));		//LOGIN_ID
+				upload.setUserName(rs.getString(2));	//USER_NAME
+				upload.setDatetime(rs.getString(3));	//CREATED_DATE
+				upload.setToriCd(rs.getString(4));		//TORIHIKISAKI_CD
+				upload.setUploadPath(rs.getString(5));	//UPLOAD_PATH
+				upload.setCode(rs.getString(6));		//CODE
+				upload.setInputPath(rs.getString(7));	//INPUT_PATH
+            	// リストにBeanクラスごと格納
+				//list.add(upload);
+			}
+			return upload;
+		} catch(SQLException e) {
+			// エラーハンドリング
+			System.out.println("sql実行失敗");
+			e.printStackTrace();
+		} catch(ClassNotFoundException e) {
+			// エラーハンドリング
+			System.out.println("JDBCドライバ関連エラー");
+			e.printStackTrace();
+		} finally {
+			// DB接続を解除
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 	public void registData_new(PoUploadBean poUpload) {
 		
 		int count = query_count(poUpload.getUploadPath());
