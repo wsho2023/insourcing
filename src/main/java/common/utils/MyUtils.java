@@ -62,6 +62,30 @@ public class MyUtils {
 		return sdf2.format(new Date());
 	}
 	
+	public static String getDateStr2() {
+		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd");
+		return sdf2.format(new Date());
+	}
+	
+	//日のオフセットとFormatパターンを決めて日付を文字列で返す。
+	public static String getDateStrDateFormat(int dayoffset, String pattern) {
+        //日時を格納するためのDateクラスを宣言(現在時刻)
+        Date date = new Date();
+		if (dayoffset != 0) {
+	        Calendar calendar = Calendar.getInstance();
+	        calendar.setTime(date);
+	        //Date型の持つ日時を表示
+	        //System.out.println(date);
+	        //Date型の持つ日時の4年後を表示(日時の加算/減算)
+	        calendar.add(Calendar.DAY_OF_MONTH, dayoffset);
+	        date = calendar.getTime();
+	        //System.out.println(date);
+		}
+
+		SimpleDateFormat sdf2 = new SimpleDateFormat(pattern);
+		return sdf2.format(new Date());
+	}
+
 	//コマンド実行
 	public static void exeCmd(String[] cmdList) throws IOException, InterruptedException {
 		//https://blog.goo.ne.jp/xmldtp/e/beb03fb01fb1d1a2c37db8d69b43dcdd

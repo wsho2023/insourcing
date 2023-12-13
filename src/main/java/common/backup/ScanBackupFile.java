@@ -42,7 +42,7 @@ public class ScanBackupFile {
 		deleteMbSize = 0;
 	}
 	
-	public void run() {
+	public String run() {
 		String zipFileName = MyFiles.getFileName(targetPath) + "_" + MyUtils.getDateStr() + ".zip";
 		zipFilePath = backupPath + zipFileName;
         Charset charset = Charset.forName("MS932");
@@ -51,6 +51,7 @@ public class ScanBackupFile {
 			MyFiles.existsDelete(zipFilePath);
 		} catch (IOException e) {
 			e.printStackTrace();
+			return e.toString();
 		}
         //https://itsakura.com/java-writezip
 		try (
@@ -60,7 +61,9 @@ public class ScanBackupFile {
 		) {
 			System.out.println("「" + targetPath + "」フォルダ内のファイル更新日が"
 					+ daysOfDeletion + "日以上のものを削除します。");
-			scanDeleteFile(zos, targetPath, targetPath + backupPath, false);	//backup
+			String msg = scanDeleteFile(zos, targetPath, targetPath + backupPath, false);	//backup
+			if (msg != null)
+				return msg;
 			System.out.println("「" + targetPath + "」フォルダ内のファイル更新日"
 					+ daysOfDeletion + "日以上のものを削除しました(ファイル数: " + deleteCount +")。");
 			totalCount = totalCount - deleteCount;
@@ -74,6 +77,7 @@ public class ScanBackupFile {
 			
 		} catch (IOException e) {
 			e.printStackTrace();
+			return e.toString();
 		}
 
 		//移動済みファイルをdelete
@@ -83,11 +87,13 @@ public class ScanBackupFile {
 				MyFiles.delete(f);
 			} catch (IOException e) {
 				e.printStackTrace();	//アクセス不可ファイルは、失敗するけど、catchして無視
+				return e.toString();
 			}
 		}
+		return null;
 	}
 	
-	private void scanDeleteFile(ZipOutputStream zos, String targetPath, String backupPath, boolean deleteFlag) {
+	private String scanDeleteFile(ZipOutputStream zos, String targetPath, String backupPath, boolean deleteFlag) {
 		//指定ディレクトリ内のファイルのみ(またはディレクトリのみ)を取得
         File file = new File(targetPath);
         File fileArray[] = file.listFiles();
@@ -126,6 +132,7 @@ public class ScanBackupFile {
 	                        	MyFiles.delete(filePath);
 	                        } catch (IOException e) {
 	                        	e.printStackTrace();
+								return e.toString();
 	                        }
 	                    } else {
 	                        System.out.println("backup... " + update_time + "： " + filePath);
@@ -138,6 +145,7 @@ public class ScanBackupFile {
 	                    		zos.write(fb);
 							} catch (IOException e) {
 								e.printStackTrace();
+								return e.toString();
 							}
 							deleteList.add(filePath);
 	                    }
@@ -145,6 +153,7 @@ public class ScanBackupFile {
                 }
             //}
         }
+		return null;
 	}
 }
 	

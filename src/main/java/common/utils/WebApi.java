@@ -15,6 +15,7 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -55,16 +56,27 @@ public class WebApi {
     }
     FormData formData;		//for Upload
     
+    public static class FormData2 {
+    	public Hashtable<String, String> params;
+    	public String file;
+    }
+    FormData2 formData2;	//for Upload
+    
     //public WebApi() {
     //}
 
 	public FormData getFormData() {return formData;}
+	public FormData2 getFormData2() {return formData2;}
 	public String getResponseStr() {return this.responseStr;}
 	public JsonNode getResponseJson() {return this.responseJson;}
 	public ArrayList<ArrayList<String>> getListData() {return this.list;}
 
 	public void setFormData(FormData formData) {
 		this.formData = formData;
+	}
+	
+	public void setFormData2(FormData2 formData) {
+		this.formData2 = formData;
 	}
 	
 	public void setUrl(String url) {
@@ -156,6 +168,97 @@ public class WebApi {
 	    	    request.writeBytes("Content-Disposition: form-data; name=\"sendOcrFlag\"" + CRLF + CRLF + this.formData.sendOcrFlag + CRLF);
 	    	    System.out.println("form-data: sendOcrFlag: " + this.formData.sendOcrFlag);
     	    }
+    	    request.writeBytes("--" + boundary + CRLF);
+            request.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"" + CRLF + CRLF);
+    	    System.out.println("form-data: filename: " + file.getName());
+    	    // ファイルをbyte配列に変換
+    	    byte[] fileByte = Files.readAllBytes(file.toPath());
+    	    request.write(fileByte);
+    	    request.writeBytes(CRLF);
+    	    request.writeBytes("--" + boundary + "--" + CRLF);
+    	    request.flush();
+    	    request.close();
+
+            //レスポンスコード/メッセージの取得
+            this.responseCode = con.getResponseCode();
+            this.responseMessage = con.getResponseMessage();
+			System.out.println("Response Code : " + this.responseCode);
+	
+    	    if (this.responseCode == HttpURLConnection.HTTP_OK) {
+                //レスポンスボディの読み出し	正常系の場合はgetInputStream
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                this.responseBody = new StringBuffer();
+                while ((inputLine = in.readLine()) != null) {
+                    this.responseBody.append(inputLine);
+                    System.out.println(inputLine.toString());
+                }
+                in.close();
+                
+                //resuponse body
+                this.responseStr = this.responseBody.toString();
+                //System.out.println(this.responseStr);
+    	    } 
+
+            return this.responseCode;
+
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+            return -1;
+    	} finally {
+    	    if(con != null) {
+    	        con.disconnect();
+    	    }
+    	}     
+    }
+
+	public int upload2() throws IOException {
+		if (this.formData2.file == null)
+            return -1;
+    	String CRLF = "\r\n";
+    	File file = new File(this.formData2.file);
+    	HttpURLConnection con = null;
+
+    	try {
+    		//http://www.mwsoft.jp/programming/java/http_proxy.html
+    		if (WebApi.proxy.host != null && WebApi.proxy.host.equals("") != true) {
+                System.setProperty("proxySet", "true");
+                System.setProperty("proxyHost", WebApi.proxy.host);
+                System.setProperty("proxyPort", WebApi.proxy.port);
+                Authenticator.setDefault(new Authenticator() {
+					@Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(WebApi.proxy.user, WebApi.proxy.password.toCharArray());
+                    }
+                });
+    		}
+    		
+			//this.url = "http://httpbin.org/post";	//for upload debug
+    	    con = (HttpURLConnection) new URL(this.url).openConnection();
+    	    con.setRequestMethod("POST");
+    	    con.setDoOutput(true);
+            System.out.println("url: " + this.url + " method: " + this.method);
+
+            //add request header
+            for (int i=0; i<5; i++) {
+            	if (this.header_key[i] == null) 
+            		break;
+        		con.setRequestProperty(this.header_key[i], this.header_value[i]);
+                System.out.println("req header: " + this.header_key[i] + ":" + this.header_value[i]);
+            }
+
+            final String boundary = UUID.randomUUID().toString();
+            con.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+            System.out.println("req header: Content-Type header_value:multipart/form-data");
+    	    DataOutputStream request = new DataOutputStream(con.getOutputStream());
+    	    
+    	    for (String key : this.formData2.params.keySet()) {
+    	        String value = this.formData2.params.get(key);
+        	    request.writeBytes("--" + boundary + CRLF);
+        	    request.writeBytes("Content-Disposition: form-data; name=\"" + key + "\"" + CRLF + CRLF + value + CRLF);
+        	    System.out.println("form-data: \"" + key + "\": " + value);
+    	    } 
+	    	    
     	    request.writeBytes("--" + boundary + CRLF);
             request.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getName() + "\"" + CRLF + CRLF);
     	    System.out.println("form-data: filename: " + file.getName());

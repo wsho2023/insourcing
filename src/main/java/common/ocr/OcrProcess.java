@@ -47,6 +47,7 @@ public class OcrProcess {
 	String OCR_READ_UNIT;
 	String OCR_UNIT_EXPORT;
 	String OCR_LINK_ENTRY;
+	int OCR_VERSION;
 	String MAIL_HOST;
 	String MAIL_PORT;
 	String MAIL_USERNAME;
@@ -55,6 +56,7 @@ public class OcrProcess {
 	String MAIL_SMTP_STARTTLS_ENABLE;
 	String MAIL_FROM;
 	String CURRENT_PATH;
+	String TEST_FLAG;
 	String SCAN_CLASS1;
 	String SCAN_CLASS2;
 	String SCAN_TARGET_PATH1;
@@ -83,6 +85,7 @@ public class OcrProcess {
 		OCR_READ_SORT = config.getOcrReadSort();
 		OCR_UNIT_EXPORT = config.getOcrUnitExport();
 		OCR_LINK_ENTRY = config.getOcrLinkEntry();
+		OCR_VERSION = Integer.parseInt(config.getOcrLinkEntry());
 		
 		MAIL_HOST = config.getMailHost();
 		MAIL_PORT = config.getMailPort();
@@ -117,12 +120,6 @@ public class OcrProcess {
 		for (int o=0; o<count; o++) {
 			OcrDataFormBean ocrDataForm = (OcrDataFormBean)list.get(o);
 			setTargetPath(ocrDataForm);
-			/*try {
-				ocrDataForm.outFolderPath = getTgtFolderPath(ocrDataForm);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			convertCSV(ocrDataForm);	//DLしたCSV変換処理*/
 			if (ocrDataForm.status.equals("REGIST") == true) {
 				MyUtils.SystemLogPrint("  " + o + " addReadingPage");
 				addReadingPage(ocrDataForm);
@@ -166,22 +163,35 @@ public class OcrProcess {
 		//HTTP request parametes
 		//---------------------------------------
 		WebApi api = new WebApi();
-		api.setUrl("POST", OCR_HOST_URL + OCR_ADD_PAGE);
+		if (OCR_VERSION == 2) 
+			api.setUrl("POST", OCR_HOST_URL + String.format(OCR_ADD_PAGE, ocrData.documentId));
+		else
+			api.setUrl("POST", OCR_HOST_URL + OCR_ADD_PAGE);
 		api.setProxy(PROXY_HOST, PROXY_PORT, PROXY_USER, PROXY_PASSWORD);
 		api.putRequestHeader(OCR_API_KEY, OCR_API_KEY_VALUE);
 		//---------------------------------------
-		WebApi.FormData formData = new WebApi.FormData();
-		formData.userId = OCR_USER_ID;
-		formData.documentId = ocrData.documentId;
-		formData.file = ocrData.uploadFilePath;
-		api.setFormData(formData);
+		if (OCR_VERSION == 2) {
+			WebApi.FormData2 formData2 = new WebApi.FormData2();
+			formData2.params.put("userId", OCR_USER_ID);;
+			formData2.file = ocrData.uploadFilePath;
+			api.setFormData2(formData2);
+		} else {
+			WebApi.FormData formData = new WebApi.FormData();
+			formData.userId = OCR_USER_ID;
+			formData.documentId = ocrData.documentId;
+			formData.file = ocrData.uploadFilePath;
+			api.setFormData(formData);
+		}
 		
 		//---------------------------------------
 		//HTTP request process
 		//---------------------------------------
 		int res;
 		try {
-			res = api.upload(0);
+			if (OCR_VERSION == 2) 
+				res = api.upload2();
+			else
+				res = api.upload(0);
 		} catch (IOException e) {
 			res = -1;
 			e.printStackTrace();
@@ -263,19 +273,31 @@ public class OcrProcess {
 		api.setProxy(PROXY_HOST, PROXY_PORT, PROXY_USER, PROXY_PASSWORD);
 		api.putRequestHeader(OCR_API_KEY, OCR_API_KEY_VALUE);
 		//---------------------------------------
-		WebApi.FormData formData = new WebApi.FormData();
-		formData.userId = OCR_USER_ID;
-		formData.sorterRuleId = ocrData.documentId;	//sorterRuleId;
-		formData.runSortingFlag = "true";
-		formData.sendOcrFlag = "true";
-		formData.file = ocrData.uploadFilePath;
-		api.setFormData(formData);
+		if (OCR_VERSION == 2) {
+			WebApi.FormData2 formData2 = new WebApi.FormData2();
+			formData2.params.put("userId", OCR_USER_ID);;
+			formData2.params.put("runSortingFlag", "true");
+			formData2.params.put("sendOcrFlag", "true");
+			formData2.file = ocrData.uploadFilePath;
+			api.setFormData2(formData2);
+		} else {
+			WebApi.FormData formData = new WebApi.FormData();
+			formData.userId = OCR_USER_ID;
+			formData.sorterRuleId = ocrData.documentId;	//sorterRuleId;
+			formData.runSortingFlag = "true";
+			formData.sendOcrFlag = "true";
+			formData.file = ocrData.uploadFilePath;
+			api.setFormData(formData);
+		}
 		//---------------------------------------
 		//HTTP request process
 		//---------------------------------------
 		int res;
 		try {
-			res = api.upload(2);
+			if (OCR_VERSION == 2) 
+				res = api.upload2();
+			else
+				res = api.upload(2);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return -1;
@@ -312,7 +334,12 @@ public class OcrProcess {
 			String status = api.getResponseJson().get("status").asText();;
 			int errorCode = api.getResponseJson().get("errorCode").asInt();;
 			String message = api.getResponseJson().get("message").asText();;
-			String sortingUnitId = api.getResponseJson().get("sortingUnitId").asText();;
+			String sortingUnitId;
+			if (OCR_VERSION == 2) {
+				sortingUnitId = api.getResponseJson().get("sortUnitId").asText();
+			} else {
+				sortingUnitId = api.getResponseJson().get("sortingUnitId").asText();
+			}
 			MyUtils.SystemLogPrint("  status: " + status + "  " + message);
 			
 			if (errorCode != 0) {
@@ -415,18 +442,39 @@ public class OcrProcess {
 				timer.schedule(task, 5000);
 				return -1;
 			} 
-			String unitId = api.getResponseJson().get("readingUnits").get(0).get("id").asText();
-			//String unitName = api.getResponseJson().get("readingUnits").get(0).get("name").asText();
-			//String unitStatus = api.getResponseJson().get("readingUnits").get(0).get("status").asText();
-			String docsetId = api.getResponseJson().get("readingUnits").get(0).get("docsetId").asText();
-			String csvFileName = api.getResponseJson().get("readingUnits").get(0).get("csvFileName").asText();
-			String documentId = api.getResponseJson().get("readingUnits").get(0).get("documentId").asText();
-			String documentName = api.getResponseJson().get("readingUnits").get(0).get("documentName").asText();	//全角は文字化けする。
-			String createdAt = api.getResponseJson().get("readingUnits").get(0).get("createdAt").asText();
-			createdAt = createdAt.substring(0, createdAt.length()-2);	//語尾の.0(2桁)をとる(yyyy-MM-dd HH:mm:ss)
-			createdAt = createdAt.replace("-", "/");				//(yyyy-MM-dd HH:mm:ss) → (yyyy/MM/dd HH:mm:ss)
+			String unitId;
+			//String unitName;
+			//String unitStatus;
+			String docsetId;
+			String csvFileName;
+			String documentId;
+			String documentName;
+			String createdAt;
+			if (OCR_VERSION == 2) {
+				unitId = api.getResponseJson().get("units").get(0).get("unitId").asText();
+				//unitName = api.getResponseJson().get("units").get(0).get("unitName").asText();
+				//unitStatus = api.getResponseJson().get("units").get(0).get("status").asText();
+				docsetId = api.getResponseJson().get("units").get(0).get("folderId").asText();
+				csvFileName = api.getResponseJson().get("units").get(0).get("csvFileName").asText();
+				documentId = api.getResponseJson().get("units").get(0).get("workflowId").asText();
+				documentName = api.getResponseJson().get("units").get(0).get("workflowName").asText();	//全角は文字化けする。
+				createdAt = api.getResponseJson().get("units").get(0).get("createdAt").asText();
+				createdAt = createdAt.substring(0, createdAt.length()-2);	//語尾の.0(2桁)をとる(yyyy-MM-dd HH:mm:ss)
+				createdAt = createdAt.replace("-", "/");				//(yyyy-MM-dd HH:mm:ss) → (yyyy/MM/dd HH:mm:ss)
+			} else {
+				unitId = api.getResponseJson().get("readingUnits").get(0).get("id").asText();
+				//unitName = api.getResponseJson().get("readingUnits").get(0).get("name").asText();
+				//unitStatus = api.getResponseJson().get("readingUnits").get(0).get("status").asText();
+				docsetId = api.getResponseJson().get("readingUnits").get(0).get("docsetId").asText();
+				csvFileName = api.getResponseJson().get("readingUnits").get(0).get("csvFileName").asText();
+				documentId = api.getResponseJson().get("readingUnits").get(0).get("documentId").asText();
+				documentName = api.getResponseJson().get("readingUnits").get(0).get("documentName").asText();	//全角は文字化けする。
+				createdAt = api.getResponseJson().get("readingUnits").get(0).get("createdAt").asText();
+				createdAt = createdAt.substring(0, createdAt.length()-2);	//語尾の.0(2桁)をとる(yyyy-MM-dd HH:mm:ss)
+				createdAt = createdAt.replace("-", "/");				//(yyyy-MM-dd HH:mm:ss) → (yyyy/MM/dd HH:mm:ss)
+			}
 			String linkUrl = OCR_HOST_URL + String.format(OCR_LINK_ENTRY, docsetId, documentId);	//Entry画面へのリンク
-			
+
 			if (sortFlag == true) {
 				//仕分けユニット経由だと、documentNameが入っていないのでここで入れる(documentIdにはSorterRuleIdが入っているので更新する)
 				ocrData.unitName = documentName;		//仕分け結果を入れる。
@@ -593,16 +641,37 @@ public class OcrProcess {
 				return -1;
 			}
 			//unitiId指定なので、1個しかないはず！
-			//String unitId = api.getResponseJson().get("readingUnits").get(0).get("id").asText();
-			//String unitName = api.getResponseJson().get("readingUnits").get(0).get("name").asText();
-			String unitStatus = api.getResponseJson().get("readingUnits").get(0).get("status").asText();
-			String docsetId = api.getResponseJson().get("readingUnits").get(0).get("docsetId").asText();
-			String csvFileName = api.getResponseJson().get("readingUnits").get(0).get("csvFileName").asText();
-			String documentId = api.getResponseJson().get("readingUnits").get(0).get("documentId").asText();
-			String documentName = api.getResponseJson().get("readingUnits").get(0).get("documentName").asText();	//文字列SJISなのでいったんコメントアウト
-			String createdAt = api.getResponseJson().get("readingUnits").get(0).get("createdAt").asText();
-			createdAt = createdAt.substring(0, createdAt.length()-2);	//語尾の.0(2桁)をとる(YYYY-MM-DD HH:MM:SS)
-			createdAt = createdAt.replace("-", "/");				//(yyyy-MM-dd HH:mm:ss) → (yyyy/MM/dd HH:mm:ss)
+			//String unitId;
+			//String unitName;
+			String unitStatus;
+			String docsetId;
+			String csvFileName;
+			String documentId;
+			String documentName;
+			String createdAt;
+			if (OCR_VERSION == 2) {
+				//unitId = api.getResponseJson().get("units").get(0).get("unitId").asText();
+				//unitName = api.getResponseJson().get("units").get(0).get("unitName").asText();
+				unitStatus = api.getResponseJson().get("units").get(0).get("status").asText();
+				docsetId = api.getResponseJson().get("units").get(0).get("folderId").asText();
+				csvFileName = api.getResponseJson().get("units").get(0).get("csvFileName").asText();
+				documentId = api.getResponseJson().get("units").get(0).get("workflowId").asText();
+				documentName = api.getResponseJson().get("units").get(0).get("workflowName").asText();	//全角は文字化けする。
+				createdAt = api.getResponseJson().get("units").get(0).get("createdAt").asText();
+				createdAt = createdAt.substring(0, createdAt.length()-2);	//語尾の.0(2桁)をとる(yyyy-MM-dd HH:mm:ss)
+				createdAt = createdAt.replace("-", "/");				//(yyyy-MM-dd HH:mm:ss) → (yyyy/MM/dd HH:mm:ss)
+			} else {
+				//unitId = api.getResponseJson().get("readingUnits").get(0).get("id").asText();
+				//unitName = api.getResponseJson().get("readingUnits").get(0).get("name").asText();
+				unitStatus = api.getResponseJson().get("readingUnits").get(0).get("status").asText();
+				docsetId = api.getResponseJson().get("readingUnits").get(0).get("docsetId").asText();
+				csvFileName = api.getResponseJson().get("readingUnits").get(0).get("csvFileName").asText();
+				documentId = api.getResponseJson().get("readingUnits").get(0).get("documentId").asText();
+				documentName = api.getResponseJson().get("readingUnits").get(0).get("documentName").asText();	//全角は文字化けする。
+				createdAt = api.getResponseJson().get("readingUnits").get(0).get("createdAt").asText();
+				createdAt = createdAt.substring(0, createdAt.length()-2);	//語尾の.0(2桁)をとる(yyyy-MM-dd HH:mm:ss)
+				createdAt = createdAt.replace("-", "/");				//(yyyy-MM-dd HH:mm:ss) → (yyyy/MM/dd HH:mm:ss)
+			}
 			String linkUrl = OCR_HOST_URL + String.format(OCR_LINK_ENTRY, docsetId, documentId);	//Entry画面へのリンク
 			
 			//name,status以外を更新
@@ -793,6 +862,10 @@ public class OcrProcess {
 			list = MyFiles.parseCSV(outputCsvFile, "SJIS");
 		} catch (IOException e) {
 			e.printStackTrace();
+			//◆2023/11/30: CSVを読み込めなかった場合、この値は少なくとも、ブランクを入れておく必要あり。
+			ocrData.checkResult = "";
+			ocrData.renkeiResult = "OCR出力結果が不正のため台帳連携不可。管理者に問い合わせてください。";
+			ocrData.chubanlist = "";
 			return;
 		}
         int maxRow = list.size();
@@ -838,7 +911,6 @@ public class OcrProcess {
         			list.get(r).set((headerNum-1), po.toUpperCase());
         		}
         		int r2;
-        		int c2;
 				boolean addOkFlag = false;
         		for (int p=0; p<repeatNum; p++) {
         			r2 = (r-1)*repeatNum + 1 + p - r2offset;
@@ -848,7 +920,7 @@ public class OcrProcess {
 						str = list.get(r).get(headerNum + p*meisaiNum);	//先頭カラムのデータ取得
 					else
 						str = "";	//CSVパースでlistに追加できなかったので、空白設定
-					MyUtils.SystemLogPrint(str);
+					MyUtils.SystemLogPrint(str);	//1カラム目：
 					addOkFlag = true;
 					//特定条件下で、明細行をスキップする
 					if (str.equals("") == true) {
@@ -927,7 +999,7 @@ public class OcrProcess {
 				} else {
 					MyUtils.SystemErrPrint("  置換マスタ：定義が存在しませんでした");
 				}
-				//xlsx.close();	更新されるので外す
+				xlsx.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -1418,7 +1490,7 @@ public class OcrProcess {
 		copyCmd[3] = ocrData.rotateInfo;//回転あり
 		copyCmd[4] = "output";
 		copyCmd[5] = copyToFile;		//copyToFile.replace("\\\\", "\\");	//この変換の必要性については要確認！
-		System.out.print(" CMD :");
+		System.out.print("  CMD :");
 		for (String cmd : copyCmd)
 			System.out.print(cmd + " ");
 		System.out.print("\n");
@@ -1445,8 +1517,9 @@ public class OcrProcess {
 			e.printStackTrace();
 		}
 		
+		//ocrData.type 0:、1:、2:
 		//連絡メール送信
-		if (ocrData.type == 0) {
+		if (ocrData.type == 0||ocrData.type == 1) {
 			String fileName2 = MyFiles.getFileName(uploadFilePath);	//フルパスからファイル名取得
 			String pdfPath = outputFolderPath + "\\" + fileName2;
 			try {
@@ -1456,8 +1529,8 @@ public class OcrProcess {
 			}
 		//zip圧縮前のExcelファイルを **** フォルダへコピー ⇒ ただ、この時点で、マクロ実行すればよい
 		} else if (ocrData.type == 2) {
-			String chumonSrc = outputFolderPath + "\\" + ocrData.csvFileName.replace("csv", ".xlsx");
-			String chumonDst = OCR_UPLOAD_PATH1 + ocrData.csvFileName.replace("csv", ".xlsx");
+			String chumonSrc = outputFolderPath + "\\" + ocrData.csvFileName.replace("csv", "xlsx");
+			String chumonDst = OCR_UPLOAD_PATH1 + ocrData.csvFileName.replace("csv", "xlsx");
 			try {
 				MyFiles.copyOW(chumonSrc, chumonDst);	//上書きコピー
 			} catch (IOException e) {

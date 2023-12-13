@@ -38,7 +38,6 @@ public class MyExcel {
 	
 	public Workbook book;
     FileInputStream fi;
-	//public Sheet sheet;
 	public XSSFSheet sheet;
 	public Row row;
 	public Cell cell;
@@ -60,6 +59,14 @@ public class MyExcel {
 			return false;
 		else
 			return true;
+	}
+
+	public Boolean checkShetExist(String name) {
+		XSSFSheet sheetExist = (XSSFSheet)book.getSheet(name);
+		if (sheetExist != null)
+			return true;
+		else
+			return false;
 	}
 
 	public void openXlsm(String xlsPath, boolean readOnly) throws IOException {
@@ -418,11 +425,11 @@ public class MyExcel {
 						if (Integer.parseInt(calFmt[0]) == colIdx) {
 							if (calFmt[1].equals("SURYO")) {
 								try {
-									int tmpVal = Integer.parseInt(strValue);
 									cell.setCellStyle(suryoStyle);
+									int tmpVal = Integer.parseInt(strValue);
 									cell.setCellValue(tmpVal);
 								} catch(NumberFormatException e) {
-									System.err.println(rowIdx + " SURYO変換NG: " + strValue);
+									System.err.println(rowIdx + " " + colIdx + " SURYO変換NG: " + strValue);
 									cell.setCellValue(strValue);
 								}
 								//System.out.println(calFmt[1] + ":" + strValue);
@@ -430,11 +437,11 @@ public class MyExcel {
 								break;
 							} else if (calFmt[1].equals("TANKA")) {
 								try {
-									double tmpVal = Double.parseDouble(strValue);
 									cell.setCellStyle(tankaStyle);
+									double tmpVal = Double.parseDouble(strValue);
 									cell.setCellValue(tmpVal);
 								} catch(NumberFormatException e) {
-									System.err.println(rowIdx + " TANKA変換NG: " + strValue);
+									System.err.println(rowIdx + " " + colIdx + " TANKA変換NG: " + strValue);
 									cell.setCellValue(strValue);
 								}
 								//System.out.println(calFmt[1] + ":" + strValue);
@@ -442,11 +449,11 @@ public class MyExcel {
 								break;
 							} else if (calFmt[1].equals("KINGAKU")) {
 								try {
-									int tmpVal = Integer.parseInt(strValue);
 									cell.setCellStyle(kingakuStyle);
+									int tmpVal = Integer.parseInt(strValue);
 									cell.setCellValue(tmpVal);
 								} catch(NumberFormatException e) {
-									System.err.println(rowIdx + " KINGAKU変換NG: " + strValue);
+									System.err.println(rowIdx + " " + colIdx + " KINGAKU変換NG: " + strValue);
 									cell.setCellValue(strValue);
 								}
 								//System.out.println(calFmt[1] + ":" + strValue);
@@ -455,11 +462,13 @@ public class MyExcel {
 							} else if (calFmt[1].equals("DATE")) {		//yyyy/mm/dd;@
 								try {
 									SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-									Date tmpVal = sdf.parse(strValue);
 									cell.setCellStyle(dateStyle);
-									cell.setCellValue(tmpVal);
+									if (strValue.equals("") != true) {
+										Date tmpVal = sdf.parse(strValue);
+										cell.setCellValue(tmpVal);
+									}
 								} catch (ParseException e) {
-									System.err.println(rowIdx + " DATE変換NG: " + strValue);
+									System.err.println(rowIdx + " " + colIdx + " DATE変換NG: " + strValue);
 									cell.setCellValue(strValue);
 								}								
 								//System.out.println(calFmt[1] + ":" + strValue);
@@ -468,11 +477,13 @@ public class MyExcel {
 							} else if (calFmt[1].equals("DATETIME")) {	//yyyy/mm/dd hh:mm:ss
 								try {
 									SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-									Date tmpVal = sdf.parse(strValue);
 									cell.setCellStyle(dtimeStyle);
-									cell.setCellValue(tmpVal);
+									if (strValue.equals("") != true) {
+										Date tmpVal = sdf.parse(strValue);
+										cell.setCellValue(tmpVal);
+									}
 								} catch (ParseException e) {
-									System.err.println(rowIdx + " DATETIME変換NG: " + strValue);
+									System.err.println(rowIdx + " " + colIdx + " DATETIME変換NG: " + strValue);
 									cell.setCellValue(strValue);
 								}								
 								//System.out.println(calFmt[1] + ":" + strValue);
@@ -533,7 +544,7 @@ public class MyExcel {
         final var table = sheet.createTable(tableArea);
         table.setName(tableName);
         table.setDisplayName(tableName); // テーブル名
-        table.setStyleName("TableStyleMedium2"); // スタイル: TableStyleLight## | TableStyleMedium## | TableStyleDark##
+        table.setStyleName("TableStyleMedium6"); // スタイル: TableStyleLight## | TableStyleMedium## | TableStyleDark##
         final var style = (XSSFTableStyleInfo) table.getStyle();
         style.setShowRowStripes(true); // 縞模様 (行)
         final var ctAutoFilter = table.getCTTable().addNewAutoFilter();
@@ -592,6 +603,7 @@ public class MyExcel {
 		return 0;
 	}
 	
+	//Pivotテーブルを更新する
 	//https://stackoverflow.com/questions/1010673/refresh-pivot-table-with-apache-poi
 	public int refreshPivot(String sheetName) {
 	    final var pivotSheet = (XSSFSheet) book.getSheet(sheetName);
@@ -610,5 +622,22 @@ public class MyExcel {
 		}
 		
 		return 0;
+	}
+
+	//Excelシートをアクティブにする
+	//https://blog.java-reference.com/poi-sheet-active/
+	public void setActiveSheet(String pivoitName) {
+		//book.setActiveSheet(0);  //シートを選択状態にする
+		//book.setSelectedTab(0);  //シートをカレントにする
+
+		//シート名で指定したい場合はこちら
+		book.setSelectedTab(book.getSheetIndex(pivoitName));
+		book.setActiveSheet(book.getSheetIndex(pivoitName));
+
+		setSheet(pivoitName);
+		getRow(0);
+		setAsActiveCell(0);
+		//String value = getStringCellValue(0,0);
+		//System.out.println(value);
 	}
 }

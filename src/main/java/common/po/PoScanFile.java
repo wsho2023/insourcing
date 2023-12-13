@@ -133,7 +133,7 @@ public class PoScanFile {
 		mailConf.toAddr = upload.getUserId();
 
 		//パターン①: 注文書のケース
-		String subject = ocrData.getDocSetName() + "ｱｯﾌﾟﾛｰﾄﾞ注文書" + "(" + ocrData.getCreatedAt() + " " + ocrData.getUnitName() + ")";
+		String subject = "K手動ｱｯﾌﾟﾛｰﾄﾞ注文書" + "(" + ocrData.getCreatedAt() + " " + ocrData.getUnitName() + ")";
 		mailConf.subject = subject;
 		mailConf.attach = pdfPath;
 		if (ocrData.getRenkeiResult().equals("") != true) {
@@ -166,7 +166,7 @@ public class PoScanFile {
 		PoUploadBean upload = null;
 		int retryCnt = 0;
 		for (;;) {
-			upload = PoUploadDAO.getInstance(config).quertyWithInputPath(uploadFilePath);
+			upload = PoUploadDAO.getInstance(config).quertyWithInputPath(uploadFilePath);	//こちらは、quertyWithInputPathを使う
 			if (upload != null)
 				break;
 			try {

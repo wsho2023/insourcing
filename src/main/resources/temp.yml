@@ -54,6 +54,7 @@ spring:
     api_key: api_key
     api_key_value: api_key_value
     user_id: user_id
+    version: version
   path:
     #templete_path: .\templete\
     templete_path: .\output\

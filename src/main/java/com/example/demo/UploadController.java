@@ -254,7 +254,10 @@ public class UploadController {
 		ocrData.setDocumentId(documentId);
 		ocrData.setDocumentName(ocrForm.getDocumentName());
 		//ocrData.setCreatedAt("");
-		int type = 1;	//1: 2:本番
+		int type = 1;	//1: 2:本番環境
+		String  TEST_FLAG = config.getScanTestFlag();
+		if (TEST_FLAG.equals("true") == true)
+			type = 3;	//3: テスト環境
 		ocrData.setType(type);
 		OcrDataFormDAO.getInstance(config).insertReadingUnitDB(ocrData);
 	}

@@ -75,6 +75,7 @@ public class SpringConfig {
     public String getOcrApiKey(){	return ocr.get("api_key");    }
     public String getOcrApiKeyValye(){	return ocr.get("api_key_value");    }
     public String getOcrUserId(){	return ocr.get("user_id");    }
+    public String getOcrVersion(){	return ocr.get("version");    }
     
     public String getPathTempletePath(){	return path.get("templete_path");	}
 	public String getPathInputPath(){	return path.get("input_path");    }

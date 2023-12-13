@@ -77,11 +77,15 @@ public class MyFiles {
 	        list = new ArrayList<ArrayList<String>>();
 
 	        String line;
+			String end;
 	        while ((line = br.readLine()) != null) {
 	            // ファイルから読み取った行を連結する
 	            sb.append(line);
-	            
-	            if (line.substring(line.length()-1, line.length()).equals("\"")==false) {
+				if (line == null || line.equals("")) {
+					continue;	//空白行は無視する。
+				}
+				end = line.substring(line.length()-1, line.length());
+	            if (end.equals("\"")==false) {
 	                // 行末がダブルクォート以外の場合、改行コードが含まれているのでcontinueして次の行へ
 	                continue;
 	            }
